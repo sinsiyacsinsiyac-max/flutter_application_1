@@ -10,6 +10,7 @@ class EventsPage extends StatefulWidget {
 class _EventsPageState extends State<EventsPage> {
   final List<Map<String, dynamic>> upcomingEvents = [
     {
+      
       'title': 'Tech Conference 2024',
       'date': 'Dec 15, 2024',
       'time': '10:00 AM - 5:00 PM',
@@ -35,6 +36,15 @@ class _EventsPageState extends State<EventsPage> {
       'type': 'Meetup',
       'icon': Icons.groups,
       'color': const Color(0xFF6A1B9A),
+    },
+    {
+      'title': 'Guest Lecture: AI & ML',
+      'date': 'Jan 5, 2025',
+      'time': '11:00 AM - 1:00 PM',
+      'location': 'Auditorium A',
+      'type': 'Lecture',
+      'icon': Icons.mic,
+      'color': const Color(0xFFD32F2F),
     },
     {
       'title': 'Guest Lecture: AI & ML',
