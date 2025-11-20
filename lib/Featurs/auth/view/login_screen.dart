@@ -36,8 +36,12 @@
 //     );
 //   }
 // }
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Featurs/auth/view/signup_screen.dart';
+import 'package:flutter_application_1/Featurs/firebase_serviece/firebase.dart';
+import 'package:flutter_application_1/Featurs/admin/home/home_screen.dart';
+import 'package:flutter_application_1/Featurs/college/college_dashboard.dart';
 import 'package:flutter_application_1/Featurs/home/view/home_page.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -50,6 +54,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
   bool _isLoading = false;
@@ -86,18 +91,61 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       
-      // Simulate API call
-      await Future.delayed(const Duration(seconds: 2));
-      
-      setState(() => _isLoading = false);
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>ChatbotHomePage()), 
-      (route) => false,);
-      
-      // if (mounted) {
-      //   ScaffoldMessenger.of(context).showSnackBar(
-      //     const SnackBar(content: Text('Login successful!')),
-      //   );
-      // }
+      try {
+        User? user = await _authService.signIn(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        );
+
+        if (user != null) {
+          // Get user role from Firestore
+          String? role = await _authService.getUserRole(user.uid);
+          
+          if (mounted) {
+            _navigateBasedOnRole(role, context);
+          }
+        }
+      } on FirebaseAuthException catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error: ${e.code}'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
+      }
+    }
+  }
+
+  void _navigateBasedOnRole(String? role, BuildContext context) {
+    switch (role) {
+      case 'admin':
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const AdminHomeScreen()),
+          (route) => false,
+        );
+        break;
+      case 'college':
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const CollegeHomeScreen()),
+          (route) => false,
+        );
+        break;
+      case 'user':
+      default:
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const ChatbotHomePage()),
+          (route) => false,
+        );
+        break;
     }
   }
 
@@ -308,8 +356,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         TextButton(
                           onPressed: () {
-                            // Navigate to sign up
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=>SignUpScreen()));
+                            Navigator.push(
+                              context, 
+                              MaterialPageRoute(builder: (context) => const SignUpScreen())
+                            );
                           },
                           child: const Text(
                             'Sign Up',

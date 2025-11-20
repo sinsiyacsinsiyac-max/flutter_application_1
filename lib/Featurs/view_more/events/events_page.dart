@@ -18,8 +18,7 @@ class _EventsPageState extends State<EventsPage> {
       'type': 'Conference',
       'icon': Icons.computer,
       'color': const Color(0xFF283593),
-    },
-    {
+    },    {
       'title': 'Workshop: Flutter Development',
       'date': 'Dec 20, 2024',
       'time': '2:00 PM - 4:00 PM',

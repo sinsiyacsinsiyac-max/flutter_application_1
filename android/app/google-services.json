@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "868586532772",
+    "project_id": "campus-iq-2d278",
+    "storage_bucket": "campus-iq-2d278.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868586532772:android:fc16db05241aaf1907db31",
+        "android_client_info": {
+          "package_name": "com.example.campusiq"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDVRUncmQcD_81J4Y2_XxLw_3cbqVECJnk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

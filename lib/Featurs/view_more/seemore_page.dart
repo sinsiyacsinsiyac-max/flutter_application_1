@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Featurs/auth/view/login_screen.dart';
+import 'package:flutter_application_1/Featurs/firebase_serviece/firebase.dart';
 import 'package:flutter_application_1/Featurs/view_more/admission/admission_page.dart';
 import 'package:flutter_application_1/Featurs/view_more/course/course_detai_page.dart';
 import 'package:flutter_application_1/Featurs/view_more/downloads/downloads_page.dart';
@@ -12,6 +14,7 @@ class ExpantioList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+      final AuthService _authService = AuthService();
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -26,17 +29,43 @@ class ExpantioList extends StatelessWidget {
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
-        children: const [
-          CoursesExpansion(),
-          SizedBox(height: 12),
-          AdmissionsExpansion(),
-          SizedBox(height: 12),
-          ExamsExpantion(),
-          SizedBox(height: 12),
-          DownloadsExpantion(),
-          SizedBox(height: 12),
-          EventsExpansion(),
-          SizedBox(height: 20),
+        children: [
+          const CoursesExpansion(),
+          const SizedBox(height: 12),
+          const AdmissionsExpansion(),
+          const SizedBox(height: 12),
+          const ExamsExpantion(),
+          const SizedBox(height: 12),
+          const DownloadsExpantion(),
+          const SizedBox(height: 12),
+          const EventsExpansion(),
+          const SizedBox(height: 20),
+          GestureDetector(
+            onTap: () async{
+              await _authService.signOut();
+              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>
+              LoginScreen()), (route) => false,);
+            },
+            child: Container(
+              padding: EdgeInsets.all(10),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.red,
+                border: Border.all(
+                  color:Colors.blueAccent 
+                )
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.logout,color: Colors.white,),
+                  Text('Logout',style: TextStyle(
+                    color: Colors.white
+                  ),)
+                ],
+              ),
+            ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
