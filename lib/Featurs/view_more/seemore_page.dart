@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Featurs/auth/view/login_screen.dart';
 import 'package:flutter_application_1/Featurs/firebase_serviece/firebase.dart';
@@ -36,7 +37,7 @@ class ExpantioList extends StatelessWidget {
           const SizedBox(height: 12),
           const ExamsExpantion(),
           const SizedBox(height: 12),
-          const DownloadsExpantion(),
+          const DownloadsExpansion(),
           const SizedBox(height: 12),
           const EventsExpansion(),
           const SizedBox(height: 20),
@@ -84,18 +85,6 @@ class CoursesExpansion extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> courses = [
-      'BCA',
-      'BCom',
-      'BBA',
-      'BComCA',
-      'MA',
-      'BA',
-      'BSC Physics',
-      'MSC Physics',
-      'MA English',
-    ];
-
     return Card(
       elevation: 10,
       shadowColor: Colors.black12,
@@ -122,53 +111,173 @@ class CoursesExpansion extends StatelessWidget {
               color: Color(0xFF1A237E),
             ),
           ),
-          subtitle: Text(
-            '${courses.length} programs',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey[600],
-            ),
+          subtitle: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance.collection('courses').snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasError) {
+                return Text(
+                  'Error loading courses',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                  ),
+                );
+              }
+
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Text(
+                  'Loading...',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                  ),
+                );
+              }
+
+              final courseCount = snapshot.data?.docs.length ?? 0;
+              return Text(
+                '$courseCount programs',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[600],
+                ),
+              );
+            },
           ),
           children: [
             const Divider(height: 1),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: courses.length,
-              itemBuilder: (context, index) {
-                return Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => CourseDetailsPage(courseName:'BCA',)));
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF1A237E),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Text(
-                            courses[index],
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const Spacer(),
-                          Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
-                          
-                        ],
-                      ),
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance.collection('courses').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      'Error loading courses: ${snapshot.error}',
+                      style: const TextStyle(color: Colors.red),
                     ),
-                  ),
+                  );
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Padding(
+                    padding: EdgeInsets.all(16.0),
+                    child: Text(
+                      'No courses available',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  );
+                }
+
+                final courses = snapshot.data!.docs;
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: courses.length,
+                  itemBuilder: (context, index) {
+                    final course = courses[index].data() as Map<String, dynamic>;
+                    final courseId = courses[index].id;
+                    final courseName = course['name'] ?? 'Unnamed Course';
+                    final courseCode = course['code'] ?? '';
+                    final department = course['department'] ?? '';
+                    final credits = course['credits']?.toString() ?? '';
+                    final description = course['description'] ?? '';
+
+                    return Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          // Navigate to course details page with all course data
+                          Navigator.push(
+                            context, 
+                            MaterialPageRoute(
+                              builder: (context) => CourseDetailsPage(
+                                courseId: courseId,
+                                courseName: courseName,
+                                courseCode: courseCode,
+                                department: department,
+                                credits: credits,
+                                description: description,
+                                hasFees: course['hasFees'] ?? false,
+                                totalFees: course['totalFees']?.toString() ?? '0',
+                                semesterFees: course['semesterFees']?.toString() ?? '0',
+                                maxStudents: course['maxStudents']?.toString() ?? '0',
+                                enrolledStudents: course['enrolledStudents']?.toString() ?? '0',
+                              ),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 8,
+                                height: 8,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF1A237E),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      courseName,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    if (courseCode.isNotEmpty)
+                                      Text(
+                                        courseCode,
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey[600],
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                              const Spacer(),
+                              if (course['hasFees'] == true)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.green.shade50,
+                                    borderRadius: BorderRadius.circular(4),
+                                    border: Border.all(color: Colors.green.shade200),
+                                  ),
+                                  child: Text(
+                                    '₹${course['totalFees']?.toStringAsFixed(0) ?? '0'}',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.green.shade700,
+                                    ),
+                                  ),
+                                ),
+                              const SizedBox(width: 12),
+                              Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -178,6 +287,7 @@ class CoursesExpansion extends StatelessWidget {
     );
   }
 }
+
 
 class AdmissionsExpansion extends StatelessWidget {
   const AdmissionsExpansion({Key? key}) : super(key: key);
@@ -357,15 +467,24 @@ class ExamsExpantion extends StatelessWidget {
   }
 }
 
-class DownloadsExpantion extends StatelessWidget {
-  const DownloadsExpantion({Key? key}) : super(key: key);
+class DownloadsExpansion extends StatelessWidget {
+  const DownloadsExpansion({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> downloads = [
-      {'title': 'Notes', 'icon': Icons.notes_rounded,'page':NotesDownloadPage()},
-      {'title': 'Previous Question Papers', 'icon': Icons.quiz_rounded,'page':PreviousQuestionPapersPage()},
-
+      {
+        'title': 'Notes', 
+        'icon': Icons.note_rounded,
+        'page': const NotesDownloadPage(),
+        'color': Colors.green.shade700,
+      },
+      {
+        'title': 'Previous Question Papers', 
+        'icon': Icons.quiz_rounded,
+        'page': const PreviousQuestionPapersPage(),
+        'color': Colors.orange.shade700,
+      },
     ];
 
     return Card(
@@ -384,7 +503,11 @@ class DownloadsExpantion extends StatelessWidget {
               color: const Color.fromARGB(255, 7, 61, 122).withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.download_rounded, color: Color.fromARGB(255, 8, 62, 123), size: 24),
+            child: const Icon(
+              Icons.download_rounded, 
+              color: Color.fromARGB(255, 8, 62, 123), 
+              size: 24
+            ),
           ),
           title: const Text(
             'Downloads',
@@ -394,50 +517,108 @@ class DownloadsExpantion extends StatelessWidget {
               color: Color.fromARGB(255, 7, 52, 102),
             ),
           ),
-          subtitle: Text(
-            'Study materials',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey[600],
-            ),
+          subtitle: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection('study_materials')
+                .snapshots(),
+            builder: (context, snapshot) {
+              final totalCount = snapshot.data?.docs.length ?? 0;
+              final notesCount = snapshot.data?.docs
+                  .where((doc) => (doc.data() as Map<String, dynamic>)['type'] == 'notes')
+                  .length ?? 0;
+              final papersCount = snapshot.data?.docs
+                  .where((doc) => (doc.data() as Map<String, dynamic>)['type'] == 'papers')
+                  .length ?? 0;
+
+              return Text(
+                '$totalCount study materials available',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: Colors.grey[600],
+                ),
+              );
+            },
           ),
           children: [
             const Divider(height: 1),
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: downloads.length,
-              itemBuilder: (context, index) {
-                return Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder:(context) =>downloads[index]['page']));
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      child: Row(
-                        children: [
-                          Icon(
-                            downloads[index]['icon'],
-                            size: 22,
-                            color: const Color.fromARGB(255, 5, 50, 100),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Text(
-                              downloads[index]['title'],
-                              style: const TextStyle( 
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
+            StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('study_materials')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                final notesCount = snapshot.data?.docs
+                    .where((doc) => (doc.data() as Map<String, dynamic>)['type'] == 'notes')
+                    .length ?? 0;
+                final papersCount = snapshot.data?.docs
+                    .where((doc) => (doc.data() as Map<String, dynamic>)['type'] == 'papers')
+                    .length ?? 0;
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: downloads.length,
+                  itemBuilder: (context, index) {
+                    final item = downloads[index];
+                    final count = index == 0 ? notesCount : papersCount;
+
+                    return Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context, 
+                            MaterialPageRoute(builder: (context) => item['page'])
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: item['color'].withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Icon(
+                                  item['icon'],
+                                  size: 20,
+                                  color: item['color'],
+                                ),
                               ),
-                            ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      item['title'],
+                                      style: const TextStyle( 
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    Text(
+                                      '$count files available',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey.shade600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Icon(
+                                Icons.arrow_forward_ios, 
+                                size: 14, 
+                                color: Colors.grey[400]
+                              ),
+                            ],
                           ),
-                          Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
+                    );
+                  },
                 );
               },
             ),

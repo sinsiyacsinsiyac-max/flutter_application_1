@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Featurs/auth/view/login_screen.dart';
+import 'package:flutter_application_1/Featurs/college/add_course.dart';
+import 'package:flutter_application_1/Featurs/college/add_event.dart';
+import 'package:flutter_application_1/Featurs/college/add_notes_and_question_pappersadd.dart';
+import 'package:flutter_application_1/Featurs/college/aminities_add_option.dart';
 import 'package:flutter_application_1/Featurs/firebase_serviece/firebase.dart';
 
 class CollegeHomeScreen extends StatefulWidget {
@@ -214,14 +218,31 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
           crossAxisCount: 4,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
+          childAspectRatio: .75,
           children: [
-            _buildActionItem(Icons.school, 'Courses', Colors.blue),
-            _buildActionItem(Icons.calendar_today, 'Schedule', Colors.green),
-            _buildActionItem(Icons.assignment, 'Assignments', Colors.orange),
-            _buildActionItem(Icons.grade, 'Results', Colors.purple),
-            _buildActionItem(Icons.library_books, 'Library', Colors.red),
-            _buildActionItem(Icons.event, 'Events', Colors.pink),
-            _buildActionItem(Icons.download, 'Resources', Colors.teal),
+            GestureDetector(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>TeacherCoursePanel()));
+              },
+              child: _buildActionItem(Icons.school, 'Courses', Colors.blue)),
+            // _buildActionItem(Icons.calendar_today, 'Schedule', Colors.green),
+            GestureDetector(
+                onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>NotesPapersPanel()));
+              },
+              child: _buildActionItem(Icons.assignment, 'Notes', Colors.orange)),
+            // _buildActionItem(Icons.grade, 'Results', Colors.purple),
+            GestureDetector(
+                onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>CollegeAmenitiesPanel()));
+              },
+              child: _buildActionItem(Icons.library_books, 'Aminities', Colors.red)),
+            GestureDetector(
+              onTap: (){
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>CollegeEventsPanel()));
+              },
+              child: _buildActionItem(Icons.event, 'Events', Colors.pink)),
+            // _buildActionItem(Icons.download, 'Resources', Colors.teal),
             _buildActionItem(Icons.person, 'Profile', Colors.indigo),
           ],
         ),

@@ -54,7 +54,7 @@ class _SplashScreenState extends State<SplashScreen> {
           (route) => false,
         );
         break;
-      case 'college':
+      case 'teacher':
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => const CollegeHomeScreen()),

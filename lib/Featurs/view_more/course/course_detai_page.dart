@@ -1,66 +1,357 @@
 import 'package:flutter/material.dart';
 
 class CourseDetailsPage extends StatelessWidget {
+  final String courseId;
   final String courseName;
+  final String courseCode;
+  final String department;
+  final String credits;
+  final String description;
+  final bool hasFees;
+  final String totalFees;
+  final String semesterFees;
+  final String maxStudents;
+  final String enrolledStudents;
 
-  const CourseDetailsPage({Key? key, required this.courseName}) : super(key: key);
+  const CourseDetailsPage({
+    Key? key,
+    required this.courseId,
+    required this.courseName,
+    required this.courseCode,
+    required this.department,
+    required this.credits,
+    required this.description,
+    required this.hasFees,
+    required this.totalFees,
+    required this.semesterFees,
+    required this.maxStudents,
+    required this.enrolledStudents,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final double enrollmentPercentage = (int.tryParse(enrolledStudents) ?? 0) / 
+                                       (int.tryParse(maxStudents) ?? 1);
+    
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 200,
-            pinned: true,
-            backgroundColor: const Color(0xFF1A237E),
-            flexibleSpace: FlexibleSpaceBar(
-              title: Text(
-                courseName,
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 20,
-                ),
+      backgroundColor: Colors.grey.shade50,
+      appBar: AppBar(
+        title: Text(
+          courseName,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+          ),
+        ),
+        backgroundColor: const Color(0xFF1A237E),
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_rounded, size: 24),
+          onPressed: () => Navigator.pop(context),
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.share_rounded, size: 22),
+            onPressed: () => _shareCourse(context),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          // Header Section with Gradient
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Color(0xFF1A237E),
+                  Color(0xFF303F9F),
+                ],
               ),
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [
-                      const Color(0xFF1A237E),
-                      const Color(0xFF283593),
-                    ],
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(24),
+                bottomRight: Radius.circular(24),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.blue.shade900.withOpacity(0.3),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Course Code Badge
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    courseCode,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
-                child: Center(
-                  child: Icon(
-                    Icons.school_rounded,
-                    size: 80,
-                    color: Colors.white.withOpacity(0.3),
+                const SizedBox(height: 12),
+                Text(
+                  courseName,
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                    height: 1.2,
                   ),
                 ),
-              ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Icon(Icons.school_rounded, size: 16, color: Colors.white.withOpacity(0.8)),
+                    const SizedBox(width: 6),
+                    Text(
+                      department,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withOpacity(0.9),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
+
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildOverviewCard(),
-                  const SizedBox(height: 16),
-                  _buildDurationCard(),
-                  const SizedBox(height: 16),
-                  _buildEligibilityCard(),
-                  const SizedBox(height: 16),
-                  _buildSyllabusCard(),
-                  const SizedBox(height: 16),
-                  _buildCareerCard(),
-                  const SizedBox(height: 16),
-                  _buildFeeStructureCard(),
+                  // Quick Stats Cards
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: Icons.credit_score_rounded,
+                          title: 'Credits',
+                          value: credits,
+                          color: Colors.blue.shade700,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildStatCard(
+                          icon: Icons.people_alt_rounded,
+                          title: 'Enrolled',
+                          value: '$enrolledStudents/$maxStudents',
+                          color: Colors.green.shade700,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Course Information Section
+                  _buildSection(
+                    title: 'Course Information',
+                    icon: Icons.info_rounded,
+                    child: Column(
+                      children: [
+                        _buildInfoItem(
+                          icon: Icons.business_center_rounded,
+                          title: 'Department',
+                          value: department,
+                        ),
+                        _buildInfoItem(
+                          icon: Icons.schedule_rounded,
+                          title: 'Credits',
+                          value: '$credits credit hours',
+                        ),
+                        _buildInfoItem(
+                          icon: Icons.people_outline_rounded,
+                          title: 'Capacity',
+                          value: '$maxStudents students',
+                        ),
+                        _buildInfoItem(
+                          icon: Icons.person_add_rounded,
+                          title: 'Currently Enrolled',
+                          value: '$enrolledStudents students',
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Enrollment Progress
+                  _buildSection(
+                    title: 'Enrollment Status',
+                    icon: Icons.trending_up_rounded,
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Available Spots',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              '${int.parse(maxStudents) - int.parse(enrolledStudents)} remaining',
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.green,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        LinearProgressIndicator(
+                          value: enrollmentPercentage,
+                          backgroundColor: Colors.grey.shade300,
+                          color: enrollmentPercentage >= 0.8 
+                              ? Colors.orange.shade600 
+                              : Colors.green.shade600,
+                          minHeight: 8,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '${(enrollmentPercentage * 100).toStringAsFixed(1)}% filled',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Description Section
+                  _buildSection(
+                    title: 'About This Course',
+                    icon: Icons.description_rounded,
+                    child: Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade800,
+                        height: 1.6,
+                      ),
+                    ),
+                  ),
+
+                  // Fee Structure Section (if available)
+                  if (hasFees) ...[
+                    const SizedBox(height: 20),
+                    _buildSection(
+                      title: 'Fee Structure',
+                      icon: Icons.attach_money_rounded,
+                      child: Column(
+                        children: [
+                          _buildFeeItem(
+                            title: 'Total Course Fees',
+                            amount: '₹$totalFees',
+                            isTotal: true,
+                          ),
+                          const SizedBox(height: 12),
+                          _buildFeeItem(
+                            title: 'Per Semester',
+                            amount: '₹$semesterFees',
+                            isTotal: false,
+                          ),
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.blue.shade100),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.info_outline_rounded, 
+                                    size: 16, color: Colors.blue.shade700),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    'Fees can be paid in installments per semester',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.blue.shade800,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 30),
+
+                  // Action Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => _contactAdmissions(context),
+                          icon: const Icon(Icons.phone_rounded, size: 18),
+                          label: const Text('Contact'),
+                          style: OutlinedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            side: BorderSide(color: Colors.blue.shade700),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        flex: 2,
+                        child: ElevatedButton.icon(
+                          onPressed: () => _enrollInCourse(context),
+                          icon: const Icon(Icons.app_registration_rounded, size: 20),
+                          label: const Text(
+                            'Enroll Now',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF1A237E),
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            elevation: 2,
+                            shadowColor: Colors.blue.shade300,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
                   const SizedBox(height: 20),
                 ],
               ),
@@ -68,536 +359,239 @@ class CourseDetailsPage extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          _showEnrollDialog(context);
-        },
-        backgroundColor: const Color(0xFF1A237E),
-        icon: const Icon(Icons.app_registration, color: Colors.white),
-        label: const Text(
-          'Enroll Now',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ),
     );
   }
 
-  Widget _buildOverviewCard() {
-    return Card(
-      elevation: 2,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
+  Widget _buildSection({
+    required String title,
+    required IconData icon,
+    required Widget child,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1A237E).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.info_rounded,
-                    color: Color(0xFF1A237E),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Course Overview',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A237E),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'This program offers comprehensive education in $courseName, designed to provide students with both theoretical knowledge and practical skills needed for professional success.',
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.grey[700],
-                height: 1.5,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDurationCard() {
-    return Card(
-      elevation: 2,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF0D47A1).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.schedule_rounded,
-                    color: Color(0xFF0D47A1),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Duration & Structure',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0D47A1),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildInfoRow(Icons.calendar_today_rounded, 'Duration', '3 Years (6 Semesters)'),
-            const SizedBox(height: 12),
-            _buildInfoRow(Icons.class_rounded, 'Mode', 'Full-time / Part-time'),
-            const SizedBox(height: 12),
-            _buildInfoRow(Icons.language_rounded, 'Medium', 'English'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildEligibilityCard() {
-    return Card(
-      elevation: 2,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF283593).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.check_circle_rounded,
-                    color: Color(0xFF283593),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Eligibility Criteria',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF283593),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildBulletPoint('10+2 or equivalent qualification'),
-            _buildBulletPoint('Minimum 50% aggregate marks'),
-            _buildBulletPoint('Age limit: 17-25 years'),
-            _buildBulletPoint('Entrance exam may be required'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSyllabusCard() {
-    final List<Map<String, dynamic>> semesters = [
-      {
-        'semester': 'Semester 1 & 2',
-        'subjects': ['Foundation Course', 'Computer Fundamentals', 'Mathematics', 'English']
-      },
-      {
-        'semester': 'Semester 3 & 4',
-        'subjects': ['Core Subjects', 'Programming Languages', 'Database Systems', 'Electives']
-      },
-      {
-        'semester': 'Semester 5 & 6',
-        'subjects': ['Advanced Topics', 'Project Work', 'Internship', 'Specialization']
-      },
-    ];
-
-    return Card(
-      elevation: 2,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1565C0).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.menu_book_rounded,
-                    color: Color(0xFF1565C0),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Course Syllabus',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1565C0),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            ...semesters.map((sem) => _buildSemesterItem(sem)).toList(),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCareerCard() {
-    return Card(
-      elevation: 2,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF00695C).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.work_rounded,
-                    color: Color(0xFF00695C),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Career Opportunities',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF00695C),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildBulletPoint('Software Developer'),
-            _buildBulletPoint('System Analyst'),
-            _buildBulletPoint('Database Administrator'),
-            _buildBulletPoint('Web Designer'),
-            _buildBulletPoint('IT Consultant'),
-            _buildBulletPoint('Project Manager'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFeeStructureCard() {
-    return Card(
-      elevation: 2,
-      shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE65100).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.payments_rounded,
-                    color: Color(0xFFE65100),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Fee Structure',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFE65100),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _buildInfoRow(Icons.currency_rupee, 'Annual Fee', '₹45,000 - ₹60,000'),
-            const SizedBox(height: 12),
-            _buildInfoRow(Icons.account_balance_rounded, 'One-time Fee', '₹5,000'),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.green[50],
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.green[200]!),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.verified_rounded, color: Colors.green[700], size: 20),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Scholarships available for meritorious students',
-                      style: TextStyle(
-                        color: Colors.green[700],
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: Colors.grey[600]),
-        const SizedBox(width: 12),
-        Text(
-          '$label: ',
-          style: TextStyle(
-            fontSize: 15,
-            color: Colors.grey[600],
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildBulletPoint(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            margin: const EdgeInsets.only(top: 8),
-            width: 6,
-            height: 6,
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A237E),
-              borderRadius: BorderRadius.circular(3),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                fontSize: 15,
-                color: Colors.grey[700],
-                height: 1.5,
-              ),
-            ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildSemesterItem(Map<String, dynamic> semester) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            semester['semester'],
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF1565C0),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: (semester['subjects'] as List<String>)
-                .map((subject) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.blue[50],
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.blue[200]!),
-                      ),
-                      child: Text(
-                        subject,
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: const Color.fromARGB(255, 8, 71, 135),
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ))
-                .toList(),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showEnrollDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          title: Row(
+          Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1A237E).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(
-                  Icons.app_registration,
+                child: Icon(icon, size: 18, color: const Color(0xFF1A237E)),
+              ),
+              const SizedBox(width: 12),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
                   color: Color(0xFF1A237E),
                 ),
               ),
-              const SizedBox(width: 12),
-              const Text(
-                'Enroll Now',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Start your journey in $courseName',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: Colors.grey[700],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Contact Admissions Office:',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey[800],
-                ),
-              ),
-              const SizedBox(height: 8),
-              _buildInfoRow(Icons.phone_rounded, 'Phone', '+91 1234567890'),
-              const SizedBox(height: 8),
-              _buildInfoRow(Icons.email_rounded, 'Email', 'admissions@college.edu'),
-            ],
+          const SizedBox(height: 16),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required String title,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 6,
+            offset: const Offset(0, 2),
           ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text(
-                'Close',
-                style: TextStyle(color: Colors.grey[600]),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 20, color: color),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey.shade600,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoItem({
+    required IconData icon,
+    required String title,
+    required String value,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: Colors.grey.shade600),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 2,
+            child: Text(
+              title,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade700,
+                fontWeight: FontWeight.w500,
               ),
             ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Redirecting to enrollment form...'),
-                    backgroundColor: Color(0xFF1A237E),
-                  ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF1A237E),
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+          ),
+          Expanded(
+            flex: 3,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeeItem({
+    required String title,
+    required String amount,
+    required bool isTotal,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isTotal ? Colors.green.shade50 : Colors.grey.shade50,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isTotal ? Colors.green.shade200 : Colors.grey.shade300,
+        ),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
+              color: isTotal ? Colors.green.shade800 : Colors.grey.shade700,
+            ),
+          ),
+          Text(
+            amount,
+            style: TextStyle(
+              fontSize: isTotal ? 18 : 16,
+              fontWeight: FontWeight.w700,
+              color: isTotal ? Colors.green.shade700 : Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _enrollInCourse(BuildContext context) {
+    // Show enrollment dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Enroll in Course'),
+        content: Text('Are you sure you want to enroll in $courseName?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Successfully enrolled in $courseName!'),
+                  backgroundColor: Colors.green,
+                  behavior: SnackBarBehavior.floating,
                 ),
-              ),
-              child: const Text('Apply Online'),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF1A237E),
             ),
-          ],
-        );
-      },
+            child: const Text('Enroll'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _contactAdmissions(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Redirecting to admissions office...'),
+        backgroundColor: Colors.blue.shade700,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _shareCourse(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Sharing $courseName...'),
+        backgroundColor: Colors.grey.shade700,
+        behavior: SnackBarBehavior.floating,
+      ),
     );
   }
 }
