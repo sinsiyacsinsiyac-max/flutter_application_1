@@ -63,7 +63,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
   _authService.signOut();
   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginScreen()), (route) => false,);
   },
-  backgroundColor: Colors.red, // Changed to red for logout
+  backgroundColor: const Color.fromARGB(255, 48, 10, 154), // Changed to red for logout
   icon: const Icon(Icons.logout_rounded, color: Colors.white),
   label: const Text(
     'Logout',
@@ -230,20 +230,20 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                 onTap: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>NotesPapersPanel()));
               },
-              child: _buildActionItem(Icons.assignment, 'Notes', Colors.orange)),
+              child: _buildActionItem(Icons.assignment, 'Notes', const Color.fromARGB(255, 40, 125, 244))),
             // _buildActionItem(Icons.grade, 'Results', Colors.purple),
             GestureDetector(
                 onTap: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>CollegeAmenitiesPanel()));
               },
-              child: _buildActionItem(Icons.library_books, 'Aminities', Colors.red)),
+              child: _buildActionItem(Icons.library_books, 'Aminities', const Color.fromARGB(255, 46, 104, 231))),
             GestureDetector(
               onTap: (){
                 Navigator.push(context, MaterialPageRoute(builder: (context)=>CollegeEventsPanel()));
               },
-              child: _buildActionItem(Icons.event, 'Events', Colors.pink)),
+              child: _buildActionItem(Icons.event, 'Events', const Color.fromARGB(255, 46, 101, 231))),
             // _buildActionItem(Icons.download, 'Resources', Colors.teal),
-            _buildActionItem(Icons.person, 'Profile', Colors.indigo),
+            _buildActionItem(Icons.person, 'Profile', const Color.fromARGB(255, 42, 132, 228)),
           ],
         ),
       ],
