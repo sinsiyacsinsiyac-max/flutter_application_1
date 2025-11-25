@@ -23,7 +23,7 @@ class NotesPapersPanel extends StatefulWidget {
 
 class _NotesPapersPanelState extends State<NotesPapersPanel> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
   int _selectedTab = 0;
   String _searchQuery = '';
 
@@ -72,12 +72,10 @@ class _NotesPapersPanelState extends State<NotesPapersPanel> {
             ),
           ),
           const SizedBox(height: 8),
-          
+
           // Content based on tab
           Expanded(
-            child: _selectedTab == 0 
-                ? _buildNotesList()
-                : _buildPapersList(),
+            child: _selectedTab == 0 ? _buildNotesList() : _buildPapersList(),
           ),
         ],
       ),
@@ -113,7 +111,9 @@ class _NotesPapersPanelState extends State<NotesPapersPanel> {
             color: _selectedTab == index ? Colors.indigo.shade50 : Colors.white,
             border: Border(
               bottom: BorderSide(
-                color: _selectedTab == index ? Colors.indigo.shade700 : Colors.transparent,
+                color: _selectedTab == index
+                    ? Colors.indigo.shade700
+                    : Colors.transparent,
                 width: 3,
               ),
             ),
@@ -123,7 +123,9 @@ class _NotesPapersPanelState extends State<NotesPapersPanel> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontWeight: FontWeight.w600,
-              color: _selectedTab == index ? Colors.indigo.shade700 : Colors.grey.shade600,
+              color: _selectedTab == index
+                  ? Colors.indigo.shade700
+                  : Colors.grey.shade600,
               fontSize: 16,
             ),
           ),
@@ -219,15 +221,14 @@ class _NotesPapersPanelState extends State<NotesPapersPanel> {
             ),
             const SizedBox(height: 8),
             Text(
-              error.contains('index') 
-                ? 'Please wait while the database updates...'
-                : 'Error: $error',
+              error.contains('index')
+                  ? 'Please wait while the database updates...'
+                  : 'Error: $error',
               textAlign: TextAlign.center,
               style: const TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 16),
-            if (error.contains('index'))
-              const CircularProgressIndicator(),
+            if (error.contains('index')) const CircularProgressIndicator(),
           ],
         ),
       ),
@@ -259,7 +260,10 @@ class _NotesPapersPanelState extends State<NotesPapersPanel> {
     );
   }
 
-  Widget _buildMaterialsList(List<QueryDocumentSnapshot> materials, String type) {
+  Widget _buildMaterialsList(
+    List<QueryDocumentSnapshot> materials,
+    String type,
+  ) {
     // Filter materials based on search query
     final filteredMaterials = _searchQuery.isEmpty
         ? materials
@@ -268,9 +272,9 @@ class _NotesPapersPanelState extends State<NotesPapersPanel> {
             final title = data['title']?.toString().toLowerCase() ?? '';
             final subject = data['subject']?.toString().toLowerCase() ?? '';
             final course = data['course']?.toString().toLowerCase() ?? '';
-            return title.contains(_searchQuery) || 
-                   subject.contains(_searchQuery) ||
-                   course.contains(_searchQuery);
+            return title.contains(_searchQuery) ||
+                subject.contains(_searchQuery) ||
+                course.contains(_searchQuery);
           }).toList();
 
     if (filteredMaterials.isEmpty) {
@@ -345,7 +349,9 @@ class _NotesPapersPanelState extends State<NotesPapersPanel> {
                   children: [
                     Icon(Icons.class_, size: 14, color: Colors.grey.shade600),
                     const SizedBox(width: 4),
-                    Text('${material['course'] ?? 'No course'} - ${material['semester'] ?? 'No semester'}'),
+                    Text(
+                      '${material['course'] ?? 'No course'} - ${material['semester'] ?? 'No semester'}',
+                    ),
                   ],
                 ),
                 const SizedBox(height: 2),
@@ -360,10 +366,7 @@ class _NotesPapersPanelState extends State<NotesPapersPanel> {
                   const SizedBox(height: 2),
                   Text(
                     '${material['fileSize']} • ${material['downloadCount'] ?? 0} downloads',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                 ],
               ],
@@ -395,10 +398,8 @@ class _NotesPapersPanelState extends State<NotesPapersPanel> {
 class AddMaterialScreen extends StatefulWidget {
   final String materialType;
 
-  const AddMaterialScreen({
-    Key? key,
-    required this.materialType,
-  }) : super(key: key);
+  const AddMaterialScreen({Key? key, required this.materialType})
+    : super(key: key);
 
   @override
   State<AddMaterialScreen> createState() => _AddMaterialScreenState();
@@ -427,14 +428,27 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
 
   // Course options
   final List<String> courses = [
-    'BCA', 'BCom', 'BBA', 'BComCA', 'MA', 'BA', 
-    'BSC Physics', 'MSC Physics', 'MA English'
+    'BCA',
+    'BCom',
+    'BBA',
+    'BComCA',
+    'MA',
+    'BA',
+    'BSC Physics',
+    'MSC Physics',
+    'MA English',
   ];
 
   // Semester options
   final List<String> semesters = [
-    'Semester 1', 'Semester 2', 'Semester 3', 'Semester 4',
-    'Semester 5', 'Semester 6', 'Semester 7', 'Semester 8'
+    'Semester 1',
+    'Semester 2',
+    'Semester 3',
+    'Semester 4',
+    'Semester 5',
+    'Semester 6',
+    'Semester 7',
+    'Semester 8',
   ];
 
   @override
@@ -505,7 +519,9 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
   }
 
   Color _getFileTypeColor() {
-    return widget.materialType == 'notes' ? Colors.green.shade700 : Colors.orange.shade700;
+    return widget.materialType == 'notes'
+        ? Colors.green.shade700
+        : Colors.orange.shade700;
   }
 
   @override
@@ -531,7 +547,9 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: _selectedFile != null ? _getFileTypeColor() : Colors.grey.shade400,
+                        color: _selectedFile != null
+                            ? _getFileTypeColor()
+                            : Colors.grey.shade400,
                         width: 2,
                       ),
                     ),
@@ -611,7 +629,8 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                     border: const OutlineInputBorder(),
                     prefixIcon: Icon(Icons.title, color: _getFileTypeColor()),
                   ),
-                  validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                  validator: (value) =>
+                      value?.isEmpty ?? true ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -622,7 +641,8 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                     border: const OutlineInputBorder(),
                     prefixIcon: Icon(Icons.subject, color: _getFileTypeColor()),
                   ),
-                  validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                  validator: (value) =>
+                      value?.isEmpty ?? true ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
 
@@ -646,75 +666,103 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                 const SizedBox(height: 16),
 
                 Row(
-  children: [
-    Expanded(
-      child: DropdownButtonFormField<String>(
-        value: _selectedSemester,
-        decoration: InputDecoration(
-          labelText: 'Semester',
-          border: const OutlineInputBorder(),
-          prefixIcon: Icon(Icons.calendar_today, color: _getFileTypeColor()),
-          isDense: true, // Reduces the height
-          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        ),
-        items: semesters.map((semester) {
-          return DropdownMenuItem(
-            value: semester,
-            child: Text(
-              semester,
-              style: const TextStyle(fontSize: 14), // Smaller font
-              overflow: TextOverflow.ellipsis, // Handle long text
-            ),
-          );
-        }).toList(),
-        onChanged: (value) {
-          setState(() {
-            _selectedSemester = value!;
-          });
-        },
-        validator: (value) => value == null ? 'Required' : null,
-        isExpanded: true, // Important: makes dropdown take full width
-        style: const TextStyle(fontSize: 14, color: Colors.black87),
-        icon: Icon(Icons.arrow_drop_down, color: _getFileTypeColor()),
-        dropdownColor: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-    ),
-    const SizedBox(width: 12),
-    Expanded(
-      child: DropdownButtonFormField<String>(
-        value: _selectedYear,
-        decoration: InputDecoration(
-          labelText: 'Year',
-          border: const OutlineInputBorder(),
-          prefixIcon: Icon(Icons.calendar_month, color: _getFileTypeColor()),
-          isDense: true,
-          contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
-        ),
-        items: ['2022', '2023', '2024', '2025'].map((year) {
-          return DropdownMenuItem(
-            value: year,
-            child: Text(
-              year,
-              style: const TextStyle(fontSize: 14),
-            ),
-          );
-        }).toList(),
-        onChanged: (value) {
-          setState(() {
-            _selectedYear = value!;
-          });
-        },
-        validator: (value) => value == null ? 'Required' : null,
-        isExpanded: true,
-        style: const TextStyle(fontSize: 14, color: Colors.black87),
-        icon: Icon(Icons.arrow_drop_down, color: _getFileTypeColor()),
-        dropdownColor: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-      ),
-    ),
-  ],
-),
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedSemester,
+                        decoration: InputDecoration(
+                          labelText: 'Semester',
+                          border: const OutlineInputBorder(),
+                          prefixIcon: Icon(
+                            Icons.calendar_today,
+                            color: _getFileTypeColor(),
+                          ),
+                          isDense: true, // Reduces the height
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 8,
+                          ),
+                        ),
+                        items: semesters.map((semester) {
+                          return DropdownMenuItem(
+                            value: semester,
+                            child: Text(
+                              semester,
+                              style: const TextStyle(
+                                fontSize: 14,
+                              ), // Smaller font
+                              overflow:
+                                  TextOverflow.ellipsis, // Handle long text
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedSemester = value!;
+                          });
+                        },
+                        validator: (value) => value == null ? 'Required' : null,
+                        isExpanded:
+                            true, // Important: makes dropdown take full width
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                        icon: Icon(
+                          Icons.arrow_drop_down,
+                          color: _getFileTypeColor(),
+                        ),
+                        dropdownColor: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        value: _selectedYear,
+                        decoration: InputDecoration(
+                          labelText: 'Year',
+                          border: const OutlineInputBorder(),
+                          prefixIcon: Icon(
+                            Icons.calendar_month,
+                            color: _getFileTypeColor(),
+                          ),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 8,
+                          ),
+                        ),
+                        items: ['2022', '2023', '2024', '2025'].map((year) {
+                          return DropdownMenuItem(
+                            value: year,
+                            child: Text(
+                              year,
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedYear = value!;
+                          });
+                        },
+                        validator: (value) => value == null ? 'Required' : null,
+                        isExpanded: true,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black87,
+                        ),
+                        icon: Icon(
+                          Icons.arrow_drop_down,
+                          color: _getFileTypeColor(),
+                        ),
+                        dropdownColor: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 16),
 
                 TextFormField(
@@ -722,7 +770,10 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                   decoration: InputDecoration(
                     labelText: 'Description (Optional)',
                     border: const OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.description, color: _getFileTypeColor()),
+                    prefixIcon: Icon(
+                      Icons.description,
+                      color: _getFileTypeColor(),
+                    ),
                   ),
                   maxLines: 3,
                 ),
@@ -748,7 +799,10 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                         )
                       : Text(
                           'Upload ${_getFileTypeIcon()}',
-                          style: const TextStyle(fontSize: 16, color: Colors.white),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
                         ),
                 ),
               ],
@@ -782,7 +836,9 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
         }
 
         // Upload PDF to Cloudinary
-        _uploadedFileUrl = await CloudneryUploader().uploadFile(XFile(_selectedFile!.path));
+        _uploadedFileUrl = await CloudneryUploader().uploadFile(
+          XFile(_selectedFile!.path),
+        );
 
         final newMaterial = {
           'title': _titleController.text.trim(),
@@ -835,8 +891,6 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
     }
   }
 }
-
-
 
 // Material Detail Screen with PDF Preview
 class MaterialDetailScreen extends StatefulWidget {
@@ -971,7 +1025,7 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
                   ),
                 ),
               ),
-            
+
             if (_isDownloading) const SizedBox(height: 16),
 
             // Header Card
@@ -986,7 +1040,10 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: color.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(20),
@@ -1044,19 +1101,48 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _buildInfoRow(Icons.school, 'Course', widget.material['course'] ?? 'Not specified'),
-                    _buildInfoRow(Icons.calendar_today, 'Semester', widget.material['semester'] ?? 'Not specified'),
-                    _buildInfoRow(Icons.date_range, 'Year', widget.material['year'] ?? 'Not specified'),
-                    _buildInfoRow(Icons.storage, 'File Size', widget.material['fileSize'] ?? 'Unknown'),
-                    _buildInfoRow(Icons.download, 'Downloads', '${widget.material['downloadCount'] ?? 0}'),
-                    _buildInfoRow(Icons.person, 'Uploaded By', widget.material['uploadedByName'] ?? 'Unknown'),
-                    _buildInfoRow(Icons.access_time, 'Upload Date', _formatDate(widget.material['createdAt'])),
+                    _buildInfoRow(
+                      Icons.school,
+                      'Course',
+                      widget.material['course'] ?? 'Not specified',
+                    ),
+                    _buildInfoRow(
+                      Icons.calendar_today,
+                      'Semester',
+                      widget.material['semester'] ?? 'Not specified',
+                    ),
+                    _buildInfoRow(
+                      Icons.date_range,
+                      'Year',
+                      widget.material['year'] ?? 'Not specified',
+                    ),
+                    _buildInfoRow(
+                      Icons.storage,
+                      'File Size',
+                      widget.material['fileSize'] ?? 'Unknown',
+                    ),
+                    _buildInfoRow(
+                      Icons.download,
+                      'Downloads',
+                      '${widget.material['downloadCount'] ?? 0}',
+                    ),
+                    _buildInfoRow(
+                      Icons.person,
+                      'Uploaded By',
+                      widget.material['uploadedByName'] ?? 'Unknown',
+                    ),
+                    _buildInfoRow(
+                      Icons.access_time,
+                      'Upload Date',
+                      _formatDate(widget.material['createdAt']),
+                    ),
                   ],
                 ),
               ),
             ),
 
-            if (widget.material['description'] != null && widget.material['description'].isNotEmpty) ...[
+            if (widget.material['description'] != null &&
+                widget.material['description'].isNotEmpty) ...[
               const SizedBox(height: 20),
               Card(
                 elevation: 2,
@@ -1078,10 +1164,7 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
                       const SizedBox(height: 12),
                       Text(
                         widget.material['description']!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
+                        style: const TextStyle(fontSize: 14, height: 1.5),
                       ),
                     ],
                   ),
@@ -1096,11 +1179,16 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _isDownloading ? null : () => _downloadFile(context),
+                    onPressed: _isDownloading
+                        ? null
+                        : () => _downloadFile(context),
                     icon: const Icon(Icons.download_rounded),
                     label: const Text(
                       'Download',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: color,
@@ -1119,7 +1207,10 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
                     icon: const Icon(Icons.open_in_browser),
                     label: const Text(
                       'Open',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: color,
@@ -1160,9 +1251,7 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
             flex: 3,
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w400,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w400),
             ),
           ),
         ],
@@ -1172,7 +1261,7 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
 
   String _formatDate(dynamic timestamp) {
     if (timestamp == null) return 'Unknown';
-    
+
     try {
       if (timestamp is Timestamp) {
         final date = timestamp.toDate();
@@ -1186,7 +1275,7 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
 
   Future<void> _downloadFile(BuildContext context) async {
     final fileUrl = widget.material['fileUrl'];
-    
+
     if (fileUrl == null) {
       _showSnackBar(context, 'File not available for download', Colors.red);
       return;
@@ -1233,7 +1322,7 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
         await for (var chunk in response.stream) {
           sink.add(chunk);
           receivedBytes += chunk.length;
-          
+
           if (totalBytes > 0) {
             setState(() {
               _downloadProgress = receivedBytes / totalBytes;
@@ -1258,8 +1347,12 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
             });
 
         if (mounted) {
-          _showSnackBar(context, 'Downloaded successfully to Downloads', Colors.green);
-          
+          _showSnackBar(
+            context,
+            'Downloaded successfully to Downloads',
+            Colors.green,
+          );
+
           // Ask if user wants to view the PDF
           _showViewDialog(context);
         }
@@ -1314,7 +1407,7 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
 
   Future<void> _openInBrowser(BuildContext context) async {
     final fileUrl = widget.material['fileUrl'];
-    
+
     if (fileUrl == null) {
       _showSnackBar(context, 'File URL not available', Colors.red);
       return;
@@ -1335,17 +1428,18 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
   Future<void> _shareMaterial(BuildContext context) async {
     final fileUrl = widget.material['fileUrl'];
     final title = widget.material['title'] ?? 'Study Material';
-    
+
     if (fileUrl == null) {
-      _showSnackBar(context, 'Cannot share: File URL not available', Colors.red);
+      _showSnackBar(
+        context,
+        'Cannot share: File URL not available',
+        Colors.red,
+      );
       return;
     }
 
     try {
-      await Share.share(
-        '$title\n\nDownload: $fileUrl',
-        subject: title,
-      );
+      await Share.share('$title\n\nDownload: $fileUrl', subject: title);
     } catch (e) {
       _showSnackBar(context, 'Error sharing: $e', Colors.red);
     }
@@ -1356,7 +1450,9 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Material'),
-        content: Text('Are you sure you want to delete "${widget.material['title']}"? This action cannot be undone.'),
+        content: Text(
+          'Are you sure you want to delete "${widget.material['title']}"? This action cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -1373,7 +1469,11 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
                 if (context.mounted) {
                   Navigator.pop(context);
                   Navigator.pop(context);
-                  _showSnackBar(context, 'Material deleted successfully', Colors.red);
+                  _showSnackBar(
+                    context,
+                    'Material deleted successfully',
+                    Colors.red,
+                  );
                 }
               } catch (e) {
                 if (context.mounted) {
@@ -1405,11 +1505,8 @@ class PDFViewerScreen extends StatefulWidget {
   final String filePath;
   final String title;
 
-  const PDFViewerScreen({
-    Key? key,
-    required this.filePath,
-    required this.title,
-  }) : super(key: key);
+  const PDFViewerScreen({Key? key, required this.filePath, required this.title})
+    : super(key: key);
 
   @override
   State<PDFViewerScreen> createState() => _PDFViewerScreenState();
@@ -1458,7 +1555,11 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 60, color: Colors.red),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 60,
+                      color: Colors.red,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Error Loading PDF',
@@ -1510,10 +1611,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                     });
                   },
                 ),
-                if (!_isReady)
-                  const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                if (!_isReady) const Center(child: CircularProgressIndicator()),
               ],
             ),
     );

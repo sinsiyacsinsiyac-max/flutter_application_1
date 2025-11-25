@@ -1,3 +1,4 @@
+// ChatbotHomePage.dart (fixed: removed listModels, added ping test)
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Featurs/view_more/seemore_page.dart';
 
@@ -293,8 +294,9 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
                                     ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(0xFF6366F1)
-                                            .withOpacity(0.4),
+                                        color: const Color(
+                                          0xFF6366F1,
+                                        ).withOpacity(0.4),
                                         blurRadius: 20,
                                         spreadRadius: 2,
                                       ),
@@ -326,12 +328,14 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
               top: 50,
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(builder:(context) =>ExpantioList()
-                  ));
-                  
-    
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => ExpantioList()),
+                  );
                 },
-                child: Text('view more',style: TextStyle(color: Colors.white),)))
+                child: Text('view more', style: TextStyle(color: Colors.white)),
+              ),
+            ),
           ],
         ),
       ),

@@ -10,6 +10,7 @@ import 'package:flutter_application_1/Featurs/view_more/events/events_page.dart'
 import 'package:flutter_application_1/Featurs/view_more/events/photo_gallery.dart'
     hide EventsPage;
 import 'package:flutter_application_1/Featurs/view_more/exam/exam_page.dart';
+import 'package:flutter_application_1/Featurs/view_more/profile/user_profile_screen.dart';
 
 class ExpantioList extends StatelessWidget {
   const ExpantioList({Key? key}) : super(key: key);
@@ -32,6 +33,8 @@ class ExpantioList extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
+          ProfileExpantion(),
+          const SizedBox(height: 12),
           const CoursesExpansion(),
           const SizedBox(height: 12),
           const AdmissionsExpansion(),
@@ -357,7 +360,8 @@ class AdmissionsExpansion extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AdmissionPage(),
+                          builder: (context) =>
+                              AdmissionPage(collegeId: 'colleges'),
                         ),
                       );
                     },
@@ -395,6 +399,59 @@ class AdmissionsExpansion extends StatelessWidget {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class ProfileExpantion extends StatelessWidget {
+  const ProfileExpantion({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // final List<Map<String, dynamic>> admissions = [
+    //   {'title': 'Documents', 'icon': Icons.description_rounded},
+    //   {'title': 'Contact Number', 'icon': Icons.phone_rounded},
+    // ];
+
+    return Card(
+      elevation: 10,
+      shadowColor: Colors.black12,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: ListTile(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => UserProfileScreen()),
+            );
+          },
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 8,
+          ),
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFF0D47A1).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.person, color: Color(0xFF0D47A1), size: 24),
+          ),
+          title: const Text(
+            'Profile',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF0D47A1),
+            ),
+          ),
+          subtitle: Text(
+            'Profile info',
+            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+          ),
         ),
       ),
     );
@@ -692,7 +749,12 @@ class EventsExpansion extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> events = [
       {
-        'title': ' Event_page',
+        'title': 'Gallery',
+        'icon': Icons.event_rounded,
+        'page': const PhotoGalleryList(),
+      },
+      {
+        'title': 'Events',
         'icon': Icons.event_available,
         'page': const EventsPage(),
       },

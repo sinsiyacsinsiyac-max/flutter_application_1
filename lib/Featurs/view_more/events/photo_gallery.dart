@@ -17,10 +17,9 @@ class PhotoGalleryList extends StatelessWidget {
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
+        // Simplified query without multiple inequality filters
         stream: _firestore
             .collection('events')
-            .where('eventDateTime', isLessThan: DateTime.now())
-            .where('imageUrls', isNotEqualTo: [])
             .orderBy('eventDateTime', descending: true)
             .snapshots(),
         builder: (context, snapshot) {
@@ -36,18 +35,27 @@ class PhotoGalleryList extends StatelessWidget {
             return _buildEmptyState();
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (context, index) {
-              final eventDoc = snapshot.data!.docs[index];
-              final event = eventDoc.data() as Map<String, dynamic>;
-              return _buildEventCard(context, event);
-            },
-          );
+          // Filter locally instead of in the query
+          final events = _filterPastEventsWithImages(snapshot.data!.docs);
+          return _buildEventsList(context, events);
         },
       ),
     );
+  }
+
+  List<QueryDocumentSnapshot> _filterPastEventsWithImages(
+    List<QueryDocumentSnapshot> docs,
+  ) {
+    final now = DateTime.now();
+
+    return docs.where((doc) {
+      final event = doc.data() as Map<String, dynamic>;
+      final eventDateTime = (event['eventDateTime'] as Timestamp).toDate();
+      final images = event['imageUrls'] as List<dynamic>? ?? [];
+
+      // Local filtering for past events with images
+      return eventDateTime.isBefore(now) && images.isNotEmpty;
+    }).toList();
   }
 
   Widget _buildEmptyState() {
@@ -72,6 +80,30 @@ class PhotoGalleryList extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildEventsList(
+    BuildContext context,
+    List<QueryDocumentSnapshot> events,
+  ) {
+    if (events.isEmpty) {
+      return Center(
+        child: Text(
+          'No past events with photos',
+          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: events.length,
+      itemBuilder: (context, index) {
+        final eventDoc = events[index];
+        final event = eventDoc.data() as Map<String, dynamic>;
+        return _buildEventCard(context, event);
+      },
     );
   }
 

@@ -12,7 +12,7 @@ class TeacherCoursePanel extends StatefulWidget {
 
 class _TeacherCoursePanelState extends State<TeacherCoursePanel> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,10 @@ class _TeacherCoursePanelState extends State<TeacherCoursePanel> {
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection('courses')
-            .where('teacherId', isEqualTo: _auth.currentUser?.uid)
+            .where(
+              'teacherId',
+              //  isEqualTo: _auth.currentUser?.uid
+            )
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {

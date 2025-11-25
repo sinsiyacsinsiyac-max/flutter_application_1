@@ -13,10 +13,8 @@ class AuthService {
     required String role, // 'user', 'college', 'admin'
   }) async {
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
 
       // Save user data to Firestore
       await _firestore.collection('users').doc(userCredential.user!.uid).set({
@@ -52,7 +50,10 @@ class AuthService {
   // Get user role from Firestore
   Future<String?> getUserRole(String uid) async {
     try {
-      DocumentSnapshot userDoc = await _firestore.collection('users').doc(uid).get();
+      DocumentSnapshot userDoc = await _firestore
+          .collection('users')
+          .doc(uid)
+          .get();
       if (userDoc.exists) {
         return userDoc['role'];
       }
@@ -61,7 +62,25 @@ class AuthService {
       return null;
     }
   }
- Future<User?> createUserWithRole({
+
+  // Get user data from Firestore
+  Future<Map<String, dynamic>?> getUserData(String uid) async {
+    try {
+      DocumentSnapshot userDoc = await _firestore
+          .collection('users')
+          .doc(uid)
+          .get();
+      if (userDoc.exists) {
+        return userDoc.data() as Map<String, dynamic>?;
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Create user with specific role (Admin only)
+  Future<User?> createUserWithRole({
     required String email,
     required String password,
     required String username,
@@ -69,10 +88,8 @@ class AuthService {
     required String createdBy, // admin user ID
   }) async {
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      UserCredential userCredential = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
 
       // Save user data to Firestore
       await _firestore.collection('users').doc(userCredential.user!.uid).set({
@@ -90,23 +107,37 @@ class AuthService {
       throw FirebaseAuthException(code: e.toString());
     }
   }
+
   // Sign out
   Future<void> signOut() async {
     await _auth.signOut();
   }
+
+  // Get users by role
   Stream<QuerySnapshot> getUsersByRole(String role) {
     return _firestore
         .collection('users')
         .where('role', isEqualTo: role)
         .snapshots();
   }
+
+  // Get all users
   Stream<QuerySnapshot> getUsers() {
     return _firestore.collection('users').snapshots();
   }
+
   // Update user role
   Future<void> updateUserRole(String uid, String newRole) async {
     await _firestore.collection('users').doc(uid).update({
       'role': newRole,
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  // Update user data
+  Future<void> updateUserData(String uid, Map<String, dynamic> data) async {
+    await _firestore.collection('users').doc(uid).update({
+      ...data,
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }
@@ -117,6 +148,7 @@ class AuthService {
     // Note: You might also want to delete the auth user
     // await _auth.currentUser!.delete();
   }
+
   // Get current user
   User? get currentUser => _auth.currentUser;
 
