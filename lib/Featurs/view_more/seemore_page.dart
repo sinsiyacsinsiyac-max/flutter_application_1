@@ -692,7 +692,12 @@ class EventsExpansion extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> events = [
       {
-        'title': ' Event_page',
+        'title': 'Gallery',
+        'icon': Icons.event_rounded,
+        'page': const PhotoGalleryList(),
+      },
+      {
+        'title': 'Events',
         'icon': Icons.event_available,
         'page': const EventsPage(),
       },
