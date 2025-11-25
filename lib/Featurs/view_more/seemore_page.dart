@@ -7,7 +7,8 @@ import 'package:flutter_application_1/Featurs/view_more/course/course_detai_page
 import 'package:flutter_application_1/Featurs/view_more/downloads/downloads_page.dart';
 import 'package:flutter_application_1/Featurs/view_more/downloads/question_and_answers.dart';
 import 'package:flutter_application_1/Featurs/view_more/events/events_page.dart';
-import 'package:flutter_application_1/Featurs/view_more/events/photo_gallery.dart' hide EventsPage;
+import 'package:flutter_application_1/Featurs/view_more/events/photo_gallery.dart'
+    hide EventsPage;
 import 'package:flutter_application_1/Featurs/view_more/exam/exam_page.dart';
 
 class ExpantioList extends StatelessWidget {
@@ -15,7 +16,7 @@ class ExpantioList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-      final AuthService _authService = AuthService();
+    final AuthService _authService = AuthService();
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -42,27 +43,26 @@ class ExpantioList extends StatelessWidget {
           const EventsExpansion(),
           const SizedBox(height: 20),
           GestureDetector(
-            onTap: () async{
+            onTap: () async {
               await _authService.signOut();
-              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>
-              LoginScreen()), (route) => false,);
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+                (route) => false,
+              );
             },
             child: Container(
               padding: EdgeInsets.all(10),
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.red,
-                border: Border.all(
-                  color:Colors.blueAccent 
-                )
+                border: Border.all(color: Colors.blueAccent),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.logout,color: Colors.white,),
-                  Text('Logout',style: TextStyle(
-                    color: Colors.white
-                  ),)
+                  Icon(Icons.logout, color: Colors.white),
+                  Text('Logout', style: TextStyle(color: Colors.white)),
                 ],
               ),
             ),
@@ -88,9 +88,7 @@ class CoursesExpansion extends StatelessWidget {
     return Card(
       elevation: 10,
       shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: ExpansionTile(
@@ -101,7 +99,11 @@ class CoursesExpansion extends StatelessWidget {
               color: const Color(0xFF1A237E).withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.school_rounded, color: Color(0xFF1A237E), size: 24),
+            child: const Icon(
+              Icons.school_rounded,
+              color: Color(0xFF1A237E),
+              size: 24,
+            ),
           ),
           title: const Text(
             'Courses',
@@ -112,42 +114,37 @@ class CoursesExpansion extends StatelessWidget {
             ),
           ),
           subtitle: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance.collection('courses').snapshots(),
+            stream: FirebaseFirestore.instance
+                .collection('courses')
+                .snapshots(),
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return Text(
                   'Error loading courses',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                 );
               }
 
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Text(
                   'Loading...',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
                 );
               }
 
               final courseCount = snapshot.data?.docs.length ?? 0;
               return Text(
                 '$courseCount programs',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 13, color: Colors.grey[600]),
               );
             },
           ),
           children: [
             const Divider(height: 1),
             StreamBuilder<QuerySnapshot>(
-              stream: FirebaseFirestore.instance.collection('courses').snapshots(),
+              stream: FirebaseFirestore.instance
+                  .collection('courses')
+                  .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Padding(
@@ -162,9 +159,7 @@ class CoursesExpansion extends StatelessWidget {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Padding(
                     padding: EdgeInsets.all(16.0),
-                    child: Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    child: Center(child: CircularProgressIndicator()),
                   );
                 }
 
@@ -185,7 +180,8 @@ class CoursesExpansion extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: courses.length,
                   itemBuilder: (context, index) {
-                    final course = courses[index].data() as Map<String, dynamic>;
+                    final course =
+                        courses[index].data() as Map<String, dynamic>;
                     final courseId = courses[index].id;
                     final courseName = course['name'] ?? 'Unnamed Course';
                     final courseCode = course['code'] ?? '';
@@ -199,7 +195,7 @@ class CoursesExpansion extends StatelessWidget {
                         onTap: () {
                           // Navigate to course details page with all course data
                           Navigator.push(
-                            context, 
+                            context,
                             MaterialPageRoute(
                               builder: (context) => CourseDetailsPage(
                                 courseId: courseId,
@@ -209,16 +205,24 @@ class CoursesExpansion extends StatelessWidget {
                                 credits: credits,
                                 description: description,
                                 hasFees: course['hasFees'] ?? false,
-                                totalFees: course['totalFees']?.toString() ?? '0',
-                                semesterFees: course['semesterFees']?.toString() ?? '0',
-                                maxStudents: course['maxStudents']?.toString() ?? '0',
-                                enrolledStudents: course['enrolledStudents']?.toString() ?? '0',
+                                totalFees:
+                                    course['totalFees']?.toString() ?? '0',
+                                semesterFees:
+                                    course['semesterFees']?.toString() ?? '0',
+                                maxStudents:
+                                    course['maxStudents']?.toString() ?? '0',
+                                enrolledStudents:
+                                    course['enrolledStudents']?.toString() ??
+                                    '0',
                               ),
                             ),
                           );
                         },
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
                           child: Row(
                             children: [
                               Container(
@@ -255,11 +259,16 @@ class CoursesExpansion extends StatelessWidget {
                               const Spacer(),
                               if (course['hasFees'] == true)
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.green.shade50,
                                     borderRadius: BorderRadius.circular(4),
-                                    border: Border.all(color: Colors.green.shade200),
+                                    border: Border.all(
+                                      color: Colors.green.shade200,
+                                    ),
                                   ),
                                   child: Text(
                                     '₹${course['totalFees']?.toStringAsFixed(0) ?? '0'}',
@@ -271,7 +280,11 @@ class CoursesExpansion extends StatelessWidget {
                                   ),
                                 ),
                               const SizedBox(width: 12),
-                              Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
+                              Icon(
+                                Icons.arrow_forward_ios,
+                                size: 14,
+                                color: Colors.grey[400],
+                              ),
                             ],
                           ),
                         ),
@@ -288,7 +301,6 @@ class CoursesExpansion extends StatelessWidget {
   }
 }
 
-
 class AdmissionsExpansion extends StatelessWidget {
   const AdmissionsExpansion({Key? key}) : super(key: key);
 
@@ -302,9 +314,7 @@ class AdmissionsExpansion extends StatelessWidget {
     return Card(
       elevation: 10,
       shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: ExpansionTile(
@@ -315,7 +325,11 @@ class AdmissionsExpansion extends StatelessWidget {
               color: const Color(0xFF0D47A1).withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.assignment_rounded, color: Color(0xFF0D47A1), size: 24),
+            child: const Icon(
+              Icons.assignment_rounded,
+              color: Color(0xFF0D47A1),
+              size: 24,
+            ),
           ),
           title: const Text(
             'Admissions',
@@ -327,10 +341,7 @@ class AdmissionsExpansion extends StatelessWidget {
           ),
           subtitle: Text(
             'Application info',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
           ),
           children: [
             const Divider(height: 1),
@@ -343,10 +354,18 @@ class AdmissionsExpansion extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder:(context) =>AdmissionPage()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AdmissionPage(),
+                        ),
+                      );
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                       child: Row(
                         children: [
                           Icon(
@@ -363,7 +382,11 @@ class AdmissionsExpansion extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 14,
+                            color: Colors.grey[400],
+                          ),
                         ],
                       ),
                     ),
@@ -391,9 +414,7 @@ class ExamsExpantion extends StatelessWidget {
     return Card(
       elevation: 10,
       shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: ExpansionTile(
@@ -404,7 +425,11 @@ class ExamsExpantion extends StatelessWidget {
               color: const Color(0xFF283593).withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.edit_note_rounded, color: Color(0xFF283593), size: 24),
+            child: const Icon(
+              Icons.edit_note_rounded,
+              color: Color(0xFF283593),
+              size: 24,
+            ),
           ),
           title: const Text(
             'Exams',
@@ -416,10 +441,7 @@ class ExamsExpantion extends StatelessWidget {
           ),
           subtitle: Text(
             'Schedule & details',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
           ),
           children: [
             const Divider(height: 1),
@@ -432,10 +454,16 @@ class ExamsExpantion extends StatelessWidget {
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(builder:(context) => ExamPage()));
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ExamPage()),
+                      );
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                       child: Row(
                         children: [
                           Icon(
@@ -452,7 +480,11 @@ class ExamsExpantion extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey[400]),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 14,
+                            color: Colors.grey[400],
+                          ),
                         ],
                       ),
                     ),
@@ -474,13 +506,13 @@ class DownloadsExpansion extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> downloads = [
       {
-        'title': 'Notes', 
+        'title': 'Notes',
         'icon': Icons.note_rounded,
         'page': const NotesDownloadPage(),
         'color': Colors.green.shade700,
       },
       {
-        'title': 'Previous Question Papers', 
+        'title': 'Previous Question Papers',
         'icon': Icons.quiz_rounded,
         'page': const PreviousQuestionPapersPage(),
         'color': Colors.orange.shade700,
@@ -490,9 +522,7 @@ class DownloadsExpansion extends StatelessWidget {
     return Card(
       elevation: 10,
       shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: ExpansionTile(
@@ -504,9 +534,9 @@ class DownloadsExpansion extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
-              Icons.download_rounded, 
-              color: Color.fromARGB(255, 8, 62, 123), 
-              size: 24
+              Icons.download_rounded,
+              color: Color.fromARGB(255, 8, 62, 123),
+              size: 24,
             ),
           ),
           title: const Text(
@@ -523,19 +553,28 @@ class DownloadsExpansion extends StatelessWidget {
                 .snapshots(),
             builder: (context, snapshot) {
               final totalCount = snapshot.data?.docs.length ?? 0;
-              final notesCount = snapshot.data?.docs
-                  .where((doc) => (doc.data() as Map<String, dynamic>)['type'] == 'notes')
-                  .length ?? 0;
-              final papersCount = snapshot.data?.docs
-                  .where((doc) => (doc.data() as Map<String, dynamic>)['type'] == 'papers')
-                  .length ?? 0;
+              final notesCount =
+                  snapshot.data?.docs
+                      .where(
+                        (doc) =>
+                            (doc.data() as Map<String, dynamic>)['type'] ==
+                            'notes',
+                      )
+                      .length ??
+                  0;
+              final papersCount =
+                  snapshot.data?.docs
+                      .where(
+                        (doc) =>
+                            (doc.data() as Map<String, dynamic>)['type'] ==
+                            'papers',
+                      )
+                      .length ??
+                  0;
 
               return Text(
                 '$totalCount study materials available',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 13, color: Colors.grey[600]),
               );
             },
           ),
@@ -546,12 +585,24 @@ class DownloadsExpansion extends StatelessWidget {
                   .collection('study_materials')
                   .snapshots(),
               builder: (context, snapshot) {
-                final notesCount = snapshot.data?.docs
-                    .where((doc) => (doc.data() as Map<String, dynamic>)['type'] == 'notes')
-                    .length ?? 0;
-                final papersCount = snapshot.data?.docs
-                    .where((doc) => (doc.data() as Map<String, dynamic>)['type'] == 'papers')
-                    .length ?? 0;
+                final notesCount =
+                    snapshot.data?.docs
+                        .where(
+                          (doc) =>
+                              (doc.data() as Map<String, dynamic>)['type'] ==
+                              'notes',
+                        )
+                        .length ??
+                    0;
+                final papersCount =
+                    snapshot.data?.docs
+                        .where(
+                          (doc) =>
+                              (doc.data() as Map<String, dynamic>)['type'] ==
+                              'papers',
+                        )
+                        .length ??
+                    0;
 
                 return ListView.builder(
                   shrinkWrap: true,
@@ -566,12 +617,17 @@ class DownloadsExpansion extends StatelessWidget {
                       child: InkWell(
                         onTap: () {
                           Navigator.push(
-                            context, 
-                            MaterialPageRoute(builder: (context) => item['page'])
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => item['page'],
+                            ),
                           );
                         },
                         child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
                           child: Row(
                             children: [
                               Container(
@@ -593,7 +649,7 @@ class DownloadsExpansion extends StatelessWidget {
                                   children: [
                                     Text(
                                       item['title'],
-                                      style: const TextStyle( 
+                                      style: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -609,9 +665,9 @@ class DownloadsExpansion extends StatelessWidget {
                                 ),
                               ),
                               Icon(
-                                Icons.arrow_forward_ios, 
-                                size: 14, 
-                                color: Colors.grey[400]
+                                Icons.arrow_forward_ios,
+                                size: 14,
+                                color: Colors.grey[400],
                               ),
                             ],
                           ),
@@ -631,29 +687,21 @@ class DownloadsExpansion extends StatelessWidget {
 
 class EventsExpansion extends StatelessWidget {
   const EventsExpansion({Key? key}) : super(key: key);
-  
-  
+
   @override
   Widget build(BuildContext context) {
     final List<Map<String, dynamic>> events = [
       {
-        'title': 'Programs',
-        'icon': Icons.event_rounded,
-        'page': const PhotoGalleryList()
-      },
-      {
-        'title': 'Up-coming Event',
+        'title': ' Event_page',
         'icon': Icons.event_available,
-        'page': const EventsPage()
+        'page': const EventsPage(),
       },
     ];
 
     return Card(
       elevation: 10,
       shadowColor: Colors.black12,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16),
         child: ExpansionTile(
@@ -664,8 +712,11 @@ class EventsExpansion extends StatelessWidget {
               color: const Color(0xFF283593).withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.mic,
-                color: Color.fromARGB(255, 11, 22, 100), size: 24),
+            child: const Icon(
+              Icons.mic,
+              color: Color.fromARGB(255, 11, 22, 100),
+              size: 24,
+            ),
           ),
           title: const Text(
             'Events',
@@ -677,10 +728,7 @@ class EventsExpansion extends StatelessWidget {
           ),
           subtitle: Text(
             'Upcoming activities',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
           ),
           children: [
             const Divider(height: 1),
@@ -702,7 +750,9 @@ class EventsExpansion extends StatelessWidget {
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 12),
+                        horizontal: 20,
+                        vertical: 12,
+                      ),
                       child: Row(
                         children: [
                           Icon(
@@ -719,8 +769,11 @@ class EventsExpansion extends StatelessWidget {
                             ),
                           ),
                           const Spacer(),
-                          Icon(Icons.arrow_forward_ios,
-                              size: 14, color: Colors.grey[400]),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 14,
+                            color: Colors.grey[400],
+                          ),
                         ],
                       ),
                     ),

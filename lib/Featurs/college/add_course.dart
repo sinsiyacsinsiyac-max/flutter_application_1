@@ -36,15 +36,11 @@ class _TeacherCoursePanelState extends State<TeacherCoursePanel> {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
+            return Center(child: Text('Error: ${snapshot.error}'));
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -58,9 +54,7 @@ class _TeacherCoursePanelState extends State<TeacherCoursePanel> {
         onPressed: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const AddCourseScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const AddCourseScreen()),
           );
         },
         backgroundColor: Colors.blue.shade700,
@@ -144,10 +138,8 @@ class _TeacherCoursePanelState extends State<TeacherCoursePanel> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => CourseDetailScreen(
-                    courseId: courseId,
-                    course: course,
-                  ),
+                  builder: (context) =>
+                      CourseDetailScreen(courseId: courseId, course: course),
                 ),
               );
             },
@@ -160,7 +152,11 @@ class _TeacherCoursePanelState extends State<TeacherCoursePanel> {
 
 // Add Course Screen
 class AddCourseScreen extends StatefulWidget {
-  const AddCourseScreen({Key? key}) : super(key: key);
+  final String? courseId;
+  final Map<String, dynamic>? existingCourse;
+
+  const AddCourseScreen({Key? key, this.courseId, this.existingCourse})
+    : super(key: key);
 
   @override
   State<AddCourseScreen> createState() => _AddCourseScreenState();
@@ -175,14 +171,39 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
   final _maxStudentsController = TextEditingController();
   final _totalFeesController = TextEditingController();
   final _semesterFeesController = TextEditingController();
-  
+
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   String _selectedDepartment = 'Computer Science';
   String _selectedSemester = '4 sem';
   bool _isLoading = false;
   bool _showFeesOption = false;
+  bool _isEditing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _isEditing = widget.courseId != null;
+
+    // If editing, populate fields with existing data
+    if (_isEditing && widget.existingCourse != null) {
+      final course = widget.existingCourse!;
+      _courseNameController.text = course['name'] ?? '';
+      _courseCodeController.text = course['code'] ?? '';
+      _descriptionController.text = course['description'] ?? '';
+      _selectedDepartment = course['department'] ?? 'Computer Science';
+      _selectedSemester = course['semester'] ?? '4 sem';
+      _creditsController.text = course['credits']?.toString() ?? '';
+      _maxStudentsController.text = course['maxStudents']?.toString() ?? '';
+      _showFeesOption = course['hasFees'] == true;
+
+      if (_showFeesOption) {
+        _totalFeesController.text = course['totalFees']?.toString() ?? '';
+        _semesterFeesController.text = course['semesterFees']?.toString() ?? '';
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -200,7 +221,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Course'),
+        title: Text(_isEditing ? 'Edit Course' : 'Add New Course'),
         backgroundColor: Colors.blue.shade700,
       ),
       body: Stack(
@@ -251,19 +272,18 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.business),
                   ),
-                  items: const [
-                    'Computer Science',
-                    'Mechanical Engineering',
-                    'Electrical Engineering',
-                    'Mathematics',
-                    'Physics',
-                    'commerce', 
-                    'english',
-                    
-                                
-                                ].map((dept) {
-                    return DropdownMenuItem(value: dept, child: Text(dept));
-                  }).toList(),
+                  items:
+                      const [
+                        'Computer Science',
+                        'Mechanical Engineering',
+                        'Electrical Engineering',
+                        'Mathematics',
+                        'Physics',
+                        'commerce',
+                        'english',
+                      ].map((dept) {
+                        return DropdownMenuItem(value: dept, child: Text(dept));
+                      }).toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedDepartment = value!;
@@ -278,11 +298,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.calendar_today),
                   ),
-                  items: const [
-                    '2 sem',
-                    '4 sem',
-                    '6 sem',
-                  ].map((sem) {
+                  items: const ['2 sem', '4 sem', '6 sem'].map((sem) {
                     return DropdownMenuItem(value: sem, child: Text(sem));
                   }).toList(),
                   onChanged: (value) {
@@ -324,7 +340,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                   ],
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Show Fees Option Toggle
                 Card(
                   color: Colors.blue.shade50,
@@ -333,7 +349,9 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                       'Add Fee Structure',
                       style: TextStyle(fontWeight: FontWeight.w600),
                     ),
-                    subtitle: const Text('Enable to add course fees information'),
+                    subtitle: const Text(
+                      'Enable to add course fees information',
+                    ),
                     value: _showFeesOption,
                     onChanged: (value) {
                       setState(() {
@@ -348,7 +366,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                     activeColor: Colors.blue.shade700,
                   ),
                 ),
-                
+
                 // Conditional Fee Fields
                 if (_showFeesOption) ...[
                   const SizedBox(height: 16),
@@ -365,9 +383,9 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                           ),
                           keyboardType: TextInputType.number,
                           validator: (value) =>
-                              _showFeesOption && (value?.isEmpty ?? true) 
-                                  ? 'Required' 
-                                  : null,
+                              _showFeesOption && (value?.isEmpty ?? true)
+                              ? 'Required'
+                              : null,
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -382,15 +400,15 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                           ),
                           keyboardType: TextInputType.number,
                           validator: (value) =>
-                              _showFeesOption && (value?.isEmpty ?? true) 
-                                  ? 'Required' 
-                                  : null,
+                              _showFeesOption && (value?.isEmpty ?? true)
+                              ? 'Required'
+                              : null,
                         ),
                       ),
                     ],
                   ),
                 ],
-                
+
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: _isLoading ? null : _submitCourse,
@@ -398,9 +416,9 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                     backgroundColor: Colors.blue.shade700,
                     padding: const EdgeInsets.all(16),
                   ),
-                  child: const Text(
-                    'Create Course',
-                    style: TextStyle(fontSize: 16, color: Colors.white),
+                  child: Text(
+                    _isEditing ? 'Update Course' : 'Create Course',
+                    style: const TextStyle(fontSize: 16, color: Colors.white),
                   ),
                 ),
               ],
@@ -409,9 +427,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
           if (_isLoading)
             Container(
               color: Colors.black26,
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: const Center(child: CircularProgressIndicator()),
             ),
         ],
       ),
@@ -430,7 +446,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
           throw Exception('User not authenticated');
         }
 
-        final newCourse = {
+        final courseData = {
           'name': _courseNameController.text.trim(),
           'code': _courseCodeController.text.trim().toUpperCase(),
           'description': _descriptionController.text.trim(),
@@ -438,36 +454,64 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
           'semester': _selectedSemester,
           'credits': int.parse(_creditsController.text),
           'maxStudents': int.parse(_maxStudentsController.text),
-          'enrolledStudents': 0,
           'hasFees': _showFeesOption,
           'teacherId': user.uid,
           'teacherName': user.displayName ?? user.email ?? 'Unknown',
-          'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp(),
         };
 
         // Add fee data only if fees option is enabled
         if (_showFeesOption) {
-          newCourse['totalFees'] = double.parse(_totalFeesController.text);
-          newCourse['semesterFees'] = double.parse(_semesterFeesController.text);
+          courseData['totalFees'] = double.parse(_totalFeesController.text);
+          courseData['semesterFees'] = double.parse(
+            _semesterFeesController.text,
+          );
+        } else {
+          // Remove fee data if fees are disabled
+          courseData['totalFees'] = FieldValue.delete();
+          courseData['semesterFees'] = FieldValue.delete();
         }
 
-        await _firestore.collection('courses').add(newCourse);
+        if (_isEditing) {
+          // Update existing course
+          await _firestore
+              .collection('courses')
+              .doc(widget.courseId)
+              .update(courseData);
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Course created successfully!'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          Navigator.pop(context);
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Course updated successfully!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            Navigator.pop(context);
+          }
+        } else {
+          // Create new course
+          courseData['enrolledStudents'] = 0;
+          courseData['createdAt'] = FieldValue.serverTimestamp();
+
+          await _firestore.collection('courses').add(courseData);
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Course created successfully!'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            Navigator.pop(context);
+          }
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error creating course: $e'),
+              content: Text(
+                'Error ${_isEditing ? 'updating' : 'creating'} course: $e',
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -512,11 +556,23 @@ class CourseDetailScreen extends StatelessWidget {
             itemBuilder: (context) => [
               const PopupMenuItem(
                 value: 'edit',
-                child: Text('Edit Course'),
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, size: 20),
+                    SizedBox(width: 8),
+                    Text('Edit Course'),
+                  ],
+                ),
               ),
               const PopupMenuItem(
                 value: 'delete',
-                child: Text('Delete Course'),
+                child: Row(
+                  children: [
+                    Icon(Icons.delete, size: 20, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text('Delete Course', style: TextStyle(color: Colors.red)),
+                  ],
+                ),
               ),
             ],
           ),
@@ -545,15 +601,12 @@ class CourseDetailScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Text(
                     course['code'] ?? '',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.white70,
-                    ),
+                    style: const TextStyle(fontSize: 16, color: Colors.white70),
                   ),
                 ],
               ),
             ),
-            
+
             // Details Section
             Padding(
               padding: const EdgeInsets.all(16),
@@ -562,29 +615,47 @@ class CourseDetailScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'Course Information',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  _buildInfoRow(Icons.business, 'Department', course['department'] ?? ''),
-                  _buildInfoRow(Icons.calendar_today, 'Semester', course['semester'] ?? ''),
-                  _buildInfoRow(Icons.credit_score, 'Credits', '${course['credits']} hours'),
-                  _buildInfoRow(Icons.people, 'Max Students', '${course['maxStudents']}'),
-                  
+                  _buildInfoRow(
+                    Icons.business,
+                    'Department',
+                    course['department'] ?? '',
+                  ),
+                  _buildInfoRow(
+                    Icons.calendar_today,
+                    'Semester',
+                    course['semester'] ?? '',
+                  ),
+                  _buildInfoRow(
+                    Icons.credit_score,
+                    'Credits',
+                    '${course['credits']} hours',
+                  ),
+                  _buildInfoRow(
+                    Icons.people,
+                    'Max Students',
+                    '${course['maxStudents']}',
+                  ),
+
                   if (course['hasFees'] == true) ...[
-                    _buildInfoRow(Icons.attach_money, 'Total Fees', '₹${course['totalFees']?.toStringAsFixed(2) ?? '0.00'}'),
-                    _buildInfoRow(Icons.payments, 'Semester Fees', '₹${course['semesterFees']?.toStringAsFixed(2) ?? '0.00'}'),
+                    _buildInfoRow(
+                      Icons.attach_money,
+                      'Total Fees',
+                      '₹${course['totalFees']?.toStringAsFixed(2) ?? '0.00'}',
+                    ),
+                    _buildInfoRow(
+                      Icons.payments,
+                      'Semester Fees',
+                      '₹${course['semesterFees']?.toStringAsFixed(2) ?? '0.00'}',
+                    ),
                   ],
-                  
+
                   const SizedBox(height: 24),
                   const Text(
                     'Description',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -595,9 +666,9 @@ class CourseDetailScreen extends StatelessWidget {
                       height: 1.5,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Fee Structure - Only show if course has fees
                   if (course['hasFees'] == true) ...[
                     const Text(
@@ -619,12 +690,17 @@ class CourseDetailScreen extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.account_balance_wallet, 
-                                      color: Colors.green.shade700, size: 20),
+                                    Icon(
+                                      Icons.account_balance_wallet,
+                                      color: Colors.green.shade700,
+                                      size: 20,
+                                    ),
                                     const SizedBox(width: 8),
                                     const Text(
                                       'Total Course Fees',
-                                      style: TextStyle(fontWeight: FontWeight.w600),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -644,12 +720,17 @@ class CourseDetailScreen extends StatelessWidget {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.payment, 
-                                      color: Colors.green.shade700, size: 20),
+                                    Icon(
+                                      Icons.payment,
+                                      color: Colors.green.shade700,
+                                      size: 20,
+                                    ),
                                     const SizedBox(width: 8),
                                     const Text(
                                       'Per Semester',
-                                      style: TextStyle(fontWeight: FontWeight.w500),
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -669,13 +750,10 @@ class CourseDetailScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 24),
                   ],
-                  
+
                   const Text(
                     'Enrollment Status',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
                   Card(
@@ -689,14 +767,17 @@ class CourseDetailScreen extends StatelessWidget {
                               const Text('Current Enrollment'),
                               Text(
                                 '${course['enrolledStudents'] ?? 0}/${course['maxStudents']}',
-                                style: const TextStyle(fontWeight: FontWeight.bold),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 8),
                           LinearProgressIndicator(
-                            value: (course['enrolledStudents'] ?? 0) / 
-                                   (course['maxStudents'] ?? 1).toDouble(),
+                            value:
+                                (course['enrolledStudents'] ?? 0) /
+                                (course['maxStudents'] ?? 1).toDouble(),
                             backgroundColor: Colors.grey.shade300,
                             color: Colors.blue,
                           ),
@@ -720,10 +801,7 @@ class CourseDetailScreen extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: Colors.blue.shade700),
           const SizedBox(width: 12),
-          Text(
-            '$label: ',
-            style: const TextStyle(fontWeight: FontWeight.w500),
-          ),
+          Text('$label: ', style: const TextStyle(fontWeight: FontWeight.w500)),
           Expanded(
             child: Text(
               value,
@@ -736,9 +814,11 @@ class CourseDetailScreen extends StatelessWidget {
   }
 
   void _editCourse(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Edit functionality coming soon!'),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            AddCourseScreen(courseId: courseId, existingCourse: course),
       ),
     );
   }
@@ -748,7 +828,9 @@ class CourseDetailScreen extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete Course'),
-        content: Text('Are you sure you want to delete "${course['name']}"?'),
+        content: Text(
+          'Are you sure you want to delete "${course['name']}"? This action cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -765,7 +847,7 @@ class CourseDetailScreen extends StatelessWidget {
                 if (context.mounted) {
                   Navigator.pop(context); // Close dialog
                   Navigator.pop(context); // Return to list
-                  
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Course deleted successfully'),
@@ -785,10 +867,7 @@ class CourseDetailScreen extends StatelessWidget {
                 }
               }
             },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
