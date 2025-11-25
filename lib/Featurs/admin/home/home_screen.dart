@@ -318,8 +318,6 @@
 //   }
 // }
 
-
-
 //   Widget _buildCourseCard(BuildContext context, String courseName) {
 //     return Card(
 //       margin: const EdgeInsets.only(bottom: 12),
@@ -454,7 +452,6 @@
 //       ),
 //     );
 //   }
-
 
 // class AdmissionManagementPage extends StatelessWidget {
 //   const AdmissionManagementPage({Key? key}) : super(key: key);
@@ -768,12 +765,16 @@
 // }
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/Featurs/admin/college_datail_add.dart';
 import 'package:flutter_application_1/Featurs/admin/home/admission%20detail/admissiondetail_page.dart';
 import 'package:flutter_application_1/Featurs/admin/home/cours%20detail/cource_detailpage.dart';
 import 'package:flutter_application_1/Featurs/admin/home/download%20details/downloaddetail_page.dart';
 import 'package:flutter_application_1/Featurs/admin/home/evenet%20details/eventdetails_page.dart';
 import 'package:flutter_application_1/Featurs/admin/home/exam%20detail/examdetail.page.dart';
+import 'package:flutter_application_1/Featurs/admin/profile_screen.dart';
 import 'package:flutter_application_1/Featurs/auth/view/login_screen.dart';
+import 'package:flutter_application_1/Featurs/college/add_course.dart';
+import 'package:flutter_application_1/Featurs/college/add_event.dart';
 import 'package:flutter_application_1/Featurs/firebase_serviece/firebase.dart';
 import 'package:flutter_application_1/Featurs/view_more/course/course_detai_page.dart';
 
@@ -818,10 +819,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 ),
                 Text(
                   'College Management System',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
@@ -831,7 +829,10 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications_outlined, color: Colors.black87),
+                icon: const Icon(
+                  Icons.notifications_outlined,
+                  color: Colors.black87,
+                ),
                 onPressed: () {},
               ),
               Positioned(
@@ -850,7 +851,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.settings_outlined, color: Colors.black87),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AdminProfileScreen()),
+              );
+            },
           ),
         ],
       ),
@@ -870,14 +876,27 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             const SizedBox(height: 4),
             const Text(
               'Manage your college portal',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 24),
 
             // User Management Card
+            // Add this to your AdminHomeScreen after the User Management card
+            _buildMainCard(
+              title: 'College Details',
+              subtitle: 'Manage college contact information',
+              icon: Icons.business_rounded,
+              color: const Color(0xFF00695C),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CollegeDetailsPage(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 16),
             _buildMainCard(
               title: 'User Management',
               subtitle: 'Manage users, colleges and teachers',
@@ -886,7 +905,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const UserManagementPage()),
+                  MaterialPageRoute(
+                    builder: (context) => const UserManagementPage(),
+                  ),
                 );
               },
             ),
@@ -900,49 +921,37 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CourseManagementPage()),
+                  MaterialPageRoute(builder: (context) => TeacherCoursePanel()),
                 );
               },
             ),
             const SizedBox(height: 16),
 
-            _buildMainCard(
-              title: 'Admissions',
-              subtitle: 'Handle admission applications',
-              icon: Icons.person_add_rounded,
-              color: const Color(0xFF0D47A1),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AdmissionManagementPage()),
-                );
-              },
-            ),
+            // _buildMainCard(
+            //   title: 'Exams',
+            //   subtitle: 'Schedule and manage examinations',
+            //   icon: Icons.edit_note_rounded,
+            //   color: const Color(0xFF283593),
+            //   onTap: () {
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(builder: (context) => const ExamManagementPage()),
+            //     );
+            //   },
+            // ),
             const SizedBox(height: 16),
 
             _buildMainCard(
-              title: 'Exams',
-              subtitle: 'Schedule and manage examinations',
-              icon: Icons.edit_note_rounded,
-              color: const Color(0xFF283593),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ExamManagementPage()),
-                );
-              },
-            ),
-            const SizedBox(height: 16),
-
-            _buildMainCard(
-              title: 'Downloads',
-              subtitle: 'Upload study materials and notes',
-              icon: Icons.download_rounded,
+              title: 'Aminities',
+              subtitle: 'Upload College  Aminities',
+              icon: Icons.category,
               color: const Color(0xFF073D7A),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const DownloadsManagementPage()),
+                  MaterialPageRoute(
+                    builder: (context) => const DownloadsManagementPage(),
+                  ),
                 );
               },
             ),
@@ -956,7 +965,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const EventsManagementPage()),
+                  MaterialPageRoute(
+                    builder: (context) => const CollegeEventsPanel(),
+                  ),
                 );
               },
             ),
@@ -1002,22 +1013,22 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          _authService.signOut();
-          Navigator.pushAndRemoveUntil(
-            context, 
-            MaterialPageRoute(builder: (context) => const LoginScreen()), 
-            (route) => false,
-          );
-        },
-        backgroundColor: Colors.red,
-        icon: const Icon(Icons.logout_rounded, color: Colors.white),
-        label: const Text(
-          'Logout',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-        ),
-      ),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () {
+      //     _authService.signOut();
+      //     Navigator.pushAndRemoveUntil(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => const LoginScreen()),
+      //       (route) => false,
+      //     );
+      //   },
+      //   backgroundColor: Colors.red,
+      //   icon: const Icon(Icons.logout_rounded, color: Colors.white),
+      //   label: const Text(
+      //     'Logout',
+      //     style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+      //   ),
+      // ),
     );
   }
 
@@ -1036,9 +1047,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border(
-            left: BorderSide(color: color, width: 5),
-          ),
+          border: Border(left: BorderSide(color: color, width: 5)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.08),
@@ -1073,10 +1082,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
-                    ),
+                    style: const TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                 ],
               ),
@@ -1195,10 +1201,22 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       child: DropdownButton<String>(
                         value: _selectedFilter,
                         items: const [
-                          DropdownMenuItem(value: 'all', child: Text('All Users')),
-                          DropdownMenuItem(value: 'teacher', child: Text('Teachers')),
-                          DropdownMenuItem(value: 'college', child: Text('Colleges')),
-                          DropdownMenuItem(value: 'user', child: Text('Students')),
+                          DropdownMenuItem(
+                            value: 'all',
+                            child: Text('All Users'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'teacher',
+                            child: Text('Teachers'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'college',
+                            child: Text('Colleges'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'user',
+                            child: Text('Students'),
+                          ),
                         ],
                         onChanged: (value) {
                           setState(() {
@@ -1216,7 +1234,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
           // Users List
           Expanded(
             child: StreamBuilder(
-              stream: _selectedFilter == 'all' 
+              stream: _selectedFilter == 'all'
                   ? _authService.getUsers()
                   : _authService.getUsersByRole(_selectedFilter),
               builder: (context, snapshot) {
@@ -1245,12 +1263,16 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   itemBuilder: (context, index) {
                     final user = users[index];
                     final userData = user.data() as Map<String, dynamic>;
-                    
+
                     // Filter by search
                     final searchTerm = _searchController.text.toLowerCase();
                     if (searchTerm.isNotEmpty &&
-                        !userData['username'].toString().toLowerCase().contains(searchTerm) &&
-                        !userData['email'].toString().toLowerCase().contains(searchTerm)) {
+                        !userData['username'].toString().toLowerCase().contains(
+                          searchTerm,
+                        ) &&
+                        !userData['email'].toString().toLowerCase().contains(
+                          searchTerm,
+                        )) {
                       return const SizedBox.shrink();
                     }
 
@@ -1279,7 +1301,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
   Widget _buildUserCard(Map<String, dynamic> userData, BuildContext context) {
     Color roleColor;
     IconData roleIcon;
-    
+
     switch (userData['role']) {
       case 'admin':
         roleColor = Colors.red;
@@ -1314,10 +1336,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
         ),
         title: Text(
           userData['username'] ?? 'No Name',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
         subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1449,7 +1468,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   role: selectedRole,
                   createdBy: FirebaseAuth.instance.currentUser!.uid,
                 );
-                
+
                 if (mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -1470,7 +1489,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
                 }
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4A148C)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4A148C),
+            ),
             child: const Text('Create User'),
           ),
         ],
@@ -1478,7 +1499,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
-  void _showEditRoleDialog(BuildContext context, Map<String, dynamic> userData) {
+  void _showEditRoleDialog(
+    BuildContext context,
+    Map<String, dynamic> userData,
+  ) {
     String newRole = userData['role'] ?? 'user';
 
     showDialog(
@@ -1505,7 +1529,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
             onPressed: () async {
               try {
                 await _authService.updateUserRole(userData['uid'], newRole);
-                
+
                 if (mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -1526,7 +1550,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
                 }
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF4A148C)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4A148C),
+            ),
             child: const Text('Update Role'),
           ),
         ],
@@ -1534,12 +1560,17 @@ class _UserManagementPageState extends State<UserManagementPage> {
     );
   }
 
-  void _showDeleteUserDialog(BuildContext context, Map<String, dynamic> userData) {
+  void _showDeleteUserDialog(
+    BuildContext context,
+    Map<String, dynamic> userData,
+  ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete User'),
-        content: Text('Are you sure you want to delete ${userData['username']}?'),
+        content: Text(
+          'Are you sure you want to delete ${userData['username']}?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -1549,7 +1580,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
             onPressed: () async {
               try {
                 await _authService.deleteUser(userData['uid']);
-                
+
                 if (mounted) {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
