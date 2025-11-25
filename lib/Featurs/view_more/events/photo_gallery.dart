@@ -1,172 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PhotoGalleryList extends StatelessWidget {
   const PhotoGalleryList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final pastEvents = [
-      {
-        'title': 'Tech Summit 2024',
-        'date': 'November 10, 2024',
-        'color': const Color(0xFF1976D2),
-        'coverImage': 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400',
-        'photos': [
-          'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600',
-          'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=600',
-          'https://images.unsplash.com/photo-1535303311164-664fc9ec6532?w=600',
-          'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=600',
-          'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=600',
-          'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=600',
-          'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=600',
-          'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600',
-          'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=600',
-          'https://images.unsplash.com/photo-1573164713714-d95e436ab8d6?w=600',
-          'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600',
-          'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=600',
-        ],
-      },
-      {
-        'title': 'Cultural Fest',
-        'date': 'October 25, 2024',
-        'color': const Color(0xFFE91E63),
-        'coverImage': 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=400',
-        'photos': [
-          'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600',
-          'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=600',
-          'https://images.unsplash.com/photo-1501612780327-45045538702b?w=600',
-          'https://images.unsplash.com/photo-1506157786151-b8491531f063?w=600',
-          'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=600',
-          'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600',
-          'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600',
-          'https://images.unsplash.com/photo-1510511459019-5dda7724fd87?w=600',
-          'https://images.unsplash.com/photo-1524368535928-5b5e00ddc76b?w=600',
-          'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=600',
-          'https://images.unsplash.com/photo-1512478788965-94d8df042a63?w=600',
-          'https://images.unsplash.com/photo-1496293455970-f8581aae0e3b?w=600',
-          'https://images.unsplash.com/photo-1509824227185-9c5a01ceba0d?w=600',
-          'https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=600',
-          'https://images.unsplash.com/photo-1511192336575-5a79af67a629?w=600',
-          'https://images.unsplash.com/photo-1471478331149-c72f17e33c73?w=600',
-          'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=600',
-          'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600',
-        ],
-      },
-      {
-        'title': 'Sports Day',
-        'date': 'October 5, 2024',
-        'color': const Color(0xFF4CAF50),
-        'coverImage': 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400',
-        'photos': [
-          'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600',
-          'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600',
-          'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=600',
-          'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600',
-          'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600',
-          'https://images.unsplash.com/photo-1519505907962-0a6cb0167c73?w=600',
-          'https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?w=600',
-          'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600',
-          'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?w=600',
-          'https://images.unsplash.com/photo-1486286701208-1d58e9338013?w=600',
-          'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?w=600',
-          'https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=600',
-          'https://images.unsplash.com/photo-1593016927992-4a79e38359e6?w=600',
-          'https://images.unsplash.com/photo-1624880357913-a8539238245b?w=600',
-          'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=600',
-          'https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=600',
-          'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=600',
-          'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=600',
-          'https://images.unsplash.com/photo-1551958219-acbc608c6377?w=600',
-          'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=600',
-          'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=600',
-          'https://images.unsplash.com/photo-1519505907962-0a6cb0167c73?w=600',
-          'https://images.unsplash.com/photo-1587280501635-68a0e82cd5ff?w=600',
-          'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600',
-        ],
-      },
-      {
-        'title': 'Freshers Welcome',
-        'date': 'September 15, 2024',
-        'color': const Color(0xFFFF9800),
-        'coverImage': 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400',
-        'photos': [
-          'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600',
-          'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=600',
-          'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=600',
-          'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600',
-          'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600',
-          'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600',
-          'https://images.unsplash.com/photo-1530099486328-e021101a494a?w=600',
-          'https://images.unsplash.com/photo-1543269664-56d93c1b41a6?w=600',
-          'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600',
-          'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600',
-          'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600',
-          'https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?w=600',
-          'https://images.unsplash.com/photo-1506869640319-fe1a24fd76dc?w=600',
-          'https://images.unsplash.com/photo-1543269664-02f4d2e4e1b5?w=600',
-          'https://images.unsplash.com/photo-1527525443983-6e60c75fff46?w=600',
-          'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600',
-          'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=600',
-          'https://images.unsplash.com/photo-1504610926078-a1611febcad3?w=600',
-          'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=600',
-          'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=600',
-          'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600',
-          'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=600',
-          'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600',
-          'https://images.unsplash.com/photo-1530099486328-e021101a494a?w=600',
-          'https://images.unsplash.com/photo-1543269664-56d93c1b41a6?w=600',
-          'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600',
-          'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600',
-          'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600',
-          'https://images.unsplash.com/photo-1504609773096-104ff2c73ba4?w=600',
-          'https://images.unsplash.com/photo-1506869640319-fe1a24fd76dc?w=600',
-        ],
-      },
-      {
-        'title': 'Annual Day Celebration',
-        'date': 'August 28, 2024',
-        'color': const Color(0xFF9C27B0),
-        'coverImage': 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=400',
-        'photos': [
-          'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600',
-          'https://images.unsplash.com/photo-1522158637959-30385a09e0da?w=600',
-          'https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=600',
-          'https://images.unsplash.com/photo-1513151233558-d860c5398176?w=600',
-          'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600',
-          'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=600',
-          'https://images.unsplash.com/photo-1496337589254-7e19d01cec44?w=600',
-          'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600',
-          'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600',
-          'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600',
-          'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=600',
-          'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600',
-          'https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=600',
-          'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600',
-          'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=600',
-          'https://images.unsplash.com/photo-1504610926078-a1611febcad3?w=600',
-          'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=600',
-          'https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=600',
-          'https://images.unsplash.com/photo-1511578314322-379afb476865?w=600',
-          'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600',
-          'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600',
-          'https://images.unsplash.com/photo-1478147427282-58a87a120781?w=600',
-          'https://images.unsplash.com/photo-1496337589254-7e19d01cec44?w=600',
-          'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=600',
-          'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=600',
-          'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=600',
-          'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=600',
-          'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=600',
-          'https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=600',
-          'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=600',
-          'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=600',
-          'https://images.unsplash.com/photo-1504610926078-a1611febcad3?w=600',
-          'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=600',
-          'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600',
-          'https://images.unsplash.com/photo-1522158637959-30385a09e0da?w=600',
-          'https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=600',
-        ],
-      },
-    ];
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -176,27 +16,74 @@ class PhotoGalleryList extends StatelessWidget {
         title: const Text('Events Gallery'),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: pastEvents.length,
-        itemBuilder: (context, index) {
-          final event = pastEvents[index];
-          return _buildEventCard(context, event);
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _firestore
+            .collection('events')
+            .where('eventDateTime', isLessThan: DateTime.now())
+            .where('imageUrls', isNotEqualTo: [])
+            .orderBy('eventDateTime', descending: true)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return _buildEmptyState();
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: snapshot.data!.docs.length,
+            itemBuilder: (context, index) {
+              final eventDoc = snapshot.data!.docs[index];
+              final event = eventDoc.data() as Map<String, dynamic>;
+              return _buildEventCard(context, event);
+            },
+          );
         },
       ),
     );
   }
 
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.photo_library, size: 80, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'No Event Photos Yet',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Check back after events for photos',
+            style: TextStyle(color: Colors.grey[500]),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildEventCard(BuildContext context, Map<String, dynamic> event) {
-    final photos = event['photos'] as List<String>;
-    
+    final photos = event['imageUrls'] as List<dynamic>? ?? [];
+    if (photos.isEmpty) return const SizedBox();
+
     return Card(
       elevation: 6,
       shadowColor: Colors.black26,
       margin: const EdgeInsets.only(bottom: 16),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -210,20 +97,29 @@ class PhotoGalleryList extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Grid Preview with Real Images
+            // Image Grid Preview
             ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
               child: SizedBox(
                 height: 200,
                 child: Stack(
                   children: [
+                    // Show up to 3 images in a grid
                     Row(
                       children: List.generate(3, (i) {
+                        if (i >= photos.length) {
+                          return Expanded(
+                            child: Container(color: Colors.grey[200]),
+                          );
+                        }
                         return Expanded(
                           child: Container(
                             margin: EdgeInsets.only(
-                                left: i > 0 ? 2 : 0, right: i < 2 ? 2 : 0),
+                              left: i > 0 ? 2 : 0,
+                              right: i < 2 ? 2 : 0,
+                            ),
                             decoration: BoxDecoration(
                               image: DecorationImage(
                                 image: NetworkImage(photos[i]),
@@ -251,20 +147,25 @@ class PhotoGalleryList extends StatelessWidget {
                       left: 12,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.photo_library,
-                                size: 16, color: event['color']),
+                            Icon(
+                              Icons.photo_library,
+                              size: 16,
+                              color: _getEventColor(event['category']),
+                            ),
                             const SizedBox(width: 6),
                             Text(
                               '${photos.length} Photos',
                               style: TextStyle(
-                                color: event['color'],
+                                color: _getEventColor(event['category']),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 12,
                               ),
@@ -284,7 +185,7 @@ class PhotoGalleryList extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    event['title'],
+                    event['name'] ?? 'Event',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -294,19 +195,22 @@ class PhotoGalleryList extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Icon(Icons.calendar_today,
-                          size: 14, color: Colors.grey[600]),
+                      Icon(
+                        Icons.calendar_today,
+                        size: 14,
+                        color: Colors.grey[600],
+                      ),
                       const SizedBox(width: 6),
                       Text(
-                        event['date'],
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                        ),
+                        event['date'] ?? '',
+                        style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                       ),
                       const Spacer(),
-                      Icon(Icons.arrow_forward_ios,
-                          size: 14, color: event['color']),
+                      Icon(
+                        Icons.arrow_forward_ios,
+                        size: 14,
+                        color: _getEventColor(event['category']),
+                      ),
                     ],
                   ),
                 ],
@@ -317,9 +221,26 @@ class PhotoGalleryList extends StatelessWidget {
       ),
     );
   }
+
+  Color _getEventColor(String? category) {
+    switch (category) {
+      case 'Cultural':
+        return Colors.purple.shade700;
+      case 'Technical':
+        return Colors.blue.shade700;
+      case 'Sports':
+        return Colors.green.shade700;
+      case 'Workshop':
+        return Colors.orange.shade700;
+      case 'Seminar':
+        return Colors.teal.shade700;
+      default:
+        return Colors.grey.shade700;
+    }
+  }
 }
 
-// Photo Gallery Page with Real Network Images
+// Photo Gallery Page with Firestore Images
 class PhotoGalleryPage extends StatelessWidget {
   final Map<String, dynamic> event;
 
@@ -327,14 +248,14 @@ class PhotoGalleryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final photos = event['photos'] as List<String>;
+    final photos = event['imageUrls'] as List<dynamic>? ?? [];
 
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.black,
-        title: Text(event['title']),
+        title: Text(event['name'] ?? 'Event Gallery'),
         centerTitle: true,
         actions: [
           Padding(
@@ -363,15 +284,13 @@ class PhotoGalleryPage extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => FullScreenImage(
-                    event: event,
-                    index: index,
-                  ),
+                  builder: (context) =>
+                      FullScreenImage(event: event, index: index),
                 ),
               );
             },
             child: Hero(
-              tag: 'photo_${event['title']}_$index',
+              tag: 'photo_${event['name']}_$index',
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(12),
@@ -397,11 +316,12 @@ class PhotoGalleryPage extends StatelessWidget {
                             color: Colors.grey[900],
                             child: Center(
                               child: CircularProgressIndicator(
-                                value: loadingProgress.expectedTotalBytes != null
+                                value:
+                                    loadingProgress.expectedTotalBytes != null
                                     ? loadingProgress.cumulativeBytesLoaded /
-                                        loadingProgress.expectedTotalBytes!
+                                          loadingProgress.expectedTotalBytes!
                                     : null,
-                                color: event['color'],
+                                color: _getEventColor(event['category']),
                                 strokeWidth: 2,
                               ),
                             ),
@@ -412,8 +332,10 @@ class PhotoGalleryPage extends StatelessWidget {
                             decoration: BoxDecoration(
                               gradient: LinearGradient(
                                 colors: [
-                                  event['color'],
-                                  event['color'].withOpacity(0.7),
+                                  _getEventColor(event['category']),
+                                  _getEventColor(
+                                    event['category'],
+                                  ).withOpacity(0.7),
                                 ],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
@@ -453,7 +375,9 @@ class PhotoGalleryPage extends StatelessWidget {
                         right: 8,
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 4),
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.black.withOpacity(0.7),
                             borderRadius: BorderRadius.circular(12),
@@ -482,22 +406,36 @@ class PhotoGalleryPage extends StatelessWidget {
       ),
     );
   }
+
+  Color _getEventColor(String? category) {
+    switch (category) {
+      case 'Cultural':
+        return Colors.purple.shade700;
+      case 'Technical':
+        return Colors.blue.shade700;
+      case 'Sports':
+        return Colors.green.shade700;
+      case 'Workshop':
+        return Colors.orange.shade700;
+      case 'Seminar':
+        return Colors.teal.shade700;
+      default:
+        return Colors.grey.shade700;
+    }
+  }
 }
 
-// Full Screen Image Viewer with Real Images
+// Full Screen Image Viewer
 class FullScreenImage extends StatelessWidget {
   final Map<String, dynamic> event;
   final int index;
 
-  const FullScreenImage({
-    Key? key,
-    required this.event,
-    required this.index,
-  }) : super(key: key);
+  const FullScreenImage({Key? key, required this.event, required this.index})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final photos = event['photos'] as List<String>;
+    final photos = event['imageUrls'] as List<dynamic>? ?? [];
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -509,16 +447,11 @@ class FullScreenImage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.share),
             onPressed: () {
+              // Implement share functionality
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Share functionality')),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.download),
-            onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Download functionality')),
+                const SnackBar(
+                  content: Text('Share functionality coming soon!'),
+                ),
               );
             },
           ),
@@ -526,7 +459,7 @@ class FullScreenImage extends StatelessWidget {
       ),
       body: Center(
         child: Hero(
-          tag: 'photo_${event['title']}_$index',
+          tag: 'photo_${event['name']}_$index',
           child: InteractiveViewer(
             minScale: 0.5,
             maxScale: 4.0,
@@ -542,9 +475,9 @@ class FullScreenImage extends StatelessWidget {
                       CircularProgressIndicator(
                         value: loadingProgress.expectedTotalBytes != null
                             ? loadingProgress.cumulativeBytesLoaded /
-                                loadingProgress.expectedTotalBytes!
+                                  loadingProgress.expectedTotalBytes!
                             : null,
-                        color: event['color'],
+                        color: _getEventColor(event['category']),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -562,8 +495,8 @@ class FullScreenImage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     gradient: LinearGradient(
                       colors: [
-                        event['color'],
-                        event['color'].withOpacity(0.7),
+                        _getEventColor(event['category']),
+                        _getEventColor(event['category']).withOpacity(0.7),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -608,17 +541,15 @@ class FullScreenImage extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FullScreenImage(
-                            event: event,
-                            index: index - 1,
-                          ),
+                          builder: (context) =>
+                              FullScreenImage(event: event, index: index - 1),
                         ),
                       );
                     }
                   : null,
             ),
             Text(
-              event['title'],
+              event['name'] ?? 'Event',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 16,
@@ -632,10 +563,8 @@ class FullScreenImage extends StatelessWidget {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => FullScreenImage(
-                            event: event,
-                            index: index + 1,
-                          ),
+                          builder: (context) =>
+                              FullScreenImage(event: event, index: index + 1),
                         ),
                       );
                     }
@@ -646,4 +575,21 @@ class FullScreenImage extends StatelessWidget {
       ),
     );
   }
+
+  Color _getEventColor(String? category) {
+    switch (category) {
+      case 'Cultural':
+        return Colors.purple.shade700;
+      case 'Technical':
+        return Colors.blue.shade700;
+      case 'Sports':
+        return Colors.green.shade700;
+      case 'Workshop':
+        return Colors.orange.shade700;
+      case 'Seminar':
+        return Colors.teal.shade700;
+      default:
+        return Colors.grey.shade700;
+    }
   }
+}

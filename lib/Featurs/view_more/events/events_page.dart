@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class EventsPage extends StatefulWidget {
   const EventsPage({Key? key}) : super(key: key);
@@ -8,73 +10,7 @@ class EventsPage extends StatefulWidget {
 }
 
 class _EventsPageState extends State<EventsPage> {
-  final List<Map<String, dynamic>> upcomingEvents = [
-    {
-      
-      'title': 'Tech Conference 2024',
-      'date': 'Dec 15, 2024',
-      'time': '10:00 AM - 5:00 PM',
-      'location': 'Convention Center',
-      'type': 'Conference',
-      'icon': Icons.computer,
-      'color': const Color(0xFF283593),
-    },    {
-      'title': 'Workshop: Flutter Development',
-      'date': 'Dec 20, 2024',
-      'time': '2:00 PM - 4:00 PM',
-      'location': 'Room 301',
-      'type': 'Workshop',
-      'icon': Icons.code,
-      'color': const Color(0xFF1565C0),
-    },
-    {
-      'title': 'Annual Meetup',
-      'date': 'Dec 25, 2024',
-      'time': '6:00 PM - 9:00 PM',
-      'location': 'Grand Hall',
-      'type': 'Meetup',
-      'icon': Icons.groups,
-      'color': const Color(0xFF6A1B9A),
-    },
-    {
-      'title': 'Guest Lecture: AI & ML',
-      'date': 'Jan 5, 2025',
-      'time': '11:00 AM - 1:00 PM',
-      'location': 'Auditorium A',
-      'type': 'Lecture',
-      'icon': Icons.mic,
-      'color': const Color(0xFFD32F2F),
-    },
-    {
-      'title': 'Guest Lecture: AI & ML',
-      'date': 'Jan 5, 2025',
-      'time': '11:00 AM - 1:00 PM',
-      'location': 'Auditorium A',
-      'type': 'Lecture',
-      'icon': Icons.mic,
-      'color': const Color(0xFFD32F2F),
-    },
-  ];
-
-  final List<Map<String, dynamic>> pastEvents = [
-    {
-      'title': 'Hackathon 2024',
-      'date': 'Nov 10, 2024',
-      'location': 'Tech Park',
-      'type': 'Hackathon',
-      'icon': Icons.terminal,
-      'color': Colors.grey,
-    },
-    {
-      'title': 'Cultural Fest',
-      'date': 'Oct 28, 2024',
-      'location': 'Main Campus',
-      'type': 'Festival',
-      'icon': Icons.celebration,
-      'color': Colors.grey,
-    },
-  ];
-
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String selectedTab = 'Upcoming';
 
   @override
@@ -112,11 +48,30 @@ class _EventsPageState extends State<EventsPage> {
               ),
             ),
           ),
-          // Events List
+          // Events List from Firestore
           Expanded(
-            child: selectedTab == 'Upcoming'
-                ? _buildEventsList(upcomingEvents, isUpcoming: true)
-                : _buildEventsList(pastEvents, isUpcoming: false),
+            child: StreamBuilder<QuerySnapshot>(
+              stream: _firestore
+                  .collection('events')
+                  .orderBy('eventDateTime', descending: true)
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return _buildEmptyState();
+                }
+
+                final events = _filterEvents(snapshot.data!.docs);
+                return _buildEventsList(events);
+              },
+            ),
           ),
         ],
       ),
@@ -151,27 +106,54 @@ class _EventsPageState extends State<EventsPage> {
     );
   }
 
-  Widget _buildEventsList(List<Map<String, dynamic>> events, {required bool isUpcoming}) {
+  List<QueryDocumentSnapshot> _filterEvents(List<QueryDocumentSnapshot> events) {
+    final now = DateTime.now();
+    
+    return events.where((doc) {
+      final event = doc.data() as Map<String, dynamic>;
+      final eventDateTime = (event['eventDateTime'] as Timestamp).toDate();
+      
+      if (selectedTab == 'Upcoming') {
+        return eventDateTime.isAfter(now);
+      } else {
+        return eventDateTime.isBefore(now);
+      }
+    }).toList();
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.event_busy,
+            size: 80,
+            color: Colors.grey[400],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'No ${selectedTab.toLowerCase()} events',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEventsList(List<QueryDocumentSnapshot> events) {
     if (events.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.event_busy,
-              size: 80,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'No ${isUpcoming ? "upcoming" : "past"} events',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+        child: Text(
+          'No ${selectedTab.toLowerCase()} events',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey[600],
+          ),
         ),
       );
     }
@@ -180,12 +162,18 @@ class _EventsPageState extends State<EventsPage> {
       padding: const EdgeInsets.all(16),
       itemCount: events.length,
       itemBuilder: (context, index) {
-        return _buildEventCard(events[index], isUpcoming);
+        final eventDoc = events[index];
+        final event = eventDoc.data() as Map<String, dynamic>;
+        return _buildEventCard(event);
       },
     );
   }
 
-  Widget _buildEventCard(Map<String, dynamic> event, bool isUpcoming) {
+  Widget _buildEventCard(Map<String, dynamic> event) {
+    final eventDateTime = (event['eventDateTime'] as Timestamp).toDate();
+    final isUpcoming = eventDateTime.isAfter(DateTime.now());
+    final images = event['imageUrls'] as List<dynamic>? ?? [];
+
     return Card(
       elevation: 3,
       shadowColor: Colors.black12,
@@ -205,25 +193,15 @@ class _EventsPageState extends State<EventsPage> {
             children: [
               Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: event['color'].withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(
-                      event['icon'],
-                      color: event['color'],
-                      size: 28,
-                    ),
-                  ),
+                  // Event Image or Icon
+                  _buildEventImage(event, images),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          event['title'],
+                          event['name'] ?? 'Event',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -237,15 +215,15 @@ class _EventsPageState extends State<EventsPage> {
                             vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: event['color'].withOpacity(0.1),
+                            color: _getEventColor(event['category']).withOpacity(0.1),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            event['type'],
+                            event['category'] ?? 'Event',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: event['color'],
+                              color: _getEventColor(event['category']),
                             ),
                           ),
                         ),
@@ -255,20 +233,18 @@ class _EventsPageState extends State<EventsPage> {
                 ],
               ),
               const SizedBox(height: 16),
-              _buildEventDetail(Icons.calendar_today, event['date']),
-              if (isUpcoming) ...[
-                const SizedBox(height: 8),
-                _buildEventDetail(Icons.access_time, event['time']),
-              ],
+              _buildEventDetail(Icons.calendar_today, event['date'] ?? ''),
               const SizedBox(height: 8),
-              _buildEventDetail(Icons.location_on, event['location']),
+              _buildEventDetail(Icons.access_time, event['time'] ?? ''),
+              const SizedBox(height: 8),
+              _buildEventDetail(Icons.location_on, event['venue'] ?? ''),
               if (isUpcoming) ...[
                 const SizedBox(height: 16),
                 Align(
                   alignment: Alignment.centerRight,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      _showRegistrationConfirmation(event['title']);
+                      _showRegistrationConfirmation(event['name']);
                     },
                     icon: const Icon(Icons.check_circle, size: 18),
                     label: const Text('Register'),
@@ -285,6 +261,41 @@ class _EventsPageState extends State<EventsPage> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildEventImage(Map<String, dynamic> event, List<dynamic> images) {
+    if (images.isNotEmpty) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Image.network(
+          images.first,
+          width: 60,
+          height: 60,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildPlaceholderIcon(event['category']);
+          },
+        ),
+      );
+    }
+    
+    return _buildPlaceholderIcon(event['category']);
+  }
+
+  Widget _buildPlaceholderIcon(String? category) {
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        color: _getEventColor(category),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(
+        _getEventIcon(category),
+        color: Colors.white,
+        size: 30,
       ),
     );
   }
@@ -307,7 +318,45 @@ class _EventsPageState extends State<EventsPage> {
     );
   }
 
+  Color _getEventColor(String? category) {
+    switch (category) {
+      case 'Cultural':
+        return Colors.purple.shade700;
+      case 'Technical':
+        return Colors.blue.shade700;
+      case 'Sports':
+        return Colors.green.shade700;
+      case 'Workshop':
+        return Colors.orange.shade700;
+      case 'Seminar':
+        return Colors.teal.shade700;
+      default:
+        return Colors.grey.shade700;
+    }
+  }
+
+  IconData _getEventIcon(String? category) {
+    switch (category) {
+      case 'Cultural':
+        return Icons.music_note;
+      case 'Technical':
+        return Icons.computer;
+      case 'Sports':
+        return Icons.sports_basketball;
+      case 'Workshop':
+        return Icons.build;
+      case 'Seminar':
+        return Icons.person;
+      default:
+        return Icons.event;
+    }
+  }
+
   void _showEventDetails(Map<String, dynamic> event) {
+    final images = event['imageUrls'] as List<dynamic>? ?? [];
+    final eventDateTime = (event['eventDateTime'] as Timestamp).toDate();
+    final isUpcoming = eventDateTime.isAfter(DateTime.now());
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -337,24 +386,40 @@ class _EventsPageState extends State<EventsPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
+                
+                // Event Image
+                if (images.isNotEmpty)
+                  Container(
+                    height: 200,
+                    width: double.infinity,
+                    margin: const EdgeInsets.only(bottom: 16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      image: DecorationImage(
+                        image: NetworkImage(images.first),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                
                 Row(
                   children: [
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: event['color'].withOpacity(0.1),
+                        color: _getEventColor(event['category']).withOpacity(0.1),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Icon(
-                        event['icon'],
-                        color: event['color'],
+                        _getEventIcon(event['category']),
+                        color: _getEventColor(event['category']),
                         size: 32,
                       ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Text(
-                        event['title'],
+                        event['name'] ?? 'Event',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -374,29 +439,92 @@ class _EventsPageState extends State<EventsPage> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                _buildDetailRow(Icons.event, 'Type', event['type']),
-                _buildDetailRow(Icons.calendar_today, 'Date', event['date']),
-                if (event.containsKey('time'))
-                  _buildDetailRow(Icons.access_time, 'Time', event['time']),
-                _buildDetailRow(Icons.location_on, 'Location', event['location']),
-                const SizedBox(height: 24),
-                const Text(
-                  'Description',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF0F1A6E),
+                _buildDetailRow(Icons.category, 'Category', event['category'] ?? ''),
+                _buildDetailRow(Icons.calendar_today, 'Date', event['date'] ?? ''),
+                _buildDetailRow(Icons.access_time, 'Time', event['time'] ?? ''),
+                _buildDetailRow(Icons.location_on, 'Location', event['venue'] ?? ''),
+                
+                if (event['description'] != null && event['description'].isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Description',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF0F1A6E),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Join us for an exciting ${event['type'].toLowerCase()} that brings together enthusiasts and professionals. This event promises to be an enriching experience with networking opportunities and valuable insights.',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.grey[700],
-                    height: 1.5,
+                  const SizedBox(height: 8),
+                  Text(
+                    event['description'] ?? '',
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Colors.grey[700],
+                      height: 1.5,
+                    ),
                   ),
-                ),
+                ],
+                
+                // Image Gallery
+                if (images.length > 1) ...[
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Event Gallery',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF0F1A6E),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    height: 100,
+                    child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: images.length,
+                      itemBuilder: (context, index) {
+                        return Container(
+                          margin: const EdgeInsets.only(right: 8),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              images[index],
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+                
+                if (isUpcoming) ...[
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.pop(context);
+                        _showRegistrationConfirmation(event['name']);
+                      },
+                      icon: const Icon(Icons.check_circle, size: 20),
+                      label: const Text(
+                        'Register for Event',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF283593),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
