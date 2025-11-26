@@ -390,7 +390,7 @@ class _NotesPapersPanelState extends State<NotesPapersPanel> {
   }
 
   Color _getMaterialColor(String type) {
-    return type == 'notes' ? Colors.green.shade700 : Colors.orange.shade700;
+    return type == 'notes' ? const Color.fromARGB(255, 33, 144, 236) : Colors.orange.shade700;
   }
 }
 
@@ -560,7 +560,7 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                               Icon(
                                 Icons.picture_as_pdf,
                                 size: 60,
-                                color: Colors.red.shade700,
+                                color: const Color.fromARGB(255, 21, 127, 213),
                               ),
                               const SizedBox(height: 8),
                               Text(
@@ -598,13 +598,13 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                               Icon(
                                 Icons.upload_file,
                                 size: 60,
-                                color: Colors.grey.shade600,
+                                color: const Color.fromARGB(255, 22, 130, 193),
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 'Tap to upload PDF file',
                                 style: TextStyle(
-                                  color: Colors.grey.shade600,
+                                  color: const Color.fromARGB(255, 11, 148, 206),
                                   fontSize: 16,
                                 ),
                               ),
@@ -612,7 +612,7 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                               Text(
                                 'Only PDF files are allowed',
                                 style: TextStyle(
-                                  color: Colors.grey.shade500,
+                                  color: const Color.fromARGB(255, 9, 158, 207),
                                   fontSize: 12,
                                 ),
                               ),
@@ -819,7 +819,7 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Please select a PDF file'),
-            backgroundColor: Colors.red,
+            backgroundColor: Color.fromARGB(255, 24, 147, 224),
           ),
         );
         return;
