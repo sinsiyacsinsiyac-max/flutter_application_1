@@ -1,13 +1,15 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_application_1/Featurs/college/add_notes_and_question_pappersadd.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:image_picker/image_picker.dart';
+import 'dart:developer' as developer;
 
 class NotesDownloadPage extends StatelessWidget {
   const NotesDownloadPage({super.key});
@@ -26,9 +28,7 @@ class NotesDownloadPage extends StatelessWidget {
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
+            return Center(child: Text('Error: ${snapshot.error}'));
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -43,19 +43,18 @@ class NotesDownloadPage extends StatelessWidget {
             );
           }
 
+          // Client-side sorting
           final notes = snapshot.data!.docs;
-
-          // Sort client-side by createdAt
           notes.sort((a, b) {
             final aData = a.data() as Map<String, dynamic>;
             final bData = b.data() as Map<String, dynamic>;
             final aTime = aData['createdAt'] as Timestamp?;
             final bTime = bData['createdAt'] as Timestamp?;
-            
+
             if (aTime == null && bTime == null) return 0;
             if (aTime == null) return 1;
             if (bTime == null) return -1;
-            
+
             return bTime.compareTo(aTime); // Descending order
           });
 
@@ -102,7 +101,11 @@ class NotesDownloadPage extends StatelessWidget {
     );
   }
 
-  Widget _buildNoteCard(BuildContext context, Map<String, dynamic> note, String noteId) {
+  Widget _buildNoteCard(
+    BuildContext context,
+    Map<String, dynamic> note,
+    String noteId,
+  ) {
     return Card(
       elevation: 2,
       margin: EdgeInsets.zero,
@@ -123,10 +126,7 @@ class NotesDownloadPage extends StatelessWidget {
         ),
         title: Text(
           note['title'] ?? 'Untitled Notes',
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
@@ -136,27 +136,18 @@ class NotesDownloadPage extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               '${note['subject'] ?? ''} • ${note['course'] ?? ''}',
-              style: TextStyle(
-                color: Colors.grey.shade700,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
             ),
             const SizedBox(height: 2),
             Text(
               '${note['semester'] ?? ''} • ${note['year'] ?? ''}',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
             ),
             if (note['fileSize'] != null) ...[
               const SizedBox(height: 2),
               Text(
                 '${note['fileSize']} • ${note['downloadCount'] ?? 0} downloads',
-                style: TextStyle(
-                  color: Colors.grey.shade500,
-                  fontSize: 11,
-                ),
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
               ),
             ],
           ],
@@ -177,10 +168,8 @@ class NotesDownloadPage extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => NoteDetailScreen(
-                noteId: noteId,
-                note: note,
-              ),
+              builder: (context) =>
+                  NoteDetailScreen(noteId: noteId, note: note),
             ),
           );
         },
@@ -194,11 +183,8 @@ class NoteDetailScreen extends StatefulWidget {
   final String noteId;
   final Map<String, dynamic> note;
 
-  const NoteDetailScreen({
-    Key? key,
-    required this.noteId,
-    required this.note,
-  }) : super(key: key);
+  const NoteDetailScreen({Key? key, required this.noteId, required this.note})
+    : super(key: key);
 
   @override
   State<NoteDetailScreen> createState() => _NoteDetailScreenState();
@@ -307,7 +293,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                   ),
                 ),
               ),
-            
+
             if (_isDownloading) const SizedBox(height: 16),
 
             // Header Card
@@ -322,7 +308,10 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.green.shade50,
                         borderRadius: BorderRadius.circular(20),
@@ -380,18 +369,43 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _buildInfoRow(Icons.school, 'Course', widget.note['course'] ?? 'Not specified'),
-                    _buildInfoRow(Icons.calendar_today, 'Semester', widget.note['semester'] ?? 'Not specified'),
-                    _buildInfoRow(Icons.date_range, 'Year', widget.note['year'] ?? 'Not specified'),
-                    _buildInfoRow(Icons.storage, 'File Size', widget.note['fileSize'] ?? 'Unknown'),
-                    _buildInfoRow(Icons.download, 'Downloads', '${widget.note['downloadCount'] ?? 0}'),
-                    _buildInfoRow(Icons.person, 'Uploaded By', widget.note['uploadedByName'] ?? 'Unknown'),
+                    _buildInfoRow(
+                      Icons.school,
+                      'Course',
+                      widget.note['course'] ?? 'Not specified',
+                    ),
+                    _buildInfoRow(
+                      Icons.calendar_today,
+                      'Semester',
+                      widget.note['semester'] ?? 'Not specified',
+                    ),
+                    _buildInfoRow(
+                      Icons.date_range,
+                      'Year',
+                      widget.note['year'] ?? 'Not specified',
+                    ),
+                    _buildInfoRow(
+                      Icons.storage,
+                      'File Size',
+                      widget.note['fileSize'] ?? 'Unknown',
+                    ),
+                    _buildInfoRow(
+                      Icons.download,
+                      'Downloads',
+                      '${widget.note['downloadCount'] ?? 0}',
+                    ),
+                    _buildInfoRow(
+                      Icons.person,
+                      'Uploaded By',
+                      widget.note['uploadedByName'] ?? 'Unknown',
+                    ),
                   ],
                 ),
               ),
             ),
 
-            if (widget.note['description'] != null && widget.note['description'].isNotEmpty) ...[
+            if (widget.note['description'] != null &&
+                widget.note['description'].isNotEmpty) ...[
               const SizedBox(height: 20),
               Card(
                 elevation: 2,
@@ -413,10 +427,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                       const SizedBox(height: 12),
                       Text(
                         widget.note['description']!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
+                        style: const TextStyle(fontSize: 14, height: 1.5),
                       ),
                     ],
                   ),
@@ -431,11 +442,16 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _isDownloading ? null : () => _downloadFile(context),
+                    onPressed: _isDownloading
+                        ? null
+                        : () => _downloadFile(context),
                     icon: const Icon(Icons.download_rounded),
                     label: const Text(
                       'Download',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green.shade700,
@@ -454,7 +470,10 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                     icon: const Icon(Icons.open_in_browser),
                     label: const Text(
                       'Open',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.green.shade700,
@@ -495,9 +514,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
             flex: 3,
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w400,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w400),
             ),
           ),
         ],
@@ -507,7 +524,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
 
   Future<void> _downloadFile(BuildContext context) async {
     final fileUrl = widget.note['fileUrl'];
-    
+
     if (fileUrl == null) {
       _showSnackBar(context, 'File not available for download', Colors.red);
       return;
@@ -521,74 +538,126 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
 
       // Request storage permission
       if (Platform.isAndroid) {
+        // For all Android versions, request storage permission
         final status = await Permission.storage.request();
         if (!status.isGranted) {
-          _showSnackBar(context, 'Storage permission denied', Colors.red);
-          setState(() => _isDownloading = false);
-          return;
-        }
-      }
-
-      // Get download directory
-      Directory? directory;
-      if (Platform.isAndroid) {
-        directory = await getExternalStorageDirectory();
-      } else {
-        directory = await getApplicationDocumentsDirectory();
-      }
-
-      final fileName = widget.note['fileName'] ?? 'note.pdf';
-      final filePath = '${directory!.path}/$fileName';
-
-      // Download file with progress
-      final request = http.Request('GET', Uri.parse(fileUrl));
-      final response = await http.Client().send(request);
-
-      if (response.statusCode == 200) {
-        final totalBytes = response.contentLength ?? 0;
-        int receivedBytes = 0;
-
-        final file = File(filePath);
-        final sink = file.openWrite();
-
-        await for (var chunk in response.stream) {
-          sink.add(chunk);
-          receivedBytes += chunk.length;
-          
-          if (totalBytes > 0) {
-            setState(() {
-              _downloadProgress = receivedBytes / totalBytes;
-            });
+          // If storage permission denied, try with manage external storage
+          final manageStatus = await Permission.manageExternalStorage.request();
+          if (!manageStatus.isGranted) {
+            _showSnackBar(context, 'Storage permission denied', Colors.red);
+            setState(() => _isDownloading = false);
+            return;
           }
         }
-
-        await sink.close();
-
-        setState(() {
-          _localFilePath = filePath;
-          _isDownloading = false;
-        });
-
-        // Update download count
-        await FirebaseFirestore.instance
-            .collection('study_materials')
-            .doc(widget.noteId)
-            .update({
-              'downloadCount': FieldValue.increment(1),
-              'updatedAt': FieldValue.serverTimestamp(),
-            });
-
-        if (mounted) {
-          _showSnackBar(context, 'Downloaded successfully!', Colors.green);
-          _showViewDialog(context);
-        }
-      } else {
-        throw Exception('Failed to download: ${response.statusCode}');
       }
+
+      await _downloadToDownloadsFolder(fileUrl);
     } catch (e) {
       setState(() => _isDownloading = false);
       _showSnackBar(context, 'Error downloading: $e', Colors.red);
     }
+  }
+
+  Future<void> _downloadToDownloadsFolder(String fileUrl) async {
+    try {
+      Directory? directory;
+      if (Platform.isAndroid) {
+        // Try to get downloads directory
+        if (await Permission.manageExternalStorage.isGranted) {
+          directory = Directory('/storage/emulated/0/Download');
+          if (!await directory.exists()) {
+            directory = await getExternalStorageDirectory();
+          }
+        } else {
+          directory = await getExternalStorageDirectory();
+        }
+      } else {
+        directory = await getApplicationDocumentsDirectory();
+      }
+
+      if (directory == null) {
+        throw Exception('Could not access storage directory');
+      }
+
+      final fileName = _getFileName(widget.note['fileName'] ?? 'download.pdf');
+      final filePath = '${directory.path}/$fileName';
+
+      await _performDownload(fileUrl, filePath);
+    } catch (e) {
+      // Fallback to app directory
+      await _downloadToAppDirectory(fileUrl);
+    }
+  }
+
+  Future<void> _downloadToAppDirectory(String fileUrl) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final fileName = _getFileName(widget.note['fileName'] ?? 'download.pdf');
+      final filePath = '${directory.path}/$fileName';
+
+      await _performDownload(fileUrl, filePath);
+
+      if (mounted) {
+        _showSnackBar(context, 'Downloaded to app directory', Colors.green);
+      }
+    } catch (e) {
+      throw Exception('Failed to download to app directory: $e');
+    }
+  }
+
+  Future<void> _performDownload(String fileUrl, String filePath) async {
+    final request = http.Request('GET', Uri.parse(fileUrl));
+    final response = await http.Client().send(request);
+
+    if (response.statusCode == 200) {
+      final totalBytes = response.contentLength ?? 0;
+      int receivedBytes = 0;
+
+      final file = File(filePath);
+      final sink = file.openWrite();
+
+      await for (var chunk in response.stream) {
+        sink.add(chunk);
+        receivedBytes += chunk.length;
+
+        if (totalBytes > 0) {
+          setState(() {
+            _downloadProgress = receivedBytes / totalBytes;
+          });
+        }
+      }
+
+      await sink.close();
+
+      setState(() {
+        _localFilePath = filePath;
+        _isDownloading = false;
+      });
+
+      // Update download count
+      await FirebaseFirestore.instance
+          .collection('study_materials')
+          .doc(widget.noteId)
+          .update({
+            'downloadCount': FieldValue.increment(1),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+
+      if (mounted) {
+        _showViewDialog(context);
+      }
+    } else {
+      throw Exception('Failed to download: ${response.statusCode}');
+    }
+  }
+
+  String _getFileName(String originalName) {
+    // Clean file name and ensure .pdf extension
+    String cleanName = originalName.replaceAll(RegExp(r'[^\w\s.-]'), '');
+    if (!cleanName.toLowerCase().endsWith('.pdf')) {
+      cleanName += '.pdf';
+    }
+    return cleanName;
   }
 
   void _showViewDialog(BuildContext context) {
@@ -633,38 +702,83 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
 
   Future<void> _openInBrowser(BuildContext context) async {
     final fileUrl = widget.note['fileUrl'];
-    
+
     if (fileUrl == null) {
       _showSnackBar(context, 'File URL not available', Colors.red);
       return;
     }
 
+    // Always use Google Docs viewer for maximum compatibility
+    final String googleDocsUrl =
+        "https://docs.google.com/gview?embedded=true&url=${Uri.encodeComponent(fileUrl)}";
+
     try {
-      final uri = Uri.parse(fileUrl);
+      final uri = Uri.parse(googleDocsUrl);
+
       if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        final launched = await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+
+        if (!launched) {
+          throw Exception('Launch returned false');
+        }
       } else {
-        throw Exception('Could not launch URL');
+        throw Exception('Cannot launch URL');
       }
     } catch (e) {
-      _showSnackBar(context, 'Error opening file: $e', Colors.red);
+      developer.log('Browser open failed: $e');
+
+      // Final fallback - show dialog with multiple options
+      await showDialog(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: const Text('Cannot Open PDF'),
+          children: [
+            ListTile(
+              leading: const Icon(Icons.download),
+              title: const Text('Download File'),
+              onTap: () {
+                Navigator.pop(context);
+                _downloadFile(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.content_copy),
+              title: const Text('Copy URL'),
+              onTap: () {
+                Navigator.pop(context);
+                Clipboard.setData(ClipboardData(text: fileUrl));
+                _showSnackBar(context, 'URL copied to clipboard', Colors.green);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.cancel),
+              title: const Text('Cancel'),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
     }
   }
 
   Future<void> _shareMaterial(BuildContext context) async {
     final fileUrl = widget.note['fileUrl'];
     final title = widget.note['title'] ?? 'Study Material';
-    
+
     if (fileUrl == null) {
-      _showSnackBar(context, 'Cannot share: File URL not available', Colors.red);
+      _showSnackBar(
+        context,
+        'Cannot share: File URL not available',
+        Colors.red,
+      );
       return;
     }
 
     try {
-      await Share.share(
-        '$title\n\nDownload: $fileUrl',
-        subject: title,
-      );
+      await Share.share('$title\n\nDownload: $fileUrl', subject: title);
     } catch (e) {
       _showSnackBar(context, 'Error sharing: $e', Colors.red);
     }
@@ -677,126 +791,6 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
         backgroundColor: color,
         behavior: SnackBarBehavior.floating,
       ),
-    );
-  }
-}
-
-// PDF Viewer Screen
-class PDFViewerScreen extends StatefulWidget {
-  final String filePath;
-  final String title;
-
-  const PDFViewerScreen({
-    Key? key,
-    required this.filePath,
-    required this.title,
-  }) : super(key: key);
-
-  @override
-  State<PDFViewerScreen> createState() => _PDFViewerScreenState();
-}
-
-class _PDFViewerScreenState extends State<PDFViewerScreen> {
-  int _currentPage = 0;
-  int _totalPages = 0;
-  bool _isReady = false;
-  String? _errorMessage;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.title,
-              style: const TextStyle(fontSize: 16),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            if (_isReady && _totalPages > 0)
-              Text(
-                'Page ${_currentPage + 1} of $_totalPages',
-                style: const TextStyle(fontSize: 12),
-              ),
-          ],
-        ),
-        backgroundColor: Colors.green.shade700,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () async {
-              await Share.shareXFiles([XFile(widget.filePath)]);
-            },
-          ),
-        ],
-      ),
-      body: _errorMessage != null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.error_outline, size: 60, color: Colors.red),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Error Loading PDF',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red.shade700,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : Stack(
-              children: [
-                PDFView(
-                  filePath: widget.filePath,
-                  enableSwipe: true,
-                  swipeHorizontal: false,
-                  autoSpacing: true,
-                  pageFling: true,
-                  pageSnap: true,
-                  onRender: (pages) {
-                    setState(() {
-                      _totalPages = pages ?? 0;
-                      _isReady = true;
-                    });
-                  },
-                  onError: (error) {
-                    setState(() {
-                      _errorMessage = error.toString();
-                    });
-                  },
-                  onPageError: (page, error) {
-                    setState(() {
-                      _errorMessage = 'Error on page $page: $error';
-                    });
-                  },
-                  onPageChanged: (page, total) {
-                    setState(() {
-                      _currentPage = page ?? 0;
-                      _totalPages = total ?? 0;
-                    });
-                  },
-                ),
-                if (!_isReady)
-                  const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-              ],
-            ),
     );
   }
 }

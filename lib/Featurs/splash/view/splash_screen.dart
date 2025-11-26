@@ -29,7 +29,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Check if user is already logged in
     final currentUser = _authService.currentUser;
-    
+
     if (currentUser != null) {
       // User is logged in, check their role and navigate accordingly
       try {
@@ -91,11 +91,7 @@ class _SplashScreenState extends State<SplashScreen> {
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Colors.blue.shade700,
-              Colors.blue.shade500,
-              Colors.white,
-            ],
+            colors: [Colors.blue.shade700, Colors.blue.shade500, Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -104,24 +100,16 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // App Logo
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.asset(
+                'assets/images/logo.jpg',
+                height: 200,
+                width: 200,
               ),
-              child: Image.asset('assets/images/logo.png',height: 30,width: 30
-              ,)
             ),
             const SizedBox(height: 30),
-            
+
             // App Name
             const Text(
               'College Assistant',
@@ -132,7 +120,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             const SizedBox(height: 10),
-            
+
             // Tagline
             Text(
               'Smart Campus Management',
@@ -142,14 +130,14 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
             ),
             const SizedBox(height: 50),
-            
+
             // Loading Indicator
             const CircularProgressIndicator(
               color: Colors.white,
               strokeWidth: 3,
             ),
             const SizedBox(height: 20),
-            
+
             // Loading Text
             Text(
               'Loading...',
