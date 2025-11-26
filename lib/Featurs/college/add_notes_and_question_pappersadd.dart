@@ -864,7 +864,7 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('${_getFileTypeIcon()} uploaded successfully!'),
-              backgroundColor: Colors.green,
+              backgroundColor: const Color.fromARGB(255, 27, 188, 224),
               behavior: SnackBarBehavior.floating,
             ),
           );
@@ -915,7 +915,7 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final isNotes = widget.material['type'] == 'notes';
-    final color = isNotes ? Colors.green.shade700 : Colors.orange.shade700;
+    final color = isNotes ? const Color.fromARGB(255, 25, 185, 229) : const Color.fromARGB(255, 13, 140, 214);
 
     return Scaffold(
       appBar: AppBar(
@@ -1235,7 +1235,7 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: Colors.grey.shade600),
+          Icon(icon, size: 20, color: const Color.fromARGB(255, 23, 138, 215)),
           const SizedBox(width: 12),
           Expanded(
             flex: 2,
@@ -1390,7 +1390,7 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
 
   void _viewPDF(BuildContext context) {
     if (_localFilePath == null) {
-      _showSnackBar(context, 'Please download the file first', Colors.orange);
+      _showSnackBar(context, 'Please download the file first', const Color.fromARGB(255, 36, 143, 243));
       return;
     }
 

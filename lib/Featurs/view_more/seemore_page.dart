@@ -29,7 +29,7 @@ class ExpantioList extends StatelessWidget {
             letterSpacing: 0.5,
           ),
         ),
-        backgroundColor: const Color(0xFF1A237E),
+        backgroundColor: const Color.fromARGB(255, 21, 133, 223),
         foregroundColor: Colors.white,
         elevation: 4,
         centerTitle: true,
@@ -155,12 +155,12 @@ class ExpantioList extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Colors.red[600]!, Colors.red[800]!],
+                colors: [const Color.fromARGB(255, 17, 139, 239)!, const Color.fromARGB(255, 43, 137, 237)!],
               ),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.red.withOpacity(0.3),
+                  color: const Color.fromARGB(255, 61, 127, 241).withOpacity(0.3),
                   blurRadius: 8,
                   offset: const Offset(0, 4),
                 ),
@@ -198,13 +198,13 @@ class ExpantioList extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            Icon(Icons.logout_rounded, color: Colors.red, size: 24),
+            Icon(Icons.logout_rounded, color: const Color.fromARGB(255, 55, 134, 231), size: 24),
             const SizedBox(width: 12),
             Text(
               'Logout',
               style: TextStyle(
                 fontWeight: FontWeight.w600,
-                color: Colors.red[700],
+                color: const Color.fromARGB(255, 40, 139, 221),
               ),
             ),
           ],
@@ -229,7 +229,7 @@ class ExpantioList extends StatelessWidget {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: const Color.fromARGB(255, 45, 167, 248),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -341,8 +341,8 @@ class CoursesExpansion extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        const Color(0xFF1A237E).withOpacity(0.8),
-                        const Color(0xFF1A237E),
+                        const Color.fromARGB(255, 42, 109, 210).withOpacity(0.8),
+                        const Color.fromARGB(255, 43, 101, 227),
                       ],
                     ),
                     borderRadius: BorderRadius.circular(10),
@@ -466,13 +466,13 @@ class AdmissionsExpansion extends StatelessWidget {
       icon: Icons.assignment_rounded,
       title: 'Admissions',
       subtitle: 'Application info & requirements',
-      color: const Color(0xFF0D47A1),
+      color: const Color.fromARGB(255, 19, 99, 220),
       childrenBuilder: (context) => [
         _buildAdmissionItem(
           context,
           'Documents & Requirements',
           Icons.description_rounded,
-          const Color(0xFF0D47A1),
+          const Color.fromARGB(255, 31, 105, 215),
         ),
         _buildAdmissionItem(
           context,
@@ -491,7 +491,7 @@ class AdmissionsExpansion extends StatelessWidget {
     Color color,
   ) {
     return Material(
-      color: Colors.transparent,
+      color: const Color.fromARGB(0, 28, 34, 126),
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -656,7 +656,7 @@ class ExamsExpantion extends StatelessWidget {
       icon: Icons.edit_note_rounded,
       title: 'Exams',
       subtitle: 'Schedule & seat arrangements',
-      color: const Color(0xFF283593),
+      color: const Color.fromARGB(255, 87, 104, 234),
       childrenBuilder: (context) => [
         _buildExamItem(
           context,
@@ -668,7 +668,7 @@ class ExamsExpantion extends StatelessWidget {
           context,
           'Seat Arrangements',
           Icons.event_seat_rounded,
-          Colors.purple,
+          const Color.fromARGB(255, 88, 96, 241),
         ),
       ],
     );
@@ -752,7 +752,7 @@ class DownloadsExpansion extends StatelessWidget {
           );
         },
       ),
-      color: const Color(0xFF1B5E20),
+      color: const Color.fromARGB(255, 90, 79, 240),
       childrenBuilder: (context) => [
         StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance
@@ -784,7 +784,7 @@ class DownloadsExpansion extends StatelessWidget {
                   context,
                   'Study Notes',
                   Icons.note_rounded,
-                  Colors.green,
+                  const Color.fromARGB(255, 57, 78, 216),
                   notesCount,
                   const NotesDownloadPage(),
                 ),
@@ -792,7 +792,7 @@ class DownloadsExpansion extends StatelessWidget {
                   context,
                   'Previous Question Papers',
                   Icons.quiz_rounded,
-                  Colors.orange,
+                  const Color.fromARGB(255, 66, 96, 234),
                   papersCount,
                   const PreviousQuestionPapersPage(),
                 ),
@@ -856,7 +856,7 @@ class DownloadsExpansion extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       '$count files available',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 12, color: const Color.fromARGB(255, 86, 95, 222)),
                     ),
                   ],
                 ),
@@ -899,20 +899,20 @@ class EventsExpansion extends StatelessWidget {
       icon: Icons.event_rounded,
       title: 'Events & Gallery',
       subtitle: 'Upcoming activities & photos',
-      color: const Color(0xFF6A1B9A),
+      color: const Color.fromARGB(255, 61, 128, 228),
       childrenBuilder: (context) => [
         _buildEventItem(
           context,
           'Photo Gallery',
           Icons.photo_library_rounded,
-          Colors.purple,
+          const Color.fromARGB(255, 55, 145, 228),
           const PhotoGalleryList(),
         ),
         _buildEventItem(
           context,
           'Events & Announcements',
           Icons.event_available_rounded,
-          Colors.deepPurple,
+          const Color.fromARGB(255, 58, 131, 183),
           const EventsPage(),
         ),
       ],
@@ -1027,7 +1027,7 @@ class _ExpansionCard extends StatelessWidget {
               ? subtitleBuilder!(context)
               : Text(
                   subtitle ?? '',
-                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  style: TextStyle(fontSize: 13, color: const Color.fromARGB(255, 123, 129, 225)),
                 ),
           children: [
             const Divider(height: 1, thickness: 1),

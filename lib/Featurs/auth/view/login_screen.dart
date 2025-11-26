@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error: ${e.code}'),
-              backgroundColor: Colors.red,
+              backgroundColor: const Color.fromARGB(255, 57, 107, 243),
             ),
           );
         }

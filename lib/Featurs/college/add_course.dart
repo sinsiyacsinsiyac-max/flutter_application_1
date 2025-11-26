@@ -273,7 +273,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                   decoration: const InputDecoration(
                     labelText: 'Department',
                     border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.business),
+                    prefixIcon: Icon(Icons.business), 
                   ),
                   items:
                       const [
@@ -284,6 +284,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                         'Physics',
                         'commerce',
                         'english',
+                        'social science',
                       ].map((dept) {
                         return DropdownMenuItem(value: dept, child: Text(dept));
                       }).toList(),
@@ -695,7 +696,7 @@ class CourseDetailScreen extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.account_balance_wallet,
-                                      color: Colors.green.shade700,
+                                      color: const Color.fromARGB(255, 30, 151, 243),
                                       size: 20,
                                     ),
                                     const SizedBox(width: 8),
@@ -725,7 +726,7 @@ class CourseDetailScreen extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.payment,
-                                      color: Colors.green.shade700,
+                                      color: const Color.fromARGB(255, 30, 161, 255),
                                       size: 20,
                                     ),
                                     const SizedBox(width: 8),
@@ -742,7 +743,7 @@ class CourseDetailScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: Colors.green.shade700,
+                                    color: const Color.fromARGB(255, 13, 162, 212),
                                   ),
                                 ),
                               ],
