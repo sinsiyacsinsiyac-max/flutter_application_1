@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -8,6 +9,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:image_picker/image_picker.dart';
+import 'dart:developer' as developer;
 
 class PreviousQuestionPapersPage extends StatelessWidget {
   const PreviousQuestionPapersPage({super.key});
@@ -23,13 +25,15 @@ class PreviousQuestionPapersPage extends StatelessWidget {
         stream: FirebaseFirestore.instance
             .collection('study_materials')
             .where('type', isEqualTo: 'papers')
-            .orderBy('createdAt', descending: true)
-            .snapshots(),
+            .snapshots(), // Removed orderBy temporarily to fix index issue
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
+            final error = snapshot.error;
+            if (error is FirebaseException &&
+                error.code == 'failed-precondition') {
+              return _buildIndexErrorState();
+            }
+            return Center(child: Text('Error: ${snapshot.error}'));
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -46,17 +50,17 @@ class PreviousQuestionPapersPage extends StatelessWidget {
 
           final papers = snapshot.data!.docs;
 
-          // Sort client-side by createdAt
+          // Enhanced client-side sorting
           papers.sort((a, b) {
             final aData = a.data() as Map<String, dynamic>;
             final bData = b.data() as Map<String, dynamic>;
             final aTime = aData['createdAt'] as Timestamp?;
             final bTime = bData['createdAt'] as Timestamp?;
-            
+
             if (aTime == null && bTime == null) return 0;
             if (aTime == null) return 1;
             if (bTime == null) return -1;
-            
+
             return bTime.compareTo(aTime); // Descending order
           });
 
@@ -103,7 +107,47 @@ class PreviousQuestionPapersPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPaperCard(BuildContext context, Map<String, dynamic> paper, String paperId) {
+  Widget _buildIndexErrorState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.build, size: 64, color: Colors.orange),
+            const SizedBox(height: 16),
+            const Text(
+              'Database Optimizing',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'The database is currently being optimized for better performance. '
+              'This may take a few minutes. Please try again shortly.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 16),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 20),
+            ElevatedButton.icon(
+              onPressed: () {
+                // Retry the stream
+              },
+              icon: const Icon(Icons.refresh),
+              label: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaperCard(
+    BuildContext context,
+    Map<String, dynamic> paper,
+    String paperId,
+  ) {
     return Card(
       elevation: 2,
       margin: EdgeInsets.zero,
@@ -124,10 +168,7 @@ class PreviousQuestionPapersPage extends StatelessWidget {
         ),
         title: Text(
           paper['title'] ?? 'Untitled Paper',
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
@@ -137,27 +178,18 @@ class PreviousQuestionPapersPage extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               '${paper['subject'] ?? ''} • ${paper['course'] ?? ''}',
-              style: TextStyle(
-                color: Colors.grey.shade700,
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
             ),
             const SizedBox(height: 2),
             Text(
               '${paper['semester'] ?? ''} • ${paper['year'] ?? ''}',
-              style: TextStyle(
-                color: Colors.grey.shade600,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
             ),
             if (paper['fileSize'] != null) ...[
               const SizedBox(height: 2),
               Text(
                 '${paper['fileSize']} • ${paper['downloadCount'] ?? 0} downloads',
-                style: TextStyle(
-                  color: Colors.grey.shade500,
-                  fontSize: 11,
-                ),
+                style: TextStyle(color: Colors.grey.shade500, fontSize: 11),
               ),
             ],
           ],
@@ -178,10 +210,8 @@ class PreviousQuestionPapersPage extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => PaperDetailScreen(
-                paperId: paperId,
-                paper: paper,
-              ),
+              builder: (context) =>
+                  PaperDetailScreen(paperId: paperId, paper: paper),
             ),
           );
         },
@@ -308,7 +338,7 @@ class _PaperDetailScreenState extends State<PaperDetailScreen> {
                   ),
                 ),
               ),
-            
+
             if (_isDownloading) const SizedBox(height: 16),
 
             // Header Card
@@ -323,7 +353,10 @@ class _PaperDetailScreenState extends State<PaperDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.orange.shade50,
                         borderRadius: BorderRadius.circular(20),
@@ -381,18 +414,43 @@ class _PaperDetailScreenState extends State<PaperDetailScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _buildInfoRow(Icons.school, 'Course', widget.paper['course'] ?? 'Not specified'),
-                    _buildInfoRow(Icons.calendar_today, 'Semester', widget.paper['semester'] ?? 'Not specified'),
-                    _buildInfoRow(Icons.date_range, 'Year', widget.paper['year'] ?? 'Not specified'),
-                    _buildInfoRow(Icons.storage, 'File Size', widget.paper['fileSize'] ?? 'Unknown'),
-                    _buildInfoRow(Icons.download, 'Downloads', '${widget.paper['downloadCount'] ?? 0}'),
-                    _buildInfoRow(Icons.person, 'Uploaded By', widget.paper['uploadedByName'] ?? 'Unknown'),
+                    _buildInfoRow(
+                      Icons.school,
+                      'Course',
+                      widget.paper['course'] ?? 'Not specified',
+                    ),
+                    _buildInfoRow(
+                      Icons.calendar_today,
+                      'Semester',
+                      widget.paper['semester'] ?? 'Not specified',
+                    ),
+                    _buildInfoRow(
+                      Icons.date_range,
+                      'Year',
+                      widget.paper['year'] ?? 'Not specified',
+                    ),
+                    _buildInfoRow(
+                      Icons.storage,
+                      'File Size',
+                      widget.paper['fileSize'] ?? 'Unknown',
+                    ),
+                    _buildInfoRow(
+                      Icons.download,
+                      'Downloads',
+                      '${widget.paper['downloadCount'] ?? 0}',
+                    ),
+                    _buildInfoRow(
+                      Icons.person,
+                      'Uploaded By',
+                      widget.paper['uploadedByName'] ?? 'Unknown',
+                    ),
                   ],
                 ),
               ),
             ),
 
-            if (widget.paper['description'] != null && widget.paper['description'].isNotEmpty) ...[
+            if (widget.paper['description'] != null &&
+                widget.paper['description'].isNotEmpty) ...[
               const SizedBox(height: 20),
               Card(
                 elevation: 2,
@@ -414,10 +472,7 @@ class _PaperDetailScreenState extends State<PaperDetailScreen> {
                       const SizedBox(height: 12),
                       Text(
                         widget.paper['description']!,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          height: 1.5,
-                        ),
+                        style: const TextStyle(fontSize: 14, height: 1.5),
                       ),
                     ],
                   ),
@@ -432,11 +487,16 @@ class _PaperDetailScreenState extends State<PaperDetailScreen> {
               children: [
                 Expanded(
                   child: ElevatedButton.icon(
-                    onPressed: _isDownloading ? null : () => _downloadFile(context),
+                    onPressed: _isDownloading
+                        ? null
+                        : () => _downloadFile(context),
                     icon: const Icon(Icons.download_rounded),
                     label: const Text(
                       'Download',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.orange.shade700,
@@ -455,7 +515,10 @@ class _PaperDetailScreenState extends State<PaperDetailScreen> {
                     icon: const Icon(Icons.open_in_browser),
                     label: const Text(
                       'Open',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: Colors.orange.shade700,
@@ -496,9 +559,7 @@ class _PaperDetailScreenState extends State<PaperDetailScreen> {
             flex: 3,
             child: Text(
               value,
-              style: const TextStyle(
-                fontWeight: FontWeight.w400,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w400),
             ),
           ),
         ],
@@ -508,7 +569,7 @@ class _PaperDetailScreenState extends State<PaperDetailScreen> {
 
   Future<void> _downloadFile(BuildContext context) async {
     final fileUrl = widget.paper['fileUrl'];
-    
+
     if (fileUrl == null) {
       _showSnackBar(context, 'File not available for download', Colors.red);
       return;
@@ -522,74 +583,126 @@ class _PaperDetailScreenState extends State<PaperDetailScreen> {
 
       // Request storage permission
       if (Platform.isAndroid) {
+        // For all Android versions, request storage permission
         final status = await Permission.storage.request();
         if (!status.isGranted) {
-          _showSnackBar(context, 'Storage permission denied', Colors.red);
-          setState(() => _isDownloading = false);
-          return;
-        }
-      }
-
-      // Get download directory
-      Directory? directory;
-      if (Platform.isAndroid) {
-        directory = await getExternalStorageDirectory();
-      } else {
-        directory = await getApplicationDocumentsDirectory();
-      }
-
-      final fileName = widget.paper['fileName'] ?? 'paper.pdf';
-      final filePath = '${directory!.path}/$fileName';
-
-      // Download file with progress
-      final request = http.Request('GET', Uri.parse(fileUrl));
-      final response = await http.Client().send(request);
-
-      if (response.statusCode == 200) {
-        final totalBytes = response.contentLength ?? 0;
-        int receivedBytes = 0;
-
-        final file = File(filePath);
-        final sink = file.openWrite();
-
-        await for (var chunk in response.stream) {
-          sink.add(chunk);
-          receivedBytes += chunk.length;
-          
-          if (totalBytes > 0) {
-            setState(() {
-              _downloadProgress = receivedBytes / totalBytes;
-            });
+          // If storage permission denied, try with manage external storage
+          final manageStatus = await Permission.manageExternalStorage.request();
+          if (!manageStatus.isGranted) {
+            _showSnackBar(context, 'Storage permission denied', Colors.red);
+            setState(() => _isDownloading = false);
+            return;
           }
         }
-
-        await sink.close();
-
-        setState(() {
-          _localFilePath = filePath;
-          _isDownloading = false;
-        });
-
-        // Update download count
-        await FirebaseFirestore.instance
-            .collection('study_materials')
-            .doc(widget.paperId)
-            .update({
-              'downloadCount': FieldValue.increment(1),
-              'updatedAt': FieldValue.serverTimestamp(),
-            });
-
-        if (mounted) {
-          _showSnackBar(context, 'Downloaded successfully!', Colors.green);
-          _showViewDialog(context);
-        }
-      } else {
-        throw Exception('Failed to download: ${response.statusCode}');
       }
+
+      await _downloadToDownloadsFolder(fileUrl);
     } catch (e) {
       setState(() => _isDownloading = false);
       _showSnackBar(context, 'Error downloading: $e', Colors.red);
     }
+  }
+
+  Future<void> _downloadToDownloadsFolder(String fileUrl) async {
+    try {
+      Directory? directory;
+      if (Platform.isAndroid) {
+        // Try to get downloads directory
+        if (await Permission.manageExternalStorage.isGranted) {
+          directory = Directory('/storage/emulated/0/Download');
+          if (!await directory.exists()) {
+            directory = await getExternalStorageDirectory();
+          }
+        } else {
+          directory = await getExternalStorageDirectory();
+        }
+      } else {
+        directory = await getApplicationDocumentsDirectory();
+      }
+
+      if (directory == null) {
+        throw Exception('Could not access storage directory');
+      }
+
+      final fileName = _getFileName(widget.paper['fileName'] ?? 'download.pdf');
+      final filePath = '${directory.path}/$fileName';
+
+      await _performDownload(fileUrl, filePath);
+    } catch (e) {
+      // Fallback to app directory
+      await _downloadToAppDirectory(fileUrl);
+    }
+  }
+
+  Future<void> _downloadToAppDirectory(String fileUrl) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final fileName = _getFileName(widget.paper['fileName'] ?? 'download.pdf');
+      final filePath = '${directory.path}/$fileName';
+
+      await _performDownload(fileUrl, filePath);
+
+      if (mounted) {
+        _showSnackBar(context, 'Downloaded to app directory', Colors.green);
+      }
+    } catch (e) {
+      throw Exception('Failed to download to app directory: $e');
+    }
+  }
+
+  Future<void> _performDownload(String fileUrl, String filePath) async {
+    final request = http.Request('GET', Uri.parse(fileUrl));
+    final response = await http.Client().send(request);
+
+    if (response.statusCode == 200) {
+      final totalBytes = response.contentLength ?? 0;
+      int receivedBytes = 0;
+
+      final file = File(filePath);
+      final sink = file.openWrite();
+
+      await for (var chunk in response.stream) {
+        sink.add(chunk);
+        receivedBytes += chunk.length;
+
+        if (totalBytes > 0) {
+          setState(() {
+            _downloadProgress = receivedBytes / totalBytes;
+          });
+        }
+      }
+
+      await sink.close();
+
+      setState(() {
+        _localFilePath = filePath;
+        _isDownloading = false;
+      });
+
+      // Update download count
+      await FirebaseFirestore.instance
+          .collection('study_materials')
+          .doc(widget.paperId)
+          .update({
+            'downloadCount': FieldValue.increment(1),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+
+      if (mounted) {
+        _showViewDialog(context);
+      }
+    } else {
+      throw Exception('Failed to download: ${response.statusCode}');
+    }
+  }
+
+  String _getFileName(String originalName) {
+    // Clean file name and ensure .pdf extension
+    String cleanName = originalName.replaceAll(RegExp(r'[^\w\s.-]'), '');
+    if (!cleanName.toLowerCase().endsWith('.pdf')) {
+      cleanName += '.pdf';
+    }
+    return cleanName;
   }
 
   void _showViewDialog(BuildContext context) {
@@ -634,38 +747,83 @@ class _PaperDetailScreenState extends State<PaperDetailScreen> {
 
   Future<void> _openInBrowser(BuildContext context) async {
     final fileUrl = widget.paper['fileUrl'];
-    
+
     if (fileUrl == null) {
       _showSnackBar(context, 'File URL not available', Colors.red);
       return;
     }
 
+    // Always use Google Docs viewer for maximum compatibility
+    final String googleDocsUrl =
+        "https://docs.google.com/gview?embedded=true&url=${Uri.encodeComponent(fileUrl)}";
+
     try {
-      final uri = Uri.parse(fileUrl);
+      final uri = Uri.parse(googleDocsUrl);
+
       if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        final launched = await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+
+        if (!launched) {
+          throw Exception('Launch returned false');
+        }
       } else {
-        throw Exception('Could not launch URL');
+        throw Exception('Cannot launch URL');
       }
     } catch (e) {
-      _showSnackBar(context, 'Error opening file: $e', Colors.red);
+      developer.log('Browser open failed: $e');
+
+      // Final fallback - show dialog with multiple options
+      await showDialog(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: const Text('Cannot Open PDF'),
+          children: [
+            ListTile(
+              leading: const Icon(Icons.download),
+              title: const Text('Download File'),
+              onTap: () {
+                Navigator.pop(context);
+                _downloadFile(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.content_copy),
+              title: const Text('Copy URL'),
+              onTap: () {
+                Navigator.pop(context);
+                Clipboard.setData(ClipboardData(text: fileUrl));
+                _showSnackBar(context, 'URL copied to clipboard', Colors.green);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.cancel),
+              title: const Text('Cancel'),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
     }
   }
 
   Future<void> _shareMaterial(BuildContext context) async {
     final fileUrl = widget.paper['fileUrl'];
     final title = widget.paper['title'] ?? 'Study Material';
-    
+
     if (fileUrl == null) {
-      _showSnackBar(context, 'Cannot share: File URL not available', Colors.red);
+      _showSnackBar(
+        context,
+        'Cannot share: File URL not available',
+        Colors.red,
+      );
       return;
     }
 
     try {
-      await Share.share(
-        '$title\n\nDownload: $fileUrl',
-        subject: title,
-      );
+      await Share.share('$title\n\nDownload: $fileUrl', subject: title);
     } catch (e) {
       _showSnackBar(context, 'Error sharing: $e', Colors.red);
     }
@@ -682,16 +840,13 @@ class _PaperDetailScreenState extends State<PaperDetailScreen> {
   }
 }
 
-// PDF Viewer Screen (reused from notes)
+// PDF Viewer Screen
 class PDFViewerScreen extends StatefulWidget {
   final String filePath;
   final String title;
 
-  const PDFViewerScreen({
-    Key? key,
-    required this.filePath,
-    required this.title,
-  }) : super(key: key);
+  const PDFViewerScreen({Key? key, required this.filePath, required this.title})
+    : super(key: key);
 
   @override
   State<PDFViewerScreen> createState() => _PDFViewerScreenState();
@@ -740,7 +895,11 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.error_outline, size: 60, color: Colors.red),
+                    const Icon(
+                      Icons.error_outline,
+                      size: 60,
+                      color: Colors.red,
+                    ),
                     const SizedBox(height: 16),
                     Text(
                       'Error Loading PDF',
@@ -792,10 +951,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
                     });
                   },
                 ),
-                if (!_isReady)
-                  const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                if (!_isReady) const Center(child: CircularProgressIndicator()),
               ],
             ),
     );
