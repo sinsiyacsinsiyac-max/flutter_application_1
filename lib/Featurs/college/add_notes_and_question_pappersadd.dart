@@ -1,8 +1,11 @@
+import 'dart:developer';
 import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_application_1/Featurs/college/cloudnary_uplaod.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
@@ -11,7 +14,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'dart:developer' as developer;
 
 // Main Notes & Papers Panel
 class NotesPapersPanel extends StatefulWidget {
@@ -23,7 +27,6 @@ class NotesPapersPanel extends StatefulWidget {
 
 class _NotesPapersPanelState extends State<NotesPapersPanel> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
   int _selectedTab = 0;
   String _searchQuery = '';
 
@@ -422,10 +425,6 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
   String? _uploadedFileUrl;
   String? _fileSize;
 
-  // Cloudinary Configuration - Replace with your credentials
-  final String cloudinaryCloudName = 'daai1jedw';
-  final String cloudinaryUploadPreset = 'campus Iq';
-
   // Course options
   final List<String> courses = [
     'BCA',
@@ -486,33 +485,6 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
       );
     }
   }
-
-  // Future<String?> _uploadToCloudinary(File file) async {
-  //   try {
-  //     final url = Uri.parse(
-  //       'https://api.cloudinary.com/v1_1/$cloudinaryCloudName/upload',
-  //     );
-
-  //     final request = http.MultipartRequest('POST', url);
-  //     request.fields['upload_preset'] = cloudinaryUploadPreset;
-  //     request.files.add(
-  //       await http.MultipartFile.fromPath('file', file.path),
-  //     );
-
-  //     final response = await request.send();
-  //     final responseData = await response.stream.toBytes();
-  //     final responseString = String.fromCharCodes(responseData);
-  //     final jsonMap = jsonDecode(responseString);
-
-  //     if (response.statusCode == 200) {
-  //       return jsonMap['secure_url'];
-  //     } else {
-  //       throw Exception('Failed to upload file: ${jsonMap['error']['message']}');
-  //     }
-  //   } catch (e) {
-  //     throw Exception('Cloudinary upload error: $e');
-  //   }
-  // }
 
   String _getFileTypeIcon() {
     return widget.materialType == 'notes' ? 'Notes' : 'Question Papers';
@@ -677,7 +649,7 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                             Icons.calendar_today,
                             color: _getFileTypeColor(),
                           ),
-                          isDense: true, // Reduces the height
+                          isDense: true,
                           contentPadding: const EdgeInsets.symmetric(
                             vertical: 12,
                             horizontal: 8,
@@ -688,11 +660,8 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                             value: semester,
                             child: Text(
                               semester,
-                              style: const TextStyle(
-                                fontSize: 14,
-                              ), // Smaller font
-                              overflow:
-                                  TextOverflow.ellipsis, // Handle long text
+                              style: const TextStyle(fontSize: 14),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           );
                         }).toList(),
@@ -702,8 +671,7 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                           });
                         },
                         validator: (value) => value == null ? 'Required' : null,
-                        isExpanded:
-                            true, // Important: makes dropdown take full width
+                        isExpanded: true,
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.black87,
@@ -1289,80 +1257,130 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
 
       // Request storage permission
       if (Platform.isAndroid) {
+        // For all Android versions, request storage permission
         final status = await Permission.storage.request();
         if (!status.isGranted) {
-          _showSnackBar(context, 'Storage permission denied', Colors.red);
-          setState(() => _isDownloading = false);
-          return;
-        }
-      }
-
-      // Get download directory
-      Directory? directory;
-      if (Platform.isAndroid) {
-        directory = await getExternalStorageDirectory();
-      } else {
-        directory = await getApplicationDocumentsDirectory();
-      }
-
-      final fileName = widget.material['fileName'] ?? 'download.pdf';
-      final filePath = '${directory!.path}/$fileName';
-
-      // Download file with progress
-      final request = http.Request('GET', Uri.parse(fileUrl));
-      final response = await http.Client().send(request);
-
-      if (response.statusCode == 200) {
-        final totalBytes = response.contentLength ?? 0;
-        int receivedBytes = 0;
-
-        final file = File(filePath);
-        final sink = file.openWrite();
-
-        await for (var chunk in response.stream) {
-          sink.add(chunk);
-          receivedBytes += chunk.length;
-
-          if (totalBytes > 0) {
-            setState(() {
-              _downloadProgress = receivedBytes / totalBytes;
-            });
+          // If storage permission denied, try with manage external storage
+          final manageStatus = await Permission.manageExternalStorage.request();
+          if (!manageStatus.isGranted) {
+            _showSnackBar(context, 'Storage permission denied', Colors.red);
+            setState(() => _isDownloading = false);
+            return;
           }
         }
-
-        await sink.close();
-
-        setState(() {
-          _localFilePath = filePath;
-          _isDownloading = false;
-        });
-
-        // Update download count
-        await FirebaseFirestore.instance
-            .collection('study_materials')
-            .doc(widget.materialId)
-            .update({
-              'downloadCount': FieldValue.increment(1),
-              'updatedAt': FieldValue.serverTimestamp(),
-            });
-
-        if (mounted) {
-          _showSnackBar(
-            context,
-            'Downloaded successfully to Downloads',
-            Colors.green,
-          );
-
-          // Ask if user wants to view the PDF
-          _showViewDialog(context);
-        }
-      } else {
-        throw Exception('Failed to download: ${response.statusCode}');
       }
+
+      await _downloadToDownloadsFolder(fileUrl);
     } catch (e) {
       setState(() => _isDownloading = false);
       _showSnackBar(context, 'Error downloading: $e', Colors.red);
     }
+  }
+
+  Future<void> _downloadToDownloadsFolder(String fileUrl) async {
+    try {
+      Directory? directory;
+      if (Platform.isAndroid) {
+        // Try to get downloads directory
+        if (await Permission.manageExternalStorage.isGranted) {
+          directory = Directory('/storage/emulated/0/Download');
+          if (!await directory.exists()) {
+            directory = await getExternalStorageDirectory();
+          }
+        } else {
+          directory = await getExternalStorageDirectory();
+        }
+      } else {
+        directory = await getApplicationDocumentsDirectory();
+      }
+
+      if (directory == null) {
+        throw Exception('Could not access storage directory');
+      }
+
+      final fileName = _getFileName(
+        widget.material['fileName'] ?? 'download.pdf',
+      );
+      final filePath = '${directory.path}/$fileName';
+
+      await _performDownload(fileUrl, filePath);
+    } catch (e) {
+      // Fallback to app directory
+      await _downloadToAppDirectory(fileUrl);
+    }
+  }
+
+  Future<void> _downloadToAppDirectory(String fileUrl) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final fileName = _getFileName(
+        widget.material['fileName'] ?? 'download.pdf',
+      );
+      final filePath = '${directory.path}/$fileName';
+
+      await _performDownload(fileUrl, filePath);
+
+      if (mounted) {
+        _showSnackBar(context, 'Downloaded to app directory', Colors.green);
+      }
+    } catch (e) {
+      throw Exception('Failed to download to app directory: $e');
+    }
+  }
+
+  Future<void> _performDownload(String fileUrl, String filePath) async {
+    final request = http.Request('GET', Uri.parse(fileUrl));
+    final response = await http.Client().send(request);
+
+    if (response.statusCode == 200) {
+      final totalBytes = response.contentLength ?? 0;
+      int receivedBytes = 0;
+
+      final file = File(filePath);
+      final sink = file.openWrite();
+
+      await for (var chunk in response.stream) {
+        sink.add(chunk);
+        receivedBytes += chunk.length;
+
+        if (totalBytes > 0) {
+          setState(() {
+            _downloadProgress = receivedBytes / totalBytes;
+          });
+        }
+      }
+
+      await sink.close();
+
+      setState(() {
+        _localFilePath = filePath;
+        _isDownloading = false;
+      });
+
+      // Update download count
+      await FirebaseFirestore.instance
+          .collection('study_materials')
+          .doc(widget.materialId)
+          .update({
+            'downloadCount': FieldValue.increment(1),
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+
+      if (mounted) {
+        _showViewDialog(context);
+      }
+    } else {
+      throw Exception('Failed to download: ${response.statusCode}');
+    }
+  }
+
+  String _getFileName(String originalName) {
+    // Clean file name and ensure .pdf extension
+    String cleanName = originalName.replaceAll(RegExp(r'[^\w\s.-]'), '');
+    if (!cleanName.toLowerCase().endsWith('.pdf')) {
+      cleanName += '.pdf';
+    }
+    return cleanName;
   }
 
   void _showViewDialog(BuildContext context) {
@@ -1394,6 +1412,17 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
       return;
     }
 
+    // Check if file exists
+    final file = File(_localFilePath!);
+    if (!file.existsSync()) {
+      _showSnackBar(
+        context,
+        'File not found. Please download again.',
+        Colors.red,
+      );
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -1413,15 +1442,59 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
       return;
     }
 
+    // Always use Google Docs viewer for maximum compatibility
+    final String googleDocsUrl =
+        "https://docs.google.com/gview?embedded=true&url=${Uri.encodeComponent(fileUrl)}";
+
     try {
-      final uri = Uri.parse(fileUrl);
+      final uri = Uri.parse(googleDocsUrl);
+
       if (await canLaunchUrl(uri)) {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+        final launched = await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+
+        if (!launched) {
+          throw Exception('Launch returned false');
+        }
       } else {
-        throw Exception('Could not launch URL');
+        throw Exception('Cannot launch URL');
       }
     } catch (e) {
-      _showSnackBar(context, 'Error opening file: $e', Colors.red);
+      developer.log('Browser open failed: $e');
+
+      // Final fallback - show dialog with multiple options
+      await showDialog(
+        context: context,
+        builder: (context) => SimpleDialog(
+          title: const Text('Cannot Open PDF'),
+          children: [
+            ListTile(
+              leading: const Icon(Icons.download),
+              title: const Text('Download File'),
+              onTap: () {
+                Navigator.pop(context);
+                _downloadFile(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.content_copy),
+              title: const Text('Copy URL'),
+              onTap: () {
+                Navigator.pop(context);
+                Clipboard.setData(ClipboardData(text: fileUrl));
+                _showSnackBar(context, 'URL copied to clipboard', Colors.green);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.cancel),
+              title: const Text('Cancel'),
+              onTap: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
     }
   }
 
@@ -1472,7 +1545,7 @@ class _MaterialDetailScreenState extends State<MaterialDetailScreen> {
                   _showSnackBar(
                     context,
                     'Material deleted successfully',
-                    Colors.red,
+                    Colors.green,
                   );
                 }
               } catch (e) {
@@ -1517,6 +1590,7 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
   int _totalPages = 0;
   bool _isReady = false;
   String? _errorMessage;
+  PDFViewController? _pdfViewController;
 
   @override
   Widget build(BuildContext context) {
@@ -1542,78 +1616,150 @@ class _PDFViewerScreenState extends State<PDFViewerScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.share),
-            onPressed: () async {
-              await Share.shareXFiles([XFile(widget.filePath)]);
-            },
+            onPressed: () => _sharePDF(context),
           ),
         ],
       ),
-      body: _errorMessage != null
-          ? Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 60,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Error Loading PDF',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red.shade700,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      _errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          : Stack(
-              children: [
-                PDFView(
-                  filePath: widget.filePath,
-                  enableSwipe: true,
-                  swipeHorizontal: false,
-                  autoSpacing: true,
-                  pageFling: true,
-                  pageSnap: true,
-                  onRender: (pages) {
-                    setState(() {
-                      _totalPages = pages ?? 0;
-                      _isReady = true;
-                    });
-                  },
-                  onError: (error) {
-                    setState(() {
-                      _errorMessage = error.toString();
-                    });
-                  },
-                  onPageError: (page, error) {
-                    setState(() {
-                      _errorMessage = 'Error on page $page: $error';
-                    });
-                  },
-                  onPageChanged: (page, total) {
-                    setState(() {
-                      _currentPage = page ?? 0;
-                      _totalPages = total ?? 0;
-                    });
-                  },
-                ),
-                if (!_isReady) const Center(child: CircularProgressIndicator()),
-              ],
-            ),
+      body: _buildPDFView(),
+      floatingActionButton: _buildNavigationButtons(),
     );
+  }
+
+  Widget _buildPDFView() {
+    if (_errorMessage != null) {
+      return _buildErrorView();
+    }
+
+    return Stack(
+      children: [
+        PDFView(
+          filePath: widget.filePath,
+          enableSwipe: true,
+          swipeHorizontal: false,
+          autoSpacing: true,
+          pageFling: true,
+          pageSnap: true,
+          defaultPage: 0,
+          fitPolicy: FitPolicy.BOTH,
+          preventLinkNavigation: false,
+          onRender: (pages) {
+            setState(() {
+              _totalPages = pages ?? 0;
+              _isReady = true;
+            });
+          },
+          onError: (error) {
+            setState(() {
+              _errorMessage = error.toString();
+              _isReady = true;
+            });
+          },
+          onPageError: (page, error) {
+            setState(() {
+              _errorMessage = 'Error on page $page: $error';
+            });
+          },
+          onPageChanged: (page, total) {
+            setState(() {
+              _currentPage = page ?? 0;
+            });
+          },
+          onViewCreated: (PDFViewController controller) {
+            _pdfViewController = controller;
+          },
+        ),
+        if (!_isReady) const Center(child: CircularProgressIndicator()),
+      ],
+    );
+  }
+
+  Widget _buildErrorView() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.error_outline, size: 60, color: Colors.red),
+            const SizedBox(height: 16),
+            const Text(
+              'Error Loading PDF',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.red,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              _errorMessage!,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _errorMessage = null;
+                  _isReady = false;
+                });
+              },
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget? _buildNavigationButtons() {
+    if (!_isReady || _totalPages <= 1) return null;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        FloatingActionButton.small(
+          heroTag: 'prev',
+          onPressed: _currentPage > 0 ? _goToPreviousPage : null,
+          child: const Icon(Icons.arrow_back),
+        ),
+        const SizedBox(width: 8),
+        FloatingActionButton.small(
+          heroTag: 'next',
+          onPressed: _currentPage < _totalPages - 1 ? _goToNextPage : null,
+          child: const Icon(Icons.arrow_forward),
+        ),
+      ],
+    );
+  }
+
+  void _goToPreviousPage() {
+    final previousPage = _currentPage - 1;
+    _pdfViewController?.setPage(previousPage);
+  }
+
+  void _goToNextPage() {
+    final nextPage = _currentPage + 1;
+    _pdfViewController?.setPage(nextPage);
+  }
+
+  Future<void> _sharePDF(BuildContext context) async {
+    try {
+      final file = XFile(widget.filePath);
+      await Share.shareXFiles([file], text: 'Sharing ${widget.title}');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error sharing file: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  @override
+  void dispose() {
+    _pdfViewController?.dispose();
+    super.dispose();
   }
 }
