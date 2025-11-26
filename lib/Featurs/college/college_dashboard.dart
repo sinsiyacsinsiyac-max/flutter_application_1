@@ -4,6 +4,7 @@ import 'package:flutter_application_1/Featurs/college/add_course.dart';
 import 'package:flutter_application_1/Featurs/college/add_event.dart';
 import 'package:flutter_application_1/Featurs/college/add_notes_and_question_pappersadd.dart';
 import 'package:flutter_application_1/Featurs/college/aminities_add_option.dart';
+import 'package:flutter_application_1/Featurs/college/profile_screen.dart';
 import 'package:flutter_application_1/Featurs/firebase_serviece/firebase.dart';
 
 class CollegeHomeScreen extends StatefulWidget {
@@ -25,10 +26,10 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
           children: [
             // Header Section
             _buildHeader(),
-            
+
             // Search Bar
             _buildSearchBar(),
-            
+
             // Main Content
             Expanded(
               child: SingleChildScrollView(
@@ -38,13 +39,13 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   children: [
                     // Quick Actions Grid
                     _buildQuickActions(),
-                    
+
                     // Featured Courses
                     _buildFeaturedCourses(),
-                    
+
                     // Upcoming Events
                     _buildUpcomingEvents(),
-                    
+
                     // News & Announcements
                     _buildNewsSection(),
                   ],
@@ -54,23 +55,26 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
           ],
         ),
       ),
-      
+
       // Bottom Navigation Bar
-      bottomNavigationBar: _buildBottomNavigationBar(),
-      floatingActionButton: FloatingActionButton.extended(
-  onPressed: () {
-  final AuthService _authService = AuthService();
-  _authService.signOut();
-  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context)=>LoginScreen()), (route) => false,);
-  },
-  backgroundColor: const Color.fromARGB(255, 48, 10, 154), // Changed to red for logout
-  icon: const Icon(Icons.logout_rounded, color: Colors.white),
-  label: const Text(
-    'Logout',
-    style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-  ),
-),
-    
+      // bottomNavigationBar: _buildBottomNavigationBar(),
+      // floatingActionButton: FloatingActionButton.extended(
+      //   onPressed: () {
+      //     final AuthService _authService = AuthService();
+      //     _authService.signOut();
+      //     Navigator.pushAndRemoveUntil(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => LoginScreen()),
+      //       (route) => false,
+      //     );
+      //   },
+      //   backgroundColor: Colors.red, // Changed to red for logout
+      //   icon: const Icon(Icons.logout_rounded, color: Colors.white),
+      //   label: const Text(
+      //     'Logout',
+      //     style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+      //   ),
+      // ),
     );
   }
 
@@ -132,7 +136,11 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
           Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications_outlined, color: Colors.white, size: 28),
+                icon: const Icon(
+                  Icons.notifications_outlined,
+                  color: Colors.white,
+                  size: 28,
+                ),
                 onPressed: () {},
               ),
               Positioned(
@@ -150,14 +158,22 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
             ],
           ),
           const SizedBox(width: 8),
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => TeacherProfileScreen()),
+              );
+            },
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Icon(Icons.person, color: Colors.white),
             ),
-            child: const Icon(Icons.person, color: Colors.white),
           ),
         ],
       ),
@@ -221,25 +237,40 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
           childAspectRatio: .75,
           children: [
             GestureDetector(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>TeacherCoursePanel()));
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TeacherCoursePanel()),
+                );
               },
-              child: _buildActionItem(Icons.school, 'Courses', Colors.blue)),
+              child: _buildActionItem(Icons.school, 'Courses', Colors.blue),
+            ),
             // _buildActionItem(Icons.calendar_today, 'Schedule', Colors.green),
             GestureDetector(
-                onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>NotesPapersPanel()));
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NotesPapersPanel()),
+                );
               },
               child: _buildActionItem(Icons.assignment, 'Notes', const Color.fromARGB(255, 40, 125, 244))),
             // _buildActionItem(Icons.grade, 'Results', Colors.purple),
             GestureDetector(
-                onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>CollegeAmenitiesPanel()));
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CollegeAmenitiesPanel(),
+                  ),
+                );
               },
               child: _buildActionItem(Icons.library_books, 'Aminities', const Color.fromARGB(255, 46, 104, 231))),
             GestureDetector(
-              onTap: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>CollegeEventsPanel()));
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CollegeEventsPanel()),
+                );
               },
               child: _buildActionItem(Icons.event, 'Events', const Color.fromARGB(255, 46, 101, 231))),
             // _buildActionItem(Icons.download, 'Resources', Colors.teal),
@@ -338,7 +369,13 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
     );
   }
 
-  Widget _buildCourseCard(String title, String instructor, String students, Color color, IconData icon) {
+  Widget _buildCourseCard(
+    String title,
+    String instructor,
+    String students,
+    Color color,
+    IconData icon,
+  ) {
     return Container(
       width: 280,
       margin: const EdgeInsets.only(right: 16),
@@ -347,10 +384,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            color.withOpacity(0.1),
-            color.withOpacity(0.05),
-          ],
+          colors: [color.withOpacity(0.1), color.withOpacity(0.05)],
         ),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(color: color.withOpacity(0.2)),
@@ -378,10 +412,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
           const SizedBox(height: 8),
           Text(
             instructor,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade600,
-            ),
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
           ),
           const SizedBox(height: 8),
           Row(
@@ -390,14 +421,14 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               const SizedBox(width: 6),
               Text(
                 students,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: color,
                   borderRadius: BorderRadius.circular(15),
@@ -476,7 +507,13 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
     );
   }
 
-  Widget _buildEventItem(String title, String date, String location, IconData icon, Color color) {
+  Widget _buildEventItem(
+    String title,
+    String date,
+    String location,
+    IconData icon,
+    Color color,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -518,18 +555,12 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                 const SizedBox(height: 4),
                 Text(
                   date,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   location,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
               ],
             ),
@@ -590,10 +621,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   const SizedBox(width: 8),
                   Text(
                     'December 10, 2024',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                   ),
                 ],
               ),
@@ -619,7 +647,10 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.orange,
                       borderRadius: BorderRadius.circular(20),
@@ -636,10 +667,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   const Spacer(),
                   Text(
                     '2 days ago',
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                   ),
                 ],
               ),
@@ -679,16 +707,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
             activeIcon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school_outlined),
-            activeIcon: Icon(Icons.school),
-            label: 'Courses',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            activeIcon: Icon(Icons.calendar_today),
-            label: 'Schedule',
-          ),
+
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outlined),
             activeIcon: Icon(Icons.person),
@@ -715,15 +734,35 @@ class CoursesScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _buildEnrolledCourseCard('Computer Science 101', 'Dr. Sarah Wilson', '85%', Colors.blue),
-          _buildEnrolledCourseCard('Mathematics for Engineers', 'Prof. John Davis', '92%', Colors.green),
-          _buildEnrolledCourseCard('Business Fundamentals', 'Dr. Emily Chen', '78%', Colors.orange),
+          _buildEnrolledCourseCard(
+            'Computer Science 101',
+            'Dr. Sarah Wilson',
+            '85%',
+            Colors.blue,
+          ),
+          _buildEnrolledCourseCard(
+            'Mathematics for Engineers',
+            'Prof. John Davis',
+            '92%',
+            Colors.green,
+          ),
+          _buildEnrolledCourseCard(
+            'Business Fundamentals',
+            'Dr. Emily Chen',
+            '78%',
+            Colors.orange,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildEnrolledCourseCard(String title, String instructor, String progress, Color color) {
+  Widget _buildEnrolledCourseCard(
+    String title,
+    String instructor,
+    String progress,
+    Color color,
+  ) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(20),
@@ -789,19 +828,13 @@ class CoursesScreen extends StatelessWidget {
             children: [
               Text(
                 'Progress: $progress',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
               TextButton(
                 onPressed: () {},
                 child: Text(
                   'Continue',
-                  style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(color: color, fontWeight: FontWeight.w600),
                 ),
               ),
             ],

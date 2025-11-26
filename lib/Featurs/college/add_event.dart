@@ -17,7 +17,7 @@ class CollegeEventsPanel extends StatefulWidget {
 
 class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  // final FirebaseAuth _auth = FirebaseAuth.instance;
   String _selectedFilter = 'All'; // 'All', 'Upcoming', 'Past'
 
   @override
@@ -79,9 +79,7 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
         onPressed: () async {
           await Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const AddEventScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const AddEventScreen()),
           );
         },
         backgroundColor: Colors.purple.shade700,
@@ -102,19 +100,19 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
       },
       selectedColor: Colors.purple.shade700,
       checkmarkColor: Colors.white,
-      labelStyle: TextStyle(
-        color: selected ? Colors.white : Colors.black,
-      ),
+      labelStyle: TextStyle(color: selected ? Colors.white : Colors.black),
     );
   }
 
-  List<QueryDocumentSnapshot> _filterEvents(List<QueryDocumentSnapshot> events) {
+  List<QueryDocumentSnapshot> _filterEvents(
+    List<QueryDocumentSnapshot> events,
+  ) {
     final now = DateTime.now();
-    
+
     return events.where((doc) {
       final event = doc.data() as Map<String, dynamic>;
       final eventDateTime = (event['eventDateTime'] as Timestamp).toDate();
-      
+
       switch (_selectedFilter) {
         case 'Upcoming':
           return eventDateTime.isAfter(now);
@@ -156,10 +154,7 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
       return Center(
         child: Text(
           'No $_selectedFilter events',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey.shade600,
-          ),
+          style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
         ),
       );
     }
@@ -189,7 +184,11 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
                 const SizedBox(height: 4),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 14, color: Colors.grey.shade600),
+                    Icon(
+                      Icons.calendar_today,
+                      size: 14,
+                      color: Colors.grey.shade600,
+                    ),
                     const SizedBox(width: 4),
                     Text(event['date'] ?? ''),
                   ],
@@ -197,7 +196,11 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    Icon(Icons.location_on, size: 14, color: Colors.grey.shade600),
+                    Icon(
+                      Icons.location_on,
+                      size: 14,
+                      color: Colors.grey.shade600,
+                    ),
                     const SizedBox(width: 4),
                     Expanded(child: Text(event['venue'] ?? '')),
                   ],
@@ -205,7 +208,10 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
                 if (isPast)
                   Container(
                     margin: const EdgeInsets.only(top: 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.red.shade100,
                       borderRadius: BorderRadius.circular(4),
@@ -226,10 +232,8 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => EventDetailScreen(
-                    eventId: eventId,
-                    event: event,
-                  ),
+                  builder: (context) =>
+                      EventDetailScreen(eventId: eventId, event: event),
                 ),
               );
             },
@@ -241,7 +245,7 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
 
   Widget _buildEventImage(Map<String, dynamic> event) {
     final images = event['imageUrls'] as List<dynamic>?;
-    
+
     if (images != null && images.isNotEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(12),
@@ -256,7 +260,7 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
         ),
       );
     }
-    
+
     return _buildPlaceholderIcon(event['category']);
   }
 
@@ -268,11 +272,7 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
         color: _getEventColor(category),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Icon(
-        _getEventIcon(category),
-        color: Colors.white,
-        size: 30,
-      ),
+      child: Icon(_getEventIcon(category), color: Colors.white, size: 30),
     );
   }
 
@@ -446,18 +446,19 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     const SizedBox(height: 12),
                   ],
                 ),
-                
+
                 // Selected Images Grid
                 if (_selectedImages.isNotEmpty) ...[
                   GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 3,
-                      crossAxisSpacing: 8,
-                      mainAxisSpacing: 8,
-                      childAspectRatio: 1,
-                    ),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          crossAxisSpacing: 8,
+                          mainAxisSpacing: 8,
+                          childAspectRatio: 1,
+                        ),
                     itemCount: _selectedImages.length,
                     itemBuilder: (context, index) {
                       return Stack(
@@ -495,7 +496,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   ),
                   const SizedBox(height: 12),
                 ],
-                
+
                 // Add Images Button
                 GestureDetector(
                   onTap: _selectedImages.length < 5 ? _pickImages : null,
@@ -505,8 +506,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: _selectedImages.length < 5 
-                            ? Colors.grey.shade400 
+                        color: _selectedImages.length < 5
+                            ? Colors.grey.shade400
                             : Colors.grey.shade300,
                       ),
                     ),
@@ -550,7 +551,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Required Fields Only
                 TextFormField(
                   controller: _eventNameController,
@@ -563,7 +564,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       value?.isEmpty ?? true ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
-                
+
                 DropdownButtonFormField<String>(
                   value: _selectedCategory,
                   decoration: const InputDecoration(
@@ -571,16 +572,20 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.category),
                   ),
-                  items: const [
-                    'Cultural',
-                    'Technical',
-                    'Sports',
-                    'Workshop',
-                    'Seminar',
-                    'Competition',
-                  ].map((category) {
-                    return DropdownMenuItem(value: category, child: Text(category));
-                  }).toList(),
+                  items:
+                      const [
+                        'Cultural',
+                        'Technical',
+                        'Sports',
+                        'Workshop',
+                        'Seminar',
+                        'Competition',
+                      ].map((category) {
+                        return DropdownMenuItem(
+                          value: category,
+                          child: Text(category),
+                        );
+                      }).toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedCategory = value!;
@@ -589,7 +594,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   validator: (value) => value == null ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
-                
+
                 ListTile(
                   contentPadding: EdgeInsets.zero,
                   title: const Text('Event Date *'),
@@ -637,7 +642,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 ),
                 const Divider(),
                 const SizedBox(height: 16),
-                
+
                 TextFormField(
                   controller: _venueController,
                   decoration: const InputDecoration(
@@ -649,7 +654,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                       value?.isEmpty ?? true ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
-                
+
                 TextFormField(
                   controller: _descriptionController,
                   decoration: const InputDecoration(
@@ -660,7 +665,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   maxLines: 3,
                 ),
                 const SizedBox(height: 24),
-                
+
                 ElevatedButton(
                   onPressed: _isLoading ? null : _submitEvent,
                   style: ElevatedButton.styleFrom(
@@ -678,9 +683,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
           if (_isLoading)
             Container(
               color: Colors.black26,
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: const Center(child: CircularProgressIndicator()),
             ),
         ],
       ),
@@ -703,7 +706,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
         if (_selectedImages.isNotEmpty) {
           _uploadedImageUrls = [];
           for (final file in _selectedImages) {
-            final uploadedUrl = await CloudneryUploader().uploadFile(XFile(file.path));
+            final uploadedUrl = await CloudneryUploader().uploadFile(
+              XFile(file.path),
+            );
             if (uploadedUrl != null) {
               _uploadedImageUrls.add(uploadedUrl);
             }
@@ -723,7 +728,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
           'name': _eventNameController.text.trim(),
           'description': _descriptionController.text.trim(),
           'category': _selectedCategory,
-          'date': '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+          'date':
+              '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
           'time': _selectedTime.format(context),
           'eventDateTime': Timestamp.fromDate(eventDateTime),
           'venue': _venueController.text.trim(),
@@ -798,18 +804,9 @@ class EventDetailScreen extends StatelessWidget {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'edit',
-                child: Text('Edit Event'),
-              ),
-              const PopupMenuItem(
-                value: 'share',
-                child: Text('Share Event'),
-              ),
-              const PopupMenuItem(
-                value: 'delete',
-                child: Text('Delete Event'),
-              ),
+              const PopupMenuItem(value: 'edit', child: Text('Edit Event')),
+              const PopupMenuItem(value: 'share', child: Text('Share Event')),
+              const PopupMenuItem(value: 'delete', child: Text('Delete Event')),
             ],
           ),
         ],
@@ -869,7 +866,7 @@ class EventDetailScreen extends StatelessWidget {
                   ],
                 ),
               ),
-            
+
             // Header Card
             Container(
               width: double.infinity,
@@ -881,7 +878,10 @@ class EventDetailScreen extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(20),
@@ -898,7 +898,10 @@ class EventDetailScreen extends StatelessWidget {
                       if (isPast) ...[
                         const SizedBox(width: 8),
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.red.withOpacity(0.8),
                             borderRadius: BorderRadius.circular(20),
@@ -927,7 +930,11 @@ class EventDetailScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      const Icon(Icons.calendar_today, color: Colors.white70, size: 16),
+                      const Icon(
+                        Icons.calendar_today,
+                        color: Colors.white70,
+                        size: 16,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         '${event['date']} at ${event['time']}',
@@ -941,7 +948,7 @@ class EventDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Details Section
             Padding(
               padding: const EdgeInsets.all(16),
@@ -950,15 +957,17 @@ class EventDetailScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'Event Information',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  _buildInfoRow(Icons.location_on, 'Venue', event['venue'] ?? ''),
-                  
-                  if (event['description'] != null && event['description'].isNotEmpty) ...[
+                  _buildInfoRow(
+                    Icons.location_on,
+                    'Venue',
+                    event['venue'] ?? '',
+                  ),
+
+                  if (event['description'] != null &&
+                      event['description'].isNotEmpty) ...[
                     const SizedBox(height: 24),
                     const Text(
                       'Description',
@@ -977,7 +986,7 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                     ),
                   ],
-                  
+
                   // Image Gallery
                   if (images.length > 1) ...[
                     const SizedBox(height: 24),
@@ -1037,10 +1046,7 @@ class EventDetailScreen extends StatelessWidget {
                   style: const TextStyle(fontWeight: FontWeight.w500),
                 ),
                 const SizedBox(height: 2),
-                Text(
-                  value,
-                  style: TextStyle(color: Colors.grey.shade700),
-                ),
+                Text(value, style: TextStyle(color: Colors.grey.shade700)),
               ],
             ),
           ),
@@ -1085,17 +1091,13 @@ class EventDetailScreen extends StatelessWidget {
 
   void _editEvent(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Edit functionality coming soon!'),
-      ),
+      const SnackBar(content: Text('Edit functionality coming soon!')),
     );
   }
 
   void _shareEvent(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Share functionality coming soon!'),
-      ),
+      const SnackBar(content: Text('Share functionality coming soon!')),
     );
   }
 
@@ -1141,10 +1143,7 @@ class EventDetailScreen extends StatelessWidget {
                 }
               }
             },
-            child: const Text(
-              'Delete',
-              style: TextStyle(color: Colors.red),
-            ),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
