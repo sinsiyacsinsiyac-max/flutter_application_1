@@ -17,7 +17,6 @@ class CollegeEventsPanel extends StatefulWidget {
 
 class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  // final FirebaseAuth _auth = FirebaseAuth.instance;
   String _selectedFilter = 'All'; // 'All', 'Upcoming', 'Past'
 
   @override
@@ -168,6 +167,7 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
         final eventId = eventDoc.id;
         final eventDateTime = (event['eventDateTime'] as Timestamp).toDate();
         final isPast = eventDateTime.isBefore(DateTime.now());
+        final images = event['imageUrls'] as List<dynamic>? ?? [];
 
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
@@ -205,6 +205,25 @@ class _CollegeEventsPanelState extends State<CollegeEventsPanel> {
                     Expanded(child: Text(event['venue'] ?? '')),
                   ],
                 ),
+                // Show image count if available
+                if (images.isNotEmpty)
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.photo_library,
+                        size: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${images.length} images',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 if (isPast)
                   Container(
                     margin: const EdgeInsets.only(top: 4),
@@ -336,10 +355,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
   List<File> _selectedImages = [];
   List<String> _uploadedImageUrls = [];
 
-  // REPLACE WITH YOUR CLOUDINARY CREDENTIALS
-  // final String cloudinaryCloudName = 'campus Iq';
-  // final String cloudinaryUploadPreset = 'daai1jedw';
-
   @override
   void dispose() {
     _eventNameController.dispose();
@@ -360,6 +375,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
         setState(() {
           _selectedImages.addAll(images.map((xFile) => File(xFile.path)));
         });
+
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Added ${images.length} image(s)'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -375,40 +398,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
     setState(() {
       _selectedImages.removeAt(index);
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Image removed'),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
-
-  // Future<List<String>> _uploadToCloudinary(List<File> imageFiles) async {
-  //   final List<String> uploadedUrls = [];
-
-  //   for (final imageFile in imageFiles) {
-  //     try {
-  //       final url = Uri.parse(
-  //         'https://api.cloudinary.com/v1_1/$cloudinaryCloudName/image/upload',
-  //       );
-
-  //       final request = http.MultipartRequest('POST', url);
-  //       request.fields['upload_preset'] = cloudinaryUploadPreset;
-  //       request.files.add(
-  //         await http.MultipartFile.fromPath('file', imageFile.path),
-  //       );
-
-  //       final response = await request.send();
-  //       final responseData = await response.stream.toBytes();
-  //       final responseString = String.fromCharCodes(responseData);
-  //       final jsonMap = jsonDecode(responseString);
-
-  //       if (response.statusCode == 200) {
-  //         uploadedUrls.add(jsonMap['secure_url']);
-  //       } else {
-  //         throw Exception('Failed to upload image');
-  //       }
-  //     } catch (e) {
-  //       throw Exception('Cloudinary upload error: $e');
-  //     }
-  //   }
-
-  //   return uploadedUrls;
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -437,7 +434,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Add up to 5 images (optional)',
+                      'Add multiple images (optional)',
                       style: TextStyle(
                         color: Colors.grey.shade600,
                         fontSize: 12,
@@ -490,6 +487,28 @@ class _AddEventScreenState extends State<AddEventScreen> {
                               ),
                             ),
                           ),
+                          Positioned(
+                            bottom: 4,
+                            left: 4,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.black54,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                '${index + 1}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
                         ],
                       );
                     },
@@ -497,57 +516,36 @@ class _AddEventScreenState extends State<AddEventScreen> {
                   const SizedBox(height: 12),
                 ],
 
-                // Add Images Button
+                // Add Images Button - No limit
                 GestureDetector(
-                  onTap: _selectedImages.length < 5 ? _pickImages : null,
+                  onTap: _pickImages,
                   child: Container(
                     height: 100,
                     decoration: BoxDecoration(
                       color: Colors.grey.shade200,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: _selectedImages.length < 5
-                            ? Colors.grey.shade400
-                            : Colors.grey.shade300,
-                      ),
+                      border: Border.all(color: Colors.grey.shade400),
                     ),
-                    child: _selectedImages.length < 5
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.add_photo_alternate,
-                                size: 40,
-                                color: Colors.grey.shade600,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Add Images (${_selectedImages.length}/5)',
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          )
-                        : Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.check_circle,
-                                size: 40,
-                                color: Colors.green.shade600,
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Maximum 5 images',
-                                style: TextStyle(
-                                  color: Colors.green.shade600,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add_photo_alternate,
+                          size: 40,
+                          color: Colors.grey.shade600,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _selectedImages.isEmpty
+                              ? 'Add Images'
+                              : 'Add More Images (${_selectedImages.length} added)',
+                          style: TextStyle(
+                            color: Colors.grey.shade600,
+                            fontSize: 14,
                           ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -705,13 +703,40 @@ class _AddEventScreenState extends State<AddEventScreen> {
         // Upload images to Cloudinary if selected
         if (_selectedImages.isNotEmpty) {
           _uploadedImageUrls = [];
+
+          // Show upload progress
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Uploading images...'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+
           for (final file in _selectedImages) {
-            final uploadedUrl = await CloudneryUploader().uploadFile(
-              XFile(file.path),
-            );
-            if (uploadedUrl != null) {
-              _uploadedImageUrls.add(uploadedUrl);
+            try {
+              final uploadedUrl = await CloudneryUploader().uploadFile(
+                XFile(file.path),
+              );
+
+              if (uploadedUrl != null) {
+                _uploadedImageUrls.add(uploadedUrl);
+                print('Successfully uploaded image: $uploadedUrl');
+              } else {
+                print('Failed to upload image: ${file.path}');
+              }
+            } catch (e) {
+              print('Error uploading image ${file.path}: $e');
+              // Continue with other images even if one fails
             }
+          }
+
+          if (_uploadedImageUrls.isEmpty && _selectedImages.isNotEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Warning: Could not upload some images'),
+                backgroundColor: Colors.orange,
+              ),
+            );
           }
         }
 
@@ -822,22 +847,48 @@ class EventDetailScreen extends StatelessWidget {
                 child: PageView.builder(
                   itemCount: images.length,
                   itemBuilder: (context, index) {
-                    return Image.network(
-                      images[index],
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
+                    return Stack(
+                      children: [
+                        Image.network(
+                          images[index],
                           width: double.infinity,
-                          height: 250,
-                          color: _getEventColor(event['category']),
-                          child: const Icon(
-                            Icons.image_not_supported,
-                            size: 60,
-                            color: Colors.white,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: double.infinity,
+                              height: 250,
+                              color: _getEventColor(event['category']),
+                              child: const Icon(
+                                Icons.image_not_supported,
+                                size: 60,
+                                color: Colors.white,
+                              ),
+                            );
+                          },
+                        ),
+                        Positioned(
+                          bottom: 16,
+                          right: 16,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black54,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              '${index + 1}/${images.length}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     );
                   },
                 ),
@@ -945,6 +996,27 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                  // Show total images count
+                  if (images.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.photo_library,
+                          color: Colors.white70,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${images.length} images',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -987,7 +1059,7 @@ class EventDetailScreen extends StatelessWidget {
                     ),
                   ],
 
-                  // Image Gallery
+                  // Image Gallery - Show if there are multiple images
                   if (images.length > 1) ...[
                     const SizedBox(height: 24),
                     const Text(
@@ -998,8 +1070,16 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
+                    Text(
+                      '${images.length} images',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
                     SizedBox(
-                      height: 100,
+                      height: 120,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: images.length,
@@ -1008,11 +1088,37 @@ class EventDetailScreen extends StatelessWidget {
                             margin: const EdgeInsets.only(right: 8),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
-                              child: Image.network(
-                                images[index],
-                                width: 100,
-                                height: 100,
-                                fit: BoxFit.cover,
+                              child: Stack(
+                                children: [
+                                  Image.network(
+                                    images[index],
+                                    width: 120,
+                                    height: 120,
+                                    fit: BoxFit.cover,
+                                  ),
+                                  Positioned(
+                                    bottom: 4,
+                                    right: 4,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                      child: Text(
+                                        '${index + 1}',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
                           );
