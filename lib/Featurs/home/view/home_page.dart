@@ -514,6 +514,10 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
       'hours',
       'information',
       'details',
+      'location',
+      'where',
+      'find',
+      'locate',
     ];
 
     return extendedKeywords
@@ -727,7 +731,9 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
         queryLower.contains('library') ||
         queryLower.contains('canteen') ||
         queryLower.contains('auditorium') ||
-        queryLower.contains('lab')) {
+        queryLower.contains('lab') ||
+        queryLower.contains('sport') ||
+        queryLower.contains('gym')) {
       _printToTerminal("🎯", "Query classified as: AMENITIES");
       return await _getAmenitiesResponse(queryLower);
     }
@@ -782,6 +788,7 @@ I'm not sure I understand. Here's what I can help you with:
 🏫 **College Information**
 • Contact details, address, phone
 • Email, website, office hours
+• College location and directions
 
 Try asking about specific courses like "BCA fees" or "college contact details"!""";
   }
@@ -810,6 +817,10 @@ Try asking about specific courses like "BCA fees" or "college contact details"!"
       'info',
       'information',
       'details',
+      'find',
+      'locate',
+      'direction',
+      'map',
     ];
 
     // List of college-related keywords (optional - makes it more specific)
@@ -844,6 +855,10 @@ Try asking about specific courses like "BCA fees" or "college contact details"!"
         queryLower == 'college contact' ||
         queryLower == 'how to contact' ||
         queryLower == 'where is' ||
+        queryLower == 'where is the college' ||
+        queryLower == 'college location' ||
+        queryLower == 'location' ||
+        queryLower == 'address' ||
         queryLower == 'phone number' ||
         queryLower == 'email address';
 
@@ -851,9 +866,11 @@ Try asking about specific courses like "BCA fees" or "college contact details"!"
     // 1. It's a direct contact query, OR
     // 2. Has contact keyword and college keyword, OR
     // 3. Has strong contact keywords even without college context
+    // 4. Is specifically asking about location/address
     return isDirectContactQuery ||
         (hasContactKeyword && hasCollegeKeyword) ||
-        (hasContactKeyword && _isStrongContactQuery(queryLower));
+        (hasContactKeyword && _isStrongContactQuery(queryLower)) ||
+        _isLocationQuery(queryLower);
   }
 
   // Check if it's a strong contact-related query
@@ -869,9 +886,39 @@ Try asking about specific courses like "BCA fees" or "college contact details"!"
       'get in touch',
       'reach us',
       'call us',
+      'college location',
+      'where is college',
+      'find college',
+      'locate college',
     ];
 
     return strongContactPatterns.any((pattern) => queryLower.contains(pattern));
+  }
+
+  // Check if it's a location query specifically for college
+  bool _isLocationQuery(String queryLower) {
+    final locationPatterns = [
+      'location',
+      'where is',
+      'address',
+      'find college',
+      'locate college',
+      'college location',
+      'where is the college',
+      'how to reach college',
+      'college address',
+      'college map',
+      'directions to college',
+    ];
+
+    return locationPatterns.any((pattern) => queryLower.contains(pattern)) &&
+        !queryLower.contains('library') &&
+        !queryLower.contains('canteen') &&
+        !queryLower.contains('auditorium') &&
+        !queryLower.contains('lab') &&
+        !queryLower.contains('sport') &&
+        !queryLower.contains('gym') &&
+        !queryLower.contains('amenity');
   }
 
   bool _isGreeting(String query) {
@@ -1271,6 +1318,8 @@ I can help you find information about:
 • "College address and phone"
 • "Email and website information"
 • "Office hours"
+• "College location"
+• "Where is the college?"
 • "Contact details" (even without saying 'college')
 
 💡 **Tips:**
@@ -1297,7 +1346,7 @@ What would you like to know?""";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.white,
