@@ -100,12 +100,16 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // App Logo
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                'assets/images/logo.jpg',
-                height: 200,
-                width: 200,
+            Container(
+              height: 200,
+              width: 200,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                // If you want a border, you can add it here
+                // border: Border.all(color: Colors.white, width: 2),
+              ),
+              child: ClipOval(
+                child: Image.asset('assets/images/logo.jpg', fit: BoxFit.cover),
               ),
             ),
             const SizedBox(height: 30),

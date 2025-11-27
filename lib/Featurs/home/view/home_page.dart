@@ -364,6 +364,7 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Map<String, dynamic>> _allCourses = [];
   List<Map<String, dynamic>> _allAmenities = [];
+  Map<String, dynamic>? _collegeData;
 
   @override
   void initState() {
@@ -391,7 +392,8 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
       "📚 Courses & Subjects\n"
       "🏛️ Campus Amenities\n"
       "📅 Events & Schedules\n"
-      "📖 Study Materials\n\n"
+      "📖 Study Materials\n"
+      "🏫 College Contact Details\n\n"
       "What would you like to know?",
     );
   }
@@ -401,15 +403,19 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
     try {
       final courses = await _firestore.collection('courses').get();
       final amenities = await _firestore.collection('amenities').get();
+      final colleges = await _firestore.collection('colleges').limit(1).get();
 
       setState(() {
         _allCourses = courses.docs.map((doc) => doc.data()).toList();
         _allAmenities = amenities.docs.map((doc) => doc.data()).toList();
+        if (colleges.docs.isNotEmpty) {
+          _collegeData = colleges.docs.first.data();
+        }
       });
 
       _printToTerminal(
         "📦",
-        "Preloaded ${_allCourses.length} courses and ${_allAmenities.length} amenities",
+        "Preloaded ${_allCourses.length} courses, ${_allAmenities.length} amenities, and college data",
       );
     } catch (e) {
       _printToTerminal("❌", "Failed to preload data: $e");
@@ -498,6 +504,16 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
       'how',
       'when',
       'where',
+      'college',
+      'contact',
+      'address',
+      'phone',
+      'email',
+      'website',
+      'office',
+      'hours',
+      'information',
+      'details',
     ];
 
     return extendedKeywords
@@ -505,39 +521,116 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
         .toList();
   }
 
-  // Improved course name detection
-  String? _detectCourseName(String query) {
-    final queryLower = query.toLowerCase();
+  // Check for exact course code match first
+  String? _findExactCourseCodeMatch(String query) {
+    final queryLower = query.toLowerCase().trim();
 
     for (var course in _allCourses) {
-      final courseName = course['name']?.toString().toLowerCase() ?? '';
-      final courseCode = course['code']?.toString().toLowerCase() ?? '';
+      final courseCode = course['code']?.toString().toLowerCase().trim() ?? '';
+      final courseName = course['name']?.toString().toLowerCase().trim() ?? '';
 
-      if (courseName.isNotEmpty && queryLower.contains(courseName)) {
-        _printToTerminal("🎯", "Detected course by name: $courseName");
+      // Remove any non-alphanumeric characters for better matching
+      final cleanQuery = queryLower.replaceAll(RegExp(r'[^a-z0-9]'), '');
+      final cleanCourseCode = courseCode.replaceAll(RegExp(r'[^a-z0-9]'), '');
+
+      if (cleanQuery == cleanCourseCode) {
+        _printToTerminal(
+          "🎯",
+          "Exact course code match: $cleanQuery -> $courseName",
+        );
+        return course['name'];
+      }
+    }
+    return null;
+  }
+
+  // Helper method for common abbreviations
+  bool _isCommonAbbreviation(String query, String courseName) {
+    final abbreviationMap = {
+      'bca': 'bachelor of computer applications',
+      'bcom': 'bachelor of commerce',
+      'bsc': 'bachelor of science',
+      'ba': 'bachelor of arts',
+      'mca': 'master of computer applications',
+    };
+
+    final fullName = abbreviationMap[query];
+    return fullName != null && courseName.contains(fullName);
+  }
+
+  // Improved course name detection with exact matching
+  String? _detectCourseName(String query) {
+    final queryLower = query.toLowerCase().trim();
+
+    // Clean query - remove common filler words
+    final cleanQuery = queryLower
+        .replaceAll(RegExp(r'\b(for|about|the|course|details|fees|fee)\b'), '')
+        .trim();
+
+    _printToTerminal("🔍", "Cleaned query for course detection: '$cleanQuery'");
+
+    for (var course in _allCourses) {
+      final courseName = course['name']?.toString().toLowerCase().trim() ?? '';
+      final courseCode = course['code']?.toString().toLowerCase().trim() ?? '';
+
+      if (courseName.isEmpty) continue;
+
+      // 1. Exact match with course name
+      if (cleanQuery == courseName) {
+        _printToTerminal("🎯", "Exact match found: $courseName");
         return course['name'];
       }
 
-      if (courseCode.isNotEmpty && queryLower.contains(courseCode)) {
-        _printToTerminal("🎯", "Detected course by code: $courseCode");
+      // 2. Exact match with course code
+      if (cleanQuery == courseCode) {
+        _printToTerminal(
+          "🎯",
+          "Exact code match found: $courseCode -> $courseName",
+        );
         return course['name'];
       }
 
-      // Check for partial matches (like "bca" in "fees for bca")
-      if (courseName.length > 3) {
-        final shortName = courseName
-            .split(' ')
-            .last; // Get last word of course name
-        if (shortName.isNotEmpty && queryLower.contains(shortName)) {
-          _printToTerminal(
-            "🎯",
-            "Detected course by partial name: $shortName -> $courseName",
-          );
-          return course['name'];
-        }
+      // 3. Query contains full course name
+      if (cleanQuery.contains(courseName) && courseName.length > 2) {
+        _printToTerminal("🎯", "Query contains full course name: $courseName");
+        return course['name'];
+      }
+
+      // 4. Course name contains full query (for abbreviations)
+      if (courseName.contains(cleanQuery) && cleanQuery.length > 2) {
+        _printToTerminal(
+          "🎯",
+          "Course name contains query: $courseName contains $cleanQuery",
+        );
+        return course['name'];
+      }
+
+      // 5. Match individual words (for multi-word courses)
+      final queryWords = cleanQuery.split(' ');
+      final courseWords = courseName.split(' ');
+
+      bool allWordsMatch = queryWords.every(
+        (queryWord) =>
+            queryWord.length > 2 &&
+            courseWords.any((courseWord) => courseWord.contains(queryWord)),
+      );
+
+      if (allWordsMatch && queryWords.isNotEmpty) {
+        _printToTerminal("🎯", "All words match for: $courseName");
+        return course['name'];
+      }
+
+      // 6. Check for common abbreviations
+      if (_isCommonAbbreviation(cleanQuery, courseName)) {
+        _printToTerminal(
+          "🎯",
+          "Common abbreviation match: $cleanQuery -> $courseName",
+        );
+        return course['name'];
       }
     }
 
+    _printToTerminal("❌", "No course match found for: '$cleanQuery'");
     return null;
   }
 
@@ -581,11 +674,14 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
     }
   }
 
-  // Enhanced smart response generator
+  // Enhanced smart response generator with better college contact detection
   Future<String> _generateSmartResponse(String query) async {
     final queryLower = query.toLowerCase();
     final keywords = _extractKeywords(queryLower);
-    final detectedCourse = _detectCourseName(query);
+
+    // Try exact course code match first
+    final exactCodeMatch = _findExactCourseCodeMatch(query);
+    final detectedCourse = exactCodeMatch ?? _detectCourseName(query);
 
     // Log query analysis
     _printToTerminal("🔍", "Analyzing query: '$query'");
@@ -598,6 +694,13 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
     if (_isGreeting(queryLower)) {
       _printToTerminal("🎯", "Query classified as: GREETING");
       return "Hello! 👋 Nice to meet you! I'm here to help you with campus information. What would you like to know about?";
+    }
+
+    // College contact information - IMPROVED DETECTION
+    bool isCollegeContactQuery = _isCollegeContactQuery(queryLower);
+    if (isCollegeContactQuery) {
+      _printToTerminal("🎯", "Query classified as: COLLEGE_CONTACT");
+      return _getCollegeContactResponse();
     }
 
     // Courses information - expanded to include fee-related queries and course names
@@ -676,7 +779,99 @@ I'm not sure I understand. Here's what I can help you with:
 • Study materials availability
 • Notes and books location
 
-Try asking about specific courses like "BCA fees" or "Computer Science courses"!""";
+🏫 **College Information**
+• Contact details, address, phone
+• Email, website, office hours
+
+Try asking about specific courses like "BCA fees" or "college contact details"!""";
+  }
+
+  // Improved college contact query detection
+  bool _isCollegeContactQuery(String queryLower) {
+    // List of contact-related keywords that should trigger college contact response
+    final contactKeywords = [
+      'contact',
+      'address',
+      'phone',
+      'telephone',
+      'number',
+      'email',
+      'website',
+      'web',
+      'site',
+      'office',
+      'hours',
+      'timing',
+      'location',
+      'where',
+      'call',
+      'email',
+      'mail',
+      'info',
+      'information',
+      'details',
+    ];
+
+    // List of college-related keywords (optional - makes it more specific)
+    final collegeKeywords = [
+      'college',
+      'campus',
+      'institute',
+      'institution',
+      'university',
+      'school',
+      'administration',
+      'admin',
+      'office',
+    ];
+
+    // Check if query contains contact-related keywords
+    bool hasContactKeyword = contactKeywords.any(
+      (keyword) => queryLower.contains(keyword),
+    );
+
+    // Check if query contains college-related keywords (optional for better context)
+    bool hasCollegeKeyword = collegeKeywords.any(
+      (keyword) => queryLower.contains(keyword),
+    );
+
+    // Special cases that should always trigger college contact
+    bool isDirectContactQuery =
+        queryLower == 'contact' ||
+        queryLower == 'contact details' ||
+        queryLower == 'contact info' ||
+        queryLower == 'contact information' ||
+        queryLower == 'college contact' ||
+        queryLower == 'how to contact' ||
+        queryLower == 'where is' ||
+        queryLower == 'phone number' ||
+        queryLower == 'email address';
+
+    // Return true if:
+    // 1. It's a direct contact query, OR
+    // 2. Has contact keyword and college keyword, OR
+    // 3. Has strong contact keywords even without college context
+    return isDirectContactQuery ||
+        (hasContactKeyword && hasCollegeKeyword) ||
+        (hasContactKeyword && _isStrongContactQuery(queryLower));
+  }
+
+  // Check if it's a strong contact-related query
+  bool _isStrongContactQuery(String queryLower) {
+    final strongContactPatterns = [
+      'contact details',
+      'contact information',
+      'phone number',
+      'email address',
+      'office hours',
+      'where is',
+      'how to contact',
+      'get in touch',
+      'reach us',
+      'call us',
+    ];
+
+    return strongContactPatterns.any((pattern) => queryLower.contains(pattern));
   }
 
   bool _isGreeting(String query) {
@@ -685,6 +880,178 @@ Try asking about specific courses like "BCA fees" or "Computer Science courses"!
         query.contains('hey') ||
         query.contains('good morning') ||
         query.contains('good afternoon');
+  }
+
+  // College contact information response
+  String _getCollegeContactResponse() {
+    if (_collegeData == null) {
+      return "I'm sorry, but college contact information is currently unavailable. Please check the college notice board or visit the administration office for contact details.";
+    }
+
+    _printToTerminal("🏫", "Displaying college contact information");
+
+    String response =
+        """
+🏫 **College Contact Information**
+
+**College Name:** ${_collegeData!['name'] ?? 'Majlis Arts and Science College'}
+
+**Contact Details:**
+""";
+
+    // Add phone if available
+    if (_collegeData!['phone'] != null &&
+        _collegeData!['phone'].toString().isNotEmpty) {
+      response += "• 📞 **Phone:** ${_collegeData!['phone']}\n";
+    } else {
+      response += "• 📞 **Phone:** Not available\n";
+    }
+
+    // Add email if available
+    if (_collegeData!['email'] != null &&
+        _collegeData!['email'].toString().isNotEmpty) {
+      response += "• 📧 **Email:** ${_collegeData!['email']}\n";
+    } else {
+      response += "• 📧 **Email:** Not available\n";
+    }
+
+    // Add website if available
+    if (_collegeData!['website'] != null &&
+        _collegeData!['website'].toString().isNotEmpty) {
+      response += "• 🌐 **Website:** ${_collegeData!['website']}\n";
+    } else {
+      response += "• 🌐 **Website:** Not available\n";
+    }
+
+    // Add address if available
+    if (_collegeData!['address'] != null &&
+        _collegeData!['address'].toString().isNotEmpty) {
+      response += "• 📍 **Address:** ${_collegeData!['address']}\n";
+    } else {
+      response += "• 📍 **Address:** Not available\n";
+    }
+
+    // Add office hours if available
+    if (_collegeData!['officeHours'] != null &&
+        _collegeData!['officeHours'].toString().isNotEmpty) {
+      response += "• 🕒 **Office Hours:** ${_collegeData!['officeHours']}\n";
+    } else {
+      response += "• 🕒 **Office Hours:** Standard college hours\n";
+    }
+
+    response += "\n**Admission Requirements:**\n";
+
+    // Add admission requirements if available
+    if (_collegeData!['admissionRequirements'] != null &&
+        _collegeData!['admissionRequirements']['documents'] != null) {
+      final documents =
+          _collegeData!['admissionRequirements']['documents'] as List;
+      if (documents.isNotEmpty) {
+        for (var doc in documents) {
+          if (doc['title'] != null && doc['title'].toString().isNotEmpty) {
+            response += "• ${doc['title']}\n";
+          }
+        }
+      } else {
+        response +=
+            "• Please contact administration for admission requirements\n";
+      }
+    } else {
+      response +=
+          "• Please contact administration for admission requirements\n";
+    }
+
+    response +=
+        "\nFor more detailed information, please visit the administration office.";
+
+    return response;
+  }
+
+  String _buildCourseDetailResponse(Map<String, dynamic> data) {
+    String response =
+        """
+📘 **${data['name'] ?? 'Course'} Details**
+
+• **Course Code:** ${data['code'] ?? 'N/A'}
+• **Department:** ${data['department'] ?? 'N/A'}""";
+
+    if (data['credits'] != null) {
+      response += "\n• **Credits:** ${data['credits']}";
+    }
+    if (data['semester'] != null) {
+      response += "\n• **Semester:** ${data['semester']}";
+    }
+
+    final semesterFees = data['semesterFees'] ?? data['fees'] ?? data['fee'];
+    if (semesterFees != null) {
+      response += "\n• **Semester Fees:** ₹$semesterFees";
+    }
+
+    if (data['description'] != null) {
+      response += "\n\n**Description:** ${data['description']}";
+    }
+
+    return response;
+  }
+
+  String _findSimilarCourses(
+    String query,
+    List<QueryDocumentSnapshot> courses,
+  ) {
+    final queryLower = query.toLowerCase();
+    final similarCourses = courses.where((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      final courseName = data['name']?.toString().toLowerCase() ?? '';
+      final courseCode = data['code']?.toString().toLowerCase() ?? '';
+
+      return courseName.contains(queryLower) ||
+          courseCode.contains(queryLower) ||
+          queryLower.contains(courseName) ||
+          queryLower.contains(courseCode);
+    }).toList();
+
+    if (similarCourses.isEmpty) {
+      return "I couldn't find a course matching '$query'. Here are all available courses:\n\n${_buildAllCoursesSummary(courses)}";
+    }
+
+    String response = "🔍 **Courses matching '$query':**\n\n";
+    for (var doc in similarCourses) {
+      final data = doc.data() as Map<String, dynamic>;
+      response += "• ${data['name']} (${data['code']})\n";
+    }
+    response += "\nAsk about a specific course for more details!";
+
+    return response;
+  }
+
+  String _buildAllCoursesSummary(List<QueryDocumentSnapshot> courses) {
+    String response = "📚 **Available Courses:**\n\n";
+
+    for (var i = 0; i < courses.length && i < 8; i++) {
+      final data = courses[i].data() as Map<String, dynamic>;
+      final courseName = data['name'] ?? 'Course';
+      final courseCode = data['code'] ?? 'Code';
+      final department = data['department'] ?? 'Dept';
+
+      response += "• $courseName ($courseCode) - $department";
+
+      // Add fee information if available
+      final fees = data['semesterFees'] ?? data['fees'];
+      if (fees != null) {
+        response += " - ₹$fees";
+      }
+
+      response += "\n";
+    }
+
+    if (courses.length > 8) {
+      response += "\n... and ${courses.length - 8} more courses available.";
+    }
+
+    response +=
+        "\n\nAsk about a specific course for more details! (e.g., 'BCA fees' or 'Computer Science course details')";
+
+    return response;
   }
 
   Future<String> _getCoursesResponse(
@@ -706,127 +1073,25 @@ Try asking about specific courses like "BCA fees" or "Computer Science courses"!
         return "I don't see any courses in the database yet. Please contact administration to add course information.";
       }
 
-      // If specific course is detected or query contains fee information
-      if (specificCourse != null ||
-          query.contains('fee') ||
-          query.contains('fees')) {
-        String? targetCourse = specificCourse;
+      // If specific course is detected, show only that course
+      if (specificCourse != null) {
+        for (var doc in courses.docs) {
+          final data = doc.data();
+          final courseName = data['name']?.toString() ?? '';
 
-        // If no specific course detected but fee query, try to find the most relevant course
-        if (targetCourse == null) {
-          for (var doc in courses.docs) {
-            final courseName =
-                doc.data()['name']?.toString().toLowerCase() ?? '';
-            if (query.contains(courseName) && courseName.isNotEmpty) {
-              targetCourse = doc.data()['name'];
-              _printToTerminal(
-                "📚",
-                "Found course for fee query: $targetCourse",
-              );
-              break;
-            }
+          if (courseName.toLowerCase() == specificCourse.toLowerCase()) {
+            _printToTerminal("📚", "Displaying detailed info for: $courseName");
+            return _buildCourseDetailResponse(data);
           }
         }
 
-        if (targetCourse != null) {
-          // Show specific course details
-          for (var doc in courses.docs) {
-            final data = doc.data();
-            if (data['name']?.toString().toLowerCase() ==
-                targetCourse!.toLowerCase()) {
-              _printToTerminal(
-                "📚",
-                "Displaying detailed info for: $targetCourse",
-              );
-
-              // Build detailed response with all available information
-              String response =
-                  """
-📘 **${data['name'] ?? 'Course'} Details**
-
-• **Course Code:** ${data['code'] ?? 'N/A'}
-• **Department:** ${data['department'] ?? 'N/A'}""";
-
-              // Add credits if available
-              if (data['credits'] != null) {
-                response += "\n• **Credits:** ${data['credits']}";
-              }
-
-              // Add semester if available
-              if (data['semester'] != null) {
-                response += "\n• **Semester:** ${data['semester']}";
-              }
-
-              // Add teacher if available
-
-              // Add student information if available
-              if (data['maxStudents'] != null) {
-                response += "\n• **Max Students:** ${data['maxStudents']}";
-              }
-
-              if (data['enrolledStudents'] != null) {
-                response +=
-                    "\n• **Currently Enrolled:** ${data['enrolledStudents']}";
-              }
-
-              // Add fee information - check multiple possible field names
-              final semesterFees =
-                  data['semesterFees'] ??
-                  data['fees'] ??
-                  data['fee'] ??
-                  data['tuition'];
-              if (semesterFees != null) {
-                response += "\n• **Semester Fees:** ₹$semesterFees";
-              } else {
-                response += "\n• **Semester Fees:** Information not available";
-              }
-
-              // Add description if available
-              if (data['description'] != null) {
-                response += "\n\n**Description:** ${data['description']}";
-              } else {
-                response += "\n\nNo additional description available.";
-              }
-
-              return response;
-            }
-          }
-        }
+        // If we get here, the specific course wasn't found exactly
+        // Show courses that might be what the user meant
+        return _findSimilarCourses(query, courses.docs);
       }
 
       // Show all courses summary
-      String response = "📚 **Available Courses:**\n\n";
-
-      for (var i = 0; i < courses.docs.length && i < 8; i++) {
-        final data = courses.docs[i].data();
-        final courseName = data['name'] ?? 'Course';
-        final courseCode = data['code'] ?? 'Code';
-        final department = data['department'] ?? 'Dept';
-
-        response += "• $courseName ($courseCode) - $department";
-
-        // Add fee information if available
-        final fees = data['semesterFees'] ?? data['fees'];
-        if (fees != null) {
-          response += " - ₹$fees";
-        }
-
-        response += "\n";
-      }
-
-      if (courses.docs.length > 8) {
-        response +=
-            "\n... and ${courses.docs.length - 8} more courses available.";
-      }
-
-      response +=
-          "\n\nAsk about a specific course for more details! (e.g., 'BCA fees' or 'Computer Science course details')";
-
-      _printToTerminal(
-        "📚",
-        "Displaying courses summary (${courses.docs.length} total)",
-      );
-      return response;
+      return _buildAllCoursesSummary(courses.docs);
     } catch (e) {
       _printToTerminal("❌ COURSES ERROR", "Firestore error: $e");
       return "I'm having trouble accessing course information right now. Please try again later or contact the administration.";
@@ -1001,6 +1266,13 @@ I can help you find information about:
 • "Course books location"
 • "Study resources"
 
+🏫 **COLLEGE INFORMATION**
+• "College contact details"
+• "College address and phone"
+• "Email and website information"
+• "Office hours"
+• "Contact details" (even without saying 'college')
+
 💡 **Tips:**
 • Be specific for better results
 • Ask about particular courses or facilities
@@ -1025,9 +1297,22 @@ What would you like to know?""";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.white,
+        leading: Container(
+          height: 50,
+          width: 50,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            // If you want a border, you can add it here
+            // border: Border.all(color: Colors.white, width: 2),
+          ),
+          child: ClipOval(
+            child: Image.asset('assets/images/logo.jpg', fit: BoxFit.cover),
+          ),
+        ),
         scrolledUnderElevation: 0,
         actions: [
           Padding(
@@ -1119,55 +1404,7 @@ What would you like to know?""";
                 ],
               ),
             ),
-
-            // Enhanced View More Button
-            // Positioned(right: 20, top: 50, child: _buildViewMoreButton()),
           ],
-        ),
-      ),
-    );
-  }
-
-  // Decorated View More Button
-  Widget _buildViewMoreButton() {
-    return Container(
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(25),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF6366F1).withOpacity(0.4),
-            blurRadius: 15,
-            spreadRadius: 2,
-            offset: const Offset(0, 4),
-          ),
-        ],
-        border: Border.all(color: Colors.white.withOpacity(0.3), width: 1.5),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ExpantioList()),
-            );
-          },
-          borderRadius: BorderRadius.circular(25),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.list, color: Colors.white, size: 18),
-                const SizedBox(width: 8),
-              ],
-            ),
-          ),
         ),
       ),
     );

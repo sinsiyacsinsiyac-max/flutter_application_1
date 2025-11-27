@@ -57,7 +57,7 @@ class ExpantioList extends StatelessWidget {
             const SizedBox(height: 16),
             const AdmissionsExpansion(),
             const SizedBox(height: 16),
-            const ExamsExpantion(),
+            const ExamsExpansion(),
             const SizedBox(height: 16),
             const DownloadsExpansion(),
             const SizedBox(height: 16),
@@ -647,8 +647,8 @@ class ProfileExpantion extends StatelessWidget {
   }
 }
 
-class ExamsExpantion extends StatelessWidget {
-  const ExamsExpantion({Key? key}) : super(key: key);
+class ExamsExpansion extends StatelessWidget {
+  const ExamsExpansion({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -663,12 +663,28 @@ class ExamsExpantion extends StatelessWidget {
           'Time Table & Schedule',
           Icons.calendar_today_rounded,
           Colors.blue,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const TimeTableViewPage(),
+              ),
+            );
+          },
         ),
         _buildExamItem(
           context,
           'Seat Arrangements',
           Icons.event_seat_rounded,
           Colors.purple,
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const SeatArrangementViewPage(),
+              ),
+            );
+          },
         ),
       ],
     );
@@ -678,17 +694,13 @@ class ExamsExpantion extends StatelessWidget {
     BuildContext context,
     String title,
     IconData icon,
-    Color color,
-  ) {
+    Color color, {
+    required VoidCallback onTap,
+  }) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ExamPage()),
-          );
-        },
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
           margin: const EdgeInsets.only(bottom: 8),

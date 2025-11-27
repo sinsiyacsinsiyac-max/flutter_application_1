@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/Featurs/admin/home/exam%20detail/examdetail.page.dart';
 import 'package:flutter_application_1/Featurs/auth/view/login_screen.dart';
 import 'package:flutter_application_1/Featurs/college/add_course.dart';
 import 'package:flutter_application_1/Featurs/college/add_event.dart';
@@ -6,6 +9,7 @@ import 'package:flutter_application_1/Featurs/college/add_notes_and_question_pap
 import 'package:flutter_application_1/Featurs/college/aminities_add_option.dart';
 import 'package:flutter_application_1/Featurs/college/profile_screen.dart';
 import 'package:flutter_application_1/Featurs/firebase_serviece/firebase.dart';
+import 'package:intl/intl.dart';
 
 class CollegeHomeScreen extends StatefulWidget {
   const CollegeHomeScreen({Key? key}) : super(key: key);
@@ -16,6 +20,15 @@ class CollegeHomeScreen extends StatefulWidget {
 
 class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
   int _currentIndex = 0;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +41,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
             _buildHeader(),
 
             // Search Bar
-            _buildSearchBar(),
+            // _buildSearchBar(),
 
             // Main Content
             Expanded(
@@ -55,128 +68,123 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
           ],
         ),
       ),
-
-      // Bottom Navigation Bar
-      // bottomNavigationBar: _buildBottomNavigationBar(),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   onPressed: () {
-      //     final AuthService _authService = AuthService();
-      //     _authService.signOut();
-      //     Navigator.pushAndRemoveUntil(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => LoginScreen()),
-      //       (route) => false,
-      //     );
-      //   },
-      //   backgroundColor: Colors.red, // Changed to red for logout
-      //   icon: const Icon(Icons.logout_rounded, color: Colors.white),
-      //   label: const Text(
-      //     'Logout',
-      //     style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-      //   ),
-      // ),
     );
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Colors.blue.shade900,
-            Colors.blue.shade700,
-            Colors.blue.shade600,
-          ],
-        ),
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(25),
-          bottomRight: Radius.circular(25),
-        ),
-      ),
-      child: Row(
-        children: [
-          // College Logo/Icon
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(Icons.school, color: Colors.white, size: 30),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Tech University',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Welcome to Campus Portal',
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.9),
-                    fontSize: 12,
-                  ),
-                ),
+    return StreamBuilder<DocumentSnapshot>(
+      stream: _firestore
+          .collection('users')
+          .doc(_auth.currentUser?.uid)
+          .snapshots(),
+      builder: (context, snapshot) {
+        final userData = snapshot.data?.data() as Map<String, dynamic>?;
+        final collegeName = userData?['collegeName'] ?? 'College Portal';
+        final userName =
+            userData?['username'] ?? _auth.currentUser?.displayName ?? 'Admin';
+
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Colors.blue.shade900,
+                Colors.blue.shade700,
+                Colors.blue.shade600,
               ],
             ),
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(25),
+              bottomRight: Radius.circular(25),
+            ),
           ),
-          // Notification & Profile
-          Stack(
+          child: Row(
             children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.notifications_outlined,
-                  color: Colors.white,
-                  size: 28,
+              // College Logo/Icon
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                onPressed: () {},
+                child: const Icon(Icons.school, color: Colors.white, size: 30),
               ),
-              Positioned(
-                right: 12,
-                top: 12,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      collegeName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Welcome, $userName',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.9),
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // Notification & Profile
+              // Stack(
+              //   children: [
+              //     IconButton(
+              //       icon: const Icon(
+              //         Icons.notifications_outlined,
+              //         color: Colors.white,
+              //         size: 28,
+              //       ),
+              //       onPressed: () {},
+              //     ),
+              //     Positioned(
+              //       right: 12,
+              //       top: 12,
+              //       child: Container(
+              //         width: 8,
+              //         height: 8,
+              //         decoration: const BoxDecoration(
+              //           color: Colors.orange,
+              //           shape: BoxShape.circle,
+              //         ),
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TeacherProfileScreen(),
+                    ),
+                  );
+                },
                 child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Colors.orange,
-                    shape: BoxShape.circle,
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
                   ),
+                  child: const Icon(Icons.person, color: Colors.white),
                 ),
               ),
             ],
           ),
-          const SizedBox(width: 8),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TeacherProfileScreen()),
-              );
-            },
-            child: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: const Icon(Icons.person, color: Colors.white),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -195,11 +203,15 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
+              controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search courses, events, resources...',
                 hintStyle: TextStyle(color: Colors.grey.shade500),
                 border: InputBorder.none,
               ),
+              onChanged: (value) {
+                // Implement search functionality
+              },
             ),
           ),
           Container(
@@ -245,7 +257,6 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               },
               child: _buildActionItem(Icons.school, 'Courses', Colors.blue),
             ),
-            // _buildActionItem(Icons.calendar_today, 'Schedule', Colors.green),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -255,7 +266,6 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               },
               child: _buildActionItem(Icons.assignment, 'Notes', Colors.orange),
             ),
-            // _buildActionItem(Icons.grade, 'Results', Colors.purple),
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -267,7 +277,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               },
               child: _buildActionItem(
                 Icons.library_books,
-                'Aminities',
+                'Amenities',
                 Colors.red,
               ),
             ),
@@ -280,8 +290,32 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               },
               child: _buildActionItem(Icons.event, 'Events', Colors.pink),
             ),
-            // _buildActionItem(Icons.download, 'Resources', Colors.teal),
-            _buildActionItem(Icons.person, 'Profile', Colors.indigo),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ExamManagementPage()),
+                );
+              },
+              child: _buildActionItem(
+                Icons.edit,
+                'Exams',
+                const Color.fromARGB(255, 198, 115, 201),
+              ),
+            ),
+            // _buildActionItem(Icons.analytics, 'Analytics', Colors.teal),
+            // _buildActionItem(Icons.people, 'Students', Colors.green),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TeacherProfileScreen(),
+                  ),
+                );
+              },
+              child: _buildActionItem(Icons.person, 'Profile', Colors.indigo),
+            ),
           ],
         ),
       ],
@@ -316,73 +350,81 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
   }
 
   Widget _buildFeaturedCourses() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return StreamBuilder<QuerySnapshot>(
+      stream: _firestore
+          .collection('courses')
+          .orderBy('createdAt', descending: true)
+          .limit(3)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildSectionLoading('Featured Courses');
+        }
+
+        if (snapshot.hasError) {
+          return _buildSectionError('Failed to load courses');
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return _buildEmptySection('Featured Courses', 'No courses available');
+        }
+
+        final courses = snapshot.data!.docs;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Featured Courses',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            TextButton(
-              onPressed: () {},
-              child: const Text(
-                'View All',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.w600,
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Featured Courses',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TeacherCoursePanel(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'View All',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: courses.map((doc) {
+                  final course = doc.data() as Map<String, dynamic>;
+                  return _buildCourseCard(course);
+                }).toList(),
               ),
             ),
           ],
-        ),
-        const SizedBox(height: 12),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [
-              _buildCourseCard(
-                'Computer Science',
-                'Dr. Sarah Wilson',
-                '120 Students',
-                Colors.blue,
-                Icons.computer,
-              ),
-              _buildCourseCard(
-                'Mechanical Eng',
-                'Prof. John Davis',
-                '85 Students',
-                Colors.green,
-                Icons.engineering,
-              ),
-              _buildCourseCard(
-                'Business Admin',
-                'Dr. Emily Chen',
-                '150 Students',
-                Colors.orange,
-                Icons.business,
-              ),
-            ],
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 
-  Widget _buildCourseCard(
-    String title,
-    String instructor,
-    String students,
-    Color color,
-    IconData icon,
-  ) {
+  Widget _buildCourseCard(Map<String, dynamic> course) {
+    final color = _getDepartmentColor(course['department'] ?? '');
+    final icon = _getDepartmentIcon(course['department'] ?? '');
+
     return Container(
       width: 280,
       margin: const EdgeInsets.only(right: 16),
@@ -409,17 +451,21 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            title,
+            course['name'] ?? 'Unnamed Course',
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 8),
           Text(
-            instructor,
+            course['teacherName'] ?? 'Unknown Teacher',
             style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 8),
           Row(
@@ -427,7 +473,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               Icon(Icons.people, color: Colors.grey.shade500, size: 16),
               const SizedBox(width: 6),
               Text(
-                students,
+                '${course['enrolledStudents'] ?? 0} Students',
                 style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               ),
               const Spacer(),
@@ -440,9 +486,9 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   color: color,
                   borderRadius: BorderRadius.circular(15),
                 ),
-                child: const Text(
-                  'Enroll',
-                  style: TextStyle(
+                child: Text(
+                  '${course['credits'] ?? 0} Credits',
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
@@ -457,70 +503,82 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
   }
 
   Widget _buildUpcomingEvents() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 24),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return StreamBuilder<QuerySnapshot>(
+      stream: _firestore
+          .collection('events')
+          .where('eventDateTime', isGreaterThan: Timestamp.now())
+          .orderBy('eventDateTime')
+          .limit(3)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildSectionLoading('Upcoming Events');
+        }
+
+        if (snapshot.hasError) {
+          return _buildSectionError('Failed to load events');
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return _buildEmptySection('Upcoming Events', 'No upcoming events');
+        }
+
+        final events = snapshot.data!.docs;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Upcoming Events',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            TextButton(
-              onPressed: () {},
-              child: const Text(
-                'See All',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.w600,
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'Upcoming Events',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
-              ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CollegeEventsPanel(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'See All',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Column(
+              children: events.map((doc) {
+                final event = doc.data() as Map<String, dynamic>;
+                return _buildEventItem(event);
+              }).toList(),
             ),
           ],
-        ),
-        const SizedBox(height: 12),
-        Column(
-          children: [
-            _buildEventItem(
-              'Tech Symposium 2024',
-              'Dec 15, 2024 • 10:00 AM',
-              'Main Auditorium',
-              Icons.computer,
-              Colors.blue,
-            ),
-            _buildEventItem(
-              'Sports Festival',
-              'Dec 18, 2024 • 2:00 PM',
-              'College Ground',
-              Icons.sports_soccer,
-              Colors.green,
-            ),
-            _buildEventItem(
-              'Cultural Night',
-              'Dec 20, 2024 • 6:00 PM',
-              'Open Amphitheater',
-              Icons.music_note,
-              Colors.purple,
-            ),
-          ],
-        ),
-      ],
+        );
+      },
     );
   }
 
-  Widget _buildEventItem(
-    String title,
-    String date,
-    String location,
-    IconData icon,
-    Color color,
-  ) {
+  Widget _buildEventItem(Map<String, dynamic> event) {
+    final eventDateTime = (event['eventDateTime'] as Timestamp).toDate();
+    final date = DateFormat('MMM dd, yyyy').format(eventDateTime);
+    final time = DateFormat('hh:mm a').format(eventDateTime);
+    final color = _getEventColor(event['category']);
+    final icon = _getEventIcon(event['category']);
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -552,22 +610,26 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  event['name'] ?? 'Unnamed Event',
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  date,
+                  '$date • $time',
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  location,
+                  event['venue'] ?? 'No venue specified',
                   style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
@@ -579,12 +641,180 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
   }
 
   Widget _buildNewsSection() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _firestore
+          .collection('announcements')
+          .orderBy('createdAt', descending: true)
+          .limit(1)
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return _buildSectionLoading('News & Announcements');
+        }
+
+        if (snapshot.hasError) {
+          return _buildSectionError('Failed to load announcements');
+        }
+
+        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+          return _buildEmptySection('News & Announcements', 'No announcements');
+        }
+
+        final announcement =
+            snapshot.data!.docs.first.data() as Map<String, dynamic>;
+        final createdAt = (announcement['createdAt'] as Timestamp).toDate();
+        final timeAgo = _getTimeAgo(createdAt);
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 24),
+            const Text(
+              'News & Announcements',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Colors.orange.shade50,
+                    Colors.orange.shade100.withOpacity(0.5),
+                  ],
+                ),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          'NEW',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        DateFormat('MMMM dd, yyyy').format(createdAt),
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    announcement['title'] ?? 'No Title',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    announcement['description'] ?? 'No description available',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black87,
+                      height: 1.4,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.orange,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: const Text(
+                          'Read More',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        timeAgo,
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Helper methods
+  Widget _buildSectionLoading(String title) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: const Center(child: CircularProgressIndicator()),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSectionError(String error) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 24),
         const Text(
-          'News & Announcements',
+          'Error',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -595,88 +825,19 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.orange.shade50,
-                Colors.orange.shade100.withOpacity(0.5),
-              ],
-            ),
-            borderRadius: BorderRadius.circular(20),
+            color: Colors.red.shade50,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.red.shade200),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.orange,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Text(
-                      'NEW',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'December 10, 2024',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Winter Semester Registration Opens',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              Icon(Icons.error_outline, color: Colors.red.shade400),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  error,
+                  style: TextStyle(color: Colors.red.shade700),
                 ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Registration for the Winter Semester 2025 is now open. All students must complete their course registration by December 25th.',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black87,
-                  height: 1.4,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.orange,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: const Text(
-                      'Register Now',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  const Spacer(),
-                  Text(
-                    '2 days ago',
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
-                  ),
-                ],
               ),
             ],
           ),
@@ -685,169 +846,129 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
     );
   }
 
-  Widget _buildBottomNavigationBar() {
-    return Container(
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+  Widget _buildEmptySection(String title, String message) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
           ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: Colors.blue.shade700,
-        unselectedItemColor: Colors.grey.shade600,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
-            label: 'Home',
+        ),
+        const SizedBox(height: 12),
+        Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade50,
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: Colors.grey.shade200),
           ),
-
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outlined),
-            activeIcon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// Additional Screens for Navigation
-class CoursesScreen extends StatelessWidget {
-  const CoursesScreen({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Courses'),
-        backgroundColor: Colors.blue.shade700,
-        foregroundColor: Colors.white,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          _buildEnrolledCourseCard(
-            'Computer Science 101',
-            'Dr. Sarah Wilson',
-            '85%',
-            Colors.blue,
-          ),
-          _buildEnrolledCourseCard(
-            'Mathematics for Engineers',
-            'Prof. John Davis',
-            '92%',
-            Colors.green,
-          ),
-          _buildEnrolledCourseCard(
-            'Business Fundamentals',
-            'Dr. Emily Chen',
-            '78%',
-            Colors.orange,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEnrolledCourseCard(
-    String title,
-    String instructor,
-    String progress,
-    Color color,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(15),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+          child: Column(
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(Icons.school, color: color),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      instructor,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          LinearProgressIndicator(
-            value: int.parse(progress.replaceAll('%', '')) / 100,
-            backgroundColor: Colors.grey.shade200,
-            color: color,
-            minHeight: 6,
-            borderRadius: BorderRadius.circular(3),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
+              Icon(Icons.info_outline, color: Colors.grey.shade400, size: 40),
+              const SizedBox(height: 8),
               Text(
-                'Progress: $progress',
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
-              ),
-              TextButton(
-                onPressed: () {},
-                child: Text(
-                  'Continue',
-                  style: TextStyle(color: color, fontWeight: FontWeight.w600),
-                ),
+                message,
+                style: TextStyle(color: Colors.grey.shade600),
+                textAlign: TextAlign.center,
               ),
             ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  Color _getDepartmentColor(String department) {
+    switch (department.toLowerCase()) {
+      case 'computer science':
+        return Colors.blue;
+      case 'mechanical engineering':
+        return Colors.green;
+      case 'electrical engineering':
+        return Colors.orange;
+      case 'mathematics':
+        return Colors.purple;
+      case 'physics':
+        return Colors.red;
+      case 'commerce':
+        return Colors.teal;
+      case 'english':
+        return Colors.indigo;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getDepartmentIcon(String department) {
+    switch (department.toLowerCase()) {
+      case 'computer science':
+        return Icons.computer;
+      case 'mechanical engineering':
+        return Icons.engineering;
+      case 'electrical engineering':
+        return Icons.electrical_services;
+      case 'mathematics':
+        return Icons.calculate;
+      case 'physics':
+        return Icons.science;
+      case 'commerce':
+        return Icons.business;
+      case 'english':
+        return Icons.menu_book;
+      default:
+        return Icons.school;
+    }
+  }
+
+  Color _getEventColor(String? category) {
+    switch (category) {
+      case 'Cultural':
+        return Colors.purple;
+      case 'Technical':
+        return Colors.blue;
+      case 'Sports':
+        return Colors.green;
+      case 'Workshop':
+        return Colors.orange;
+      case 'Seminar':
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  IconData _getEventIcon(String? category) {
+    switch (category) {
+      case 'Cultural':
+        return Icons.music_note;
+      case 'Technical':
+        return Icons.computer;
+      case 'Sports':
+        return Icons.sports_basketball;
+      case 'Workshop':
+        return Icons.build;
+      case 'Seminar':
+        return Icons.person;
+      default:
+        return Icons.event;
+    }
+  }
+
+  String _getTimeAgo(DateTime date) {
+    final now = DateTime.now();
+    final difference = now.difference(date);
+
+    if (difference.inMinutes < 1) return 'Just now';
+    if (difference.inMinutes < 60) return '${difference.inMinutes}m ago';
+    if (difference.inHours < 24) return '${difference.inHours}h ago';
+    if (difference.inDays < 7) return '${difference.inDays}d ago';
+    if (difference.inDays < 30)
+      return '${(difference.inDays / 7).floor()}w ago';
+    return '${(difference.inDays / 30).floor()}mo ago';
   }
 }

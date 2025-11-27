@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Featurs/firebase_serviece/firebase.dart';
 import 'package:flutter_application_1/Featurs/auth/view/login_screen.dart';
@@ -12,13 +13,19 @@ class TeacherProfileScreen extends StatefulWidget {
 
 class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
   final AuthService _authService = AuthService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
   Map<String, dynamic>? _userData;
   bool _isLoading = true;
+  int _usersCount = 0;
+  int _coursesCount = 0;
+  int _eventsCount = 0;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _loadStatsData();
   }
 
   Future<void> _loadUserData() async {
@@ -27,6 +34,39 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
       final data = await _authService.getUserData(user.uid);
       setState(() {
         _userData = data;
+      });
+    }
+  }
+
+  Future<void> _loadStatsData() async {
+    try {
+      // Get users count with role "user"
+      final usersQuery = await _firestore
+          .collection('users')
+          .where('role', isEqualTo: 'user')
+          .get();
+
+      // Get courses count for this teacher
+      final currentUser = FirebaseAuth.instance.currentUser;
+      final coursesQuery = currentUser != null
+          ? await _firestore
+                .collection('courses')
+                .where('teacherId', isEqualTo: currentUser.uid)
+                .get()
+          : null;
+
+      // Get events count
+      final eventsQuery = await _firestore.collection('events').get();
+
+      setState(() {
+        _usersCount = usersQuery.size;
+        _coursesCount = coursesQuery?.size ?? 0;
+        _eventsCount = eventsQuery.size;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error loading stats: $e');
+      setState(() {
         _isLoading = false;
       });
     }
@@ -46,7 +86,15 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        scrolledUnderElevation: 0,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -82,7 +130,10 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                           radius: 60,
                           backgroundColor: Colors.white,
                           child: Text(
-                            (_userData?['username'] ?? 'T')[0].toUpperCase(),
+                            (_userData?['username'] ??
+                                    _userData?['name'] ??
+                                    'T')[0]
+                                .toUpperCase(),
                             style: const TextStyle(
                               fontSize: 48,
                               fontWeight: FontWeight.bold,
@@ -94,7 +145,9 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                       const SizedBox(height: 20),
                       // Username
                       Text(
-                        _userData?['username'] ?? 'Teacher',
+                        _userData?['username'] ??
+                            _userData?['name'] ??
+                            'Teacher',
                         style: const TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -122,7 +175,8 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                             ),
                             const SizedBox(width: 6),
                             Text(
-                              'Teacher',
+                              _userData?['role']?.toString().toUpperCase() ??
+                                  'TEACHER',
                               style: TextStyle(
                                 color: Colors.grey[800],
                                 fontWeight: FontWeight.w600,
@@ -141,7 +195,7 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                             Expanded(
                               child: _buildStatCard(
                                 icon: Icons.people_outline,
-                                value: '156',
+                                value: _usersCount.toString(),
                                 label: 'Students',
                               ),
                             ),
@@ -149,16 +203,16 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                             Expanded(
                               child: _buildStatCard(
                                 icon: Icons.book_outlined,
-                                value: '24',
+                                value: _coursesCount.toString(),
                                 label: 'Courses',
                               ),
                             ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: _buildStatCard(
-                                icon: Icons.star_outline,
-                                value: '4.8',
-                                label: 'Rating',
+                                icon: Icons.event_outlined,
+                                value: _eventsCount.toString(),
+                                label: 'Events',
                               ),
                             ),
                           ],
@@ -174,13 +228,22 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                             _buildInfoCard(
                               icon: Icons.email_outlined,
                               title: 'Email',
-                              value: _userData?['email'] ?? 'Not available',
+                              value:
+                                  _userData?['email'] ??
+                                  FirebaseAuth.instance.currentUser?.email ??
+                                  'Not available',
                             ),
                             const SizedBox(height: 16),
                             _buildInfoCard(
                               icon: Icons.business,
                               title: 'Department',
                               value: _userData?['department'] ?? 'Not assigned',
+                            ),
+                            const SizedBox(height: 16),
+                            _buildInfoCard(
+                              icon: Icons.phone_outlined,
+                              title: 'Phone',
+                              value: _userData?['phone'] ?? 'Not provided',
                             ),
                             const SizedBox(height: 16),
                             _buildInfoCard(
@@ -191,38 +254,12 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
                             const SizedBox(height: 32),
 
                             // Action Buttons
-                            // _buildActionButton(
-                            //   icon: Icons.assignment_outlined,
-                            //   label: 'My Courses',
-                            //   onTap: () {
-                            //     // Navigate to courses
-                            //   },
-                            // ),
-                            // const SizedBox(height: 12),
-                            // _buildActionButton(
-                            //   icon: Icons.analytics_outlined,
-                            //   label: 'Performance Analytics',
-                            //   onTap: () {
-                            //     // Navigate to analytics
-                            //   },
-                            // ),
-                            // const SizedBox(height: 12),
-                            // _buildActionButton(
-                            //   icon: Icons.edit_outlined,
-                            //   label: 'Edit Profile',
-                            //   onTap: () {
-                            //     // Navigate to edit profile
-                            //   },
-                            // ),
-                            // const SizedBox(height: 12),
-                            // _buildActionButton(
-                            //   icon: Icons.settings_outlined,
-                            //   label: 'Settings',
-                            //   onTap: () {
-                            //     // Navigate to settings
-                            //   },
-                            // ),
-                            const SizedBox(height: 24),
+                            _buildActionButton(
+                              icon: Icons.refresh_outlined,
+                              label: 'Refresh Data',
+                              onTap: _refreshData,
+                            ),
+                            const SizedBox(height: 12),
                             _buildActionButton(
                               icon: Icons.logout,
                               label: 'Logout',
@@ -388,5 +425,12 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
     } catch (e) {
       return 'Not available';
     }
+  }
+
+  Future<void> _refreshData() async {
+    setState(() {
+      _isLoading = true;
+    });
+    await Future.wait([_loadUserData(), _loadStatsData()]);
   }
 }
