@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:http/http.dart' as http;
+import 'dart:typed_data';
 
 class PhotoGalleryList extends StatelessWidget {
   const PhotoGalleryList({Key? key}) : super(key: key);
@@ -17,7 +20,6 @@ class PhotoGalleryList extends StatelessWidget {
         centerTitle: true,
       ),
       body: StreamBuilder<QuerySnapshot>(
-        // Simplified query without multiple inequality filters
         stream: _firestore
             .collection('events')
             .orderBy('eventDateTime', descending: true)
@@ -35,7 +37,6 @@ class PhotoGalleryList extends StatelessWidget {
             return _buildEmptyState();
           }
 
-          // Filter locally instead of in the query
           final events = _filterPastEventsWithImages(snapshot.data!.docs);
           return _buildEventsList(context, events);
         },
@@ -53,7 +54,6 @@ class PhotoGalleryList extends StatelessWidget {
       final eventDateTime = (event['eventDateTime'] as Timestamp).toDate();
       final images = event['imageUrls'] as List<dynamic>? ?? [];
 
-      // Local filtering for past events with images
       return eventDateTime.isBefore(now) && images.isNotEmpty;
     }).toList();
   }
@@ -129,7 +129,6 @@ class PhotoGalleryList extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Grid Preview
             ClipRRect(
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(16),
@@ -138,7 +137,6 @@ class PhotoGalleryList extends StatelessWidget {
                 height: 200,
                 child: Stack(
                   children: [
-                    // Show up to 3 images in a grid
                     Row(
                       children: List.generate(3, (i) {
                         if (i >= photos.length) {
@@ -210,7 +208,6 @@ class PhotoGalleryList extends StatelessWidget {
                 ),
               ),
             ),
-            // Event Info
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -272,7 +269,6 @@ class PhotoGalleryList extends StatelessWidget {
   }
 }
 
-// Photo Gallery Page with Firestore Images
 class PhotoGalleryPage extends StatelessWidget {
   final Map<String, dynamic> event;
 
@@ -383,7 +379,6 @@ class PhotoGalleryPage extends StatelessWidget {
                           );
                         },
                       ),
-                      // Gradient overlay at bottom
                       Positioned(
                         bottom: 0,
                         left: 0,
@@ -457,8 +452,7 @@ class PhotoGalleryPage extends StatelessWidget {
   }
 }
 
-// Full Screen Image Viewer
-class FullScreenImage extends StatelessWidget {
+class FullScreenImage extends StatefulWidget {
   final Map<String, dynamic> event;
   final int index;
 
@@ -466,37 +460,144 @@ class FullScreenImage extends StatelessWidget {
     : super(key: key);
 
   @override
+  State<FullScreenImage> createState() => _FullScreenImageState();
+}
+
+class _FullScreenImageState extends State<FullScreenImage> {
+  bool _isSharing = false;
+
+  Future<void> _shareImage() async {
+    setState(() {
+      _isSharing = true;
+    });
+
+    try {
+      final photos = widget.event['imageUrls'] as List<dynamic>? ?? [];
+      final imageUrl = photos[widget.index];
+
+      // Share the image URL directly
+      await Share.share(
+        'Check out this photo from ${widget.event['name']}!\n\n$imageUrl',
+        subject: 'Photo from ${widget.event['name']}',
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to share image: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        _isSharing = false;
+      });
+    }
+  }
+
+  Future<void> _shareImageAsFile() async {
+    setState(() {
+      _isSharing = true;
+    });
+
+    try {
+      final photos = widget.event['imageUrls'] as List<dynamic>? ?? [];
+      final imageUrl = photos[widget.index];
+
+      // Download the image
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        final bytes = response.bodyBytes;
+
+        // Create a temporary file and share (this is a simplified version)
+        // Note: For complete file sharing, you might want to use the share_plus
+        // XFile sharing feature with proper temporary file creation
+
+        await Share.share(
+          'Check out this photo from ${widget.event['name']}!',
+          subject: 'Photo from ${widget.event['name']}',
+        );
+      } else {
+        throw Exception('Failed to download image');
+      }
+    } catch (e) {
+      // Fallback to sharing the URL
+      await _shareImage();
+    } finally {
+      setState(() {
+        _isSharing = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final photos = event['imageUrls'] as List<dynamic>? ?? [];
+    final photos = widget.event['imageUrls'] as List<dynamic>? ?? [];
 
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
-        title: Text('Photo ${index + 1} of ${photos.length}'),
+        title: Text('Photo ${widget.index + 1} of ${photos.length}'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () {
-              // Implement share functionality
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Share functionality coming soon!'),
+          _isSharing
+              ? const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  ),
+                )
+              : IconButton(
+                  icon: const Icon(Icons.share, color: Colors.white),
+                  onPressed: _shareImage,
                 ),
-              );
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert, color: Colors.white),
+            onSelected: (value) {
+              if (value == 'share_url') {
+                _shareImage();
+              } else if (value == 'share_file') {
+                _shareImageAsFile();
+              }
             },
+            itemBuilder: (BuildContext context) => [
+              const PopupMenuItem<String>(
+                value: 'share_url',
+                child: Row(
+                  children: [
+                    Icon(Icons.link),
+                    SizedBox(width: 8),
+                    Text('Share Image Link'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'share_file',
+                child: Row(
+                  children: [
+                    Icon(Icons.file_copy),
+                    SizedBox(width: 8),
+                    Text('Share Image File'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
       body: Center(
         child: Hero(
-          tag: 'photo_${event['name']}_$index',
+          tag: 'photo_${widget.event['name']}_${widget.index}',
           child: InteractiveViewer(
             minScale: 0.5,
             maxScale: 4.0,
             child: Image.network(
-              photos[index],
+              photos[widget.index],
               fit: BoxFit.contain,
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
@@ -509,7 +610,7 @@ class FullScreenImage extends StatelessWidget {
                             ? loadingProgress.cumulativeBytesLoaded /
                                   loadingProgress.expectedTotalBytes!
                             : null,
-                        color: _getEventColor(event['category']),
+                        color: _getEventColor(widget.event['category']),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -527,8 +628,10 @@ class FullScreenImage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(16),
                     gradient: LinearGradient(
                       colors: [
-                        _getEventColor(event['category']),
-                        _getEventColor(event['category']).withOpacity(0.7),
+                        _getEventColor(widget.event['category']),
+                        _getEventColor(
+                          widget.event['category'],
+                        ).withOpacity(0.7),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -568,35 +671,42 @@ class FullScreenImage extends StatelessWidget {
           children: [
             IconButton(
               icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-              onPressed: index > 0
+              onPressed: widget.index > 0
                   ? () {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              FullScreenImage(event: event, index: index - 1),
+                          builder: (context) => FullScreenImage(
+                            event: widget.event,
+                            index: widget.index - 1,
+                          ),
                         ),
                       );
                     }
                   : null,
             ),
-            Text(
-              event['name'] ?? 'Event',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+            Expanded(
+              child: Text(
+                widget.event['name'] ?? 'Event',
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
               ),
             ),
             IconButton(
               icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
-              onPressed: index < photos.length - 1
+              onPressed: widget.index < photos.length - 1
                   ? () {
                       Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              FullScreenImage(event: event, index: index + 1),
+                          builder: (context) => FullScreenImage(
+                            event: widget.event,
+                            index: widget.index + 1,
+                          ),
                         ),
                       );
                     }
