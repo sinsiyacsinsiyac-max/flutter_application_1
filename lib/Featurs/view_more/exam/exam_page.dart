@@ -518,7 +518,7 @@ class _TimeTableViewContent extends StatelessWidget {
             title: data['title'] ?? 'Time Table',
             heroTag: 'timetable_${data['title']}',
           ),
-          
+
           // Info section
           Padding(
             padding: const EdgeInsets.all(16),
@@ -535,14 +535,15 @@ class _TimeTableViewContent extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
+                    Icon(
+                      Icons.calendar_today,
+                      size: 16,
+                      color: Colors.grey[600],
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       'Uploaded: ${_formatTimestamp(data['createdAt'])}',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                   ],
                 ),
@@ -608,7 +609,10 @@ class _TimeTableViewContent extends StatelessWidget {
                 bottom: 12,
                 right: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black54,
                     borderRadius: BorderRadius.circular(8),
@@ -653,17 +657,17 @@ class _TimeTableViewContent extends StatelessWidget {
             foregroundColor: Colors.white,
             elevation: 0,
             actions: [
-              IconButton(
-                icon: const Icon(Icons.download),
-                onPressed: () {
-                  // Add download functionality here
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Download feature coming soon'),
-                    ),
-                  );
-                },
-              ),
+              // IconButton(
+              //   icon: const Icon(Icons.download),
+              //   onPressed: () {
+              //     // Add download functionality here
+              //     ScaffoldMessenger.of(context).showSnackBar(
+              //       const SnackBar(
+              //         content: Text('Download feature coming soon'),
+              //       ),
+              //     );
+              //   },
+              // ),
             ],
           ),
           body: Center(
@@ -749,7 +753,10 @@ class _SeatArrangementViewContent extends StatelessWidget {
     );
   }
 
-  Widget _buildSeatArrangementCard(Map<String, dynamic> data, BuildContext context) {
+  Widget _buildSeatArrangementCard(
+    Map<String, dynamic> data,
+    BuildContext context,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
@@ -763,7 +770,7 @@ class _SeatArrangementViewContent extends StatelessWidget {
             title: data['title'] ?? 'Seat Arrangement',
             heroTag: 'seat_${data['title']}',
           ),
-          
+
           Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -779,14 +786,15 @@ class _SeatArrangementViewContent extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
+                    Icon(
+                      Icons.calendar_today,
+                      size: 16,
+                      color: Colors.grey[600],
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       'Uploaded: ${_formatTimestamp(data['createdAt'])}',
-                      style: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.grey[600], fontSize: 14),
                     ),
                   ],
                 ),
@@ -853,7 +861,10 @@ class _SeatArrangementViewContent extends StatelessWidget {
                 bottom: 12,
                 right: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.black54,
                     borderRadius: BorderRadius.circular(8),
@@ -898,16 +909,16 @@ class _SeatArrangementViewContent extends StatelessWidget {
             foregroundColor: Colors.white,
             elevation: 0,
             actions: [
-              IconButton(
-                icon: const Icon(Icons.download),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Download feature coming soon'),
-                    ),
-                  );
-                },
-              ),
+              // IconButton(
+              //   icon: const Icon(Icons.download),
+              //   onPressed: () {
+              //     ScaffoldMessenger.of(context).showSnackBar(
+              //       const SnackBar(
+              //         content: Text('Download feature coming soon'),
+              //       ),
+              //     );
+              //   },
+              // ),
             ],
           ),
           body: Center(
@@ -986,7 +997,10 @@ Widget _buildEmptyWidget({
   );
 }
 
-Widget _buildPlaceholderSection({required IconData icon, required String title}) {
+Widget _buildPlaceholderSection({
+  required IconData icon,
+  required String title,
+}) {
   return Container(
     height: 150,
     width: double.infinity,
@@ -1002,10 +1016,7 @@ Widget _buildPlaceholderSection({required IconData icon, required String title})
       children: [
         Icon(icon, size: 48, color: Colors.grey[400]),
         const SizedBox(height: 8),
-        Text(
-          title,
-          style: TextStyle(color: Colors.grey[600]),
-        ),
+        Text(title, style: TextStyle(color: Colors.grey[600])),
       ],
     ),
   );
@@ -1015,9 +1026,7 @@ Widget _buildImageLoading() {
   return Container(
     height: 220,
     color: Colors.grey[200],
-    child: const Center(
-      child: CircularProgressIndicator(),
-    ),
+    child: const Center(child: CircularProgressIndicator()),
   );
 }
 
@@ -1030,10 +1039,7 @@ Widget _buildImageError() {
       children: [
         Icon(Icons.broken_image, size: 48, color: Colors.grey[400]),
         const SizedBox(height: 8),
-        Text(
-          'Failed to load image',
-          style: TextStyle(color: Colors.grey[600]),
-        ),
+        Text('Failed to load image', style: TextStyle(color: Colors.grey[600])),
       ],
     ),
   );
