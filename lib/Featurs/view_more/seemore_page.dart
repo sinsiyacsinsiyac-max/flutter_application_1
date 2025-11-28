@@ -1091,7 +1091,7 @@ Widget _buildErrorState(String message) {
         const SizedBox(height: 12),
         Text(
           message,
-          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          style: TextStyle(fontSize: 14, color: const Color.fromARGB(255, 32, 192, 236)),
           textAlign: TextAlign.center,
         ),
       ],
@@ -1104,11 +1104,11 @@ Widget _buildEmptyState(String message) {
     padding: const EdgeInsets.all(24),
     child: Column(
       children: [
-        Icon(Icons.inbox_rounded, color: Colors.grey[400], size: 48),
+        Icon(Icons.inbox_rounded, color: const Color.fromARGB(255, 37, 147, 238), size: 48),
         const SizedBox(height: 12),
         Text(
           message,
-          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          style: TextStyle(fontSize: 14, color: const Color.fromARGB(255, 57, 181, 243)),
           textAlign: TextAlign.center,
         ),
       ],

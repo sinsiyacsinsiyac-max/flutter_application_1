@@ -301,7 +301,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.calendar_today),
                   ),
-                  items: const ['2 sem', '4 sem', '6 sem'].map((sem) {
+                  items: const ['2 sem', '4 sem', '6 sem','8 sem'].map((sem) {
                     return DropdownMenuItem(value: sem, child: Text(sem));
                   }).toList(),
                   onChanged: (value) {

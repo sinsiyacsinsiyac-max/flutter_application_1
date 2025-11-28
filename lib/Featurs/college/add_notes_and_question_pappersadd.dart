@@ -524,7 +524,7 @@ class _AddMaterialScreenState extends State<AddMaterialScreen> {
                             : Colors.grey.shade400,
                         width: 2,
                       ),
-                    ),
+                    ), 
                     child: _selectedFile != null
                         ? Column(
                             mainAxisAlignment: MainAxisAlignment.center,

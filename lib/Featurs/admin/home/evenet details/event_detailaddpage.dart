@@ -70,7 +70,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF0F1A6E),
+              primary: Color.fromARGB(255, 91, 147, 243),
             ),
           ),
           child: child!,
@@ -90,7 +90,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF0F1A6E),
+              primary: Color.fromARGB(255, 91, 159, 237),
             ),
           ),
           child: child!,
@@ -120,14 +120,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Event created successfully!'),
-          backgroundColor: Colors.green,
+          backgroundColor: Color.fromARGB(255, 92, 158, 239),
         ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please fill all required fields'),
-          backgroundColor: Colors.red,
+          backgroundColor: Color.fromARGB(255, 98, 189, 250),
         ),
       );
     }
@@ -142,7 +142,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
           'Add New Event',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF0F1A6E),
+        backgroundColor: const Color.fromARGB(255, 90, 165, 249),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -164,13 +164,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     controller: _titleController,
                     decoration: InputDecoration(
                       labelText: 'Event Title *',
-                      prefixIcon: const Icon(Icons.title, color: Color(0xFF0F1A6E)),
+                      prefixIcon: const Icon(Icons.title, color: Color.fromARGB(255, 96, 172, 239)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Color(0xFF0F1A6E), width: 2),
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 95, 152, 231), width: 2),
                       ),
                     ),
                     validator: (value) {
@@ -186,13 +186,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     maxLines: 4,
                     decoration: InputDecoration(
                       labelText: 'Description *',
-                      prefixIcon: const Icon(Icons.description, color: Color(0xFF0F1A6E)),
+                      prefixIcon: const Icon(Icons.description, color: Color.fromARGB(255, 95, 162, 239)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Color(0xFF0F1A6E), width: 2),
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 93, 166, 235), width: 2),
                       ),
                     ),
                     validator: (value) {
@@ -207,13 +207,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     value: _selectedCategory,
                     decoration: InputDecoration(
                       labelText: 'Category',
-                      prefixIcon: const Icon(Icons.category, color: Color(0xFF0F1A6E)),
+                      prefixIcon: const Icon(Icons.category, color: Color.fromARGB(255, 96, 146, 221)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Color(0xFF0F1A6E), width: 2),
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 90, 136, 253), width: 2),
                       ),
                     ),
                     items: _categories.map((category) {
@@ -232,7 +232,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     child: InputDecorator(
                       decoration: InputDecoration(
                         labelText: 'Event Date *',
-                        prefixIcon: const Icon(Icons.calendar_today, color: Color(0xFF0F1A6E)),
+                        prefixIcon: const Icon(Icons.calendar_today, color: Color.fromARGB(255, 90, 147, 239)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -253,7 +253,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     child: InputDecorator(
                       decoration: InputDecoration(
                         labelText: 'Event Time *',
-                        prefixIcon: const Icon(Icons.access_time, color: Color(0xFF0F1A6E)),
+                        prefixIcon: const Icon(Icons.access_time, color: Color.fromARGB(255, 93, 127, 228)),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -273,13 +273,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     controller: _locationController,
                     decoration: InputDecoration(
                       labelText: 'Location *',
-                      prefixIcon: const Icon(Icons.location_on, color: Color(0xFF0F1A6E)),
+                      prefixIcon: const Icon(Icons.location_on, color: Color.fromARGB(255, 87, 127, 245)),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: Color(0xFF0F1A6E), width: 2),
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 91, 134, 244), width: 2),
                       ),
                     ),
                     validator: (value) {
@@ -297,7 +297,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
             ElevatedButton(
               onPressed: _saveEvent,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF0F1A6E),
+                backgroundColor: const Color.fromARGB(255, 94, 128, 241),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -335,7 +335,7 @@ class EventDetailScreen extends StatelessWidget {
           'Event Details',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF0F1A6E),
+        backgroundColor: const Color.fromARGB(255, 92, 110, 242),
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -366,8 +366,8 @@ class EventDetailScreen extends StatelessWidget {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    const Color(0xFF0F1A6E),
-                    const Color(0xFF0F1A6E).withOpacity(0.7),
+                    const Color.fromARGB(255, 90, 151, 236),
+                    const Color.fromARGB(255, 94, 111, 240).withOpacity(0.7),
                   ],
                 ),
               ),
@@ -391,7 +391,7 @@ class EventDetailScreen extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF0F1A6E),
+                      color: Color.fromARGB(255, 91, 109, 239),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -400,13 +400,13 @@ class EventDetailScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF0F1A6E).withOpacity(0.1),
+                      color: const Color.fromARGB(255, 94, 111, 234).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
                       event.category,
                       style: const TextStyle(
-                        color: Color(0xFF0F1A6E),
+                        color: Color.fromARGB(255, 92, 110, 248),
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -426,7 +426,7 @@ class EventDetailScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF0F1A6E).withOpacity(0.1),
+                              color: const Color.fromARGB(255, 105, 121, 244).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Icon(
