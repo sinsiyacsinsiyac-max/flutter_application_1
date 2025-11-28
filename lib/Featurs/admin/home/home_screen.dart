@@ -763,6 +763,7 @@
 //     );
 //   }
 // }
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/Featurs/admin/college_datail_add.dart';
@@ -775,6 +776,7 @@ import 'package:flutter_application_1/Featurs/admin/profile_screen.dart';
 import 'package:flutter_application_1/Featurs/auth/view/login_screen.dart';
 import 'package:flutter_application_1/Featurs/college/add_course.dart';
 import 'package:flutter_application_1/Featurs/college/add_event.dart';
+import 'package:flutter_application_1/Featurs/college/aminities_add_option.dart';
 import 'package:flutter_application_1/Featurs/firebase_serviece/firebase.dart';
 import 'package:flutter_application_1/Featurs/view_more/course/course_detai_page.dart';
 
@@ -787,6 +789,34 @@ class AdminHomeScreen extends StatefulWidget {
 
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final AuthService _authService = AuthService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  int _usersCount = 0;
+  int _teacheCount = 0;
+  int _courseCount = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  Future _loadData() async {
+    final usersQuery = await _firestore
+        .collection('users')
+        .where('role', isEqualTo: 'user')
+        .get();
+    final teachersQuery = await _firestore
+        .collection('users')
+        .where('role', isEqualTo: 'teacher')
+        .get();
+    final courseQuery = await _firestore.collection('courses').get();
+    setState(() {
+      _usersCount = usersQuery.size;
+      _teacheCount = teachersQuery.size;
+      _courseCount = courseQuery.size;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -950,7 +980,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const DownloadsManagementPage(),
+                    builder: (context) => const CollegeAmenitiesPanel(),
                   ),
                 );
               },
@@ -1001,10 +1031,22 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildStatItem('9', 'Courses', const Color(0xFF1A237E)),
-                      _buildStatItem('45', 'Students', const Color(0xFF0D47A1)),
-                      _buildStatItem('15', 'Teachers', const Color(0xFF4A148C)),
-                      _buildStatItem('3', 'Colleges', const Color(0xFF283593)),
+                      _buildStatItem(
+                        _courseCount,
+                        'Courses',
+                        const Color(0xFF1A237E),
+                      ),
+                      _buildStatItem(
+                        _usersCount,
+                        'Students',
+                        const Color(0xFF0D47A1),
+                      ),
+                      _buildStatItem(
+                        _teacheCount,
+                        'Teachers',
+                        const Color(0xFF4A148C),
+                      ),
+                      // _buildStatItem('3', 'Colleges', const Color(0xFF283593)),
                     ],
                   ),
                 ],
@@ -1098,11 +1140,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
     );
   }
 
-  Widget _buildStatItem(String count, String label, Color color) {
+  Widget _buildStatItem(int count, String label, Color color) {
     return Column(
       children: [
         Text(
-          count,
+          '${count}',
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
