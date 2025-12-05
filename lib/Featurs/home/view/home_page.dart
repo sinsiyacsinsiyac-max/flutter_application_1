@@ -366,6 +366,10 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
   List<Map<String, dynamic>> _allAmenities = [];
   Map<String, dynamic>? _collegeData;
 
+  // User name tracking
+  String? _userName;
+  String? _currentUserId; // You should get this from Firebase Auth
+
   @override
   void initState() {
     super.initState();
@@ -382,6 +386,9 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
     // Preload data for better matching
     _preloadData();
 
+    // Try to load existing user name if user is logged in
+    _loadExistingUserName();
+
     // Print initial message
     _printToTerminal("🤖", "Campus Assistant started and ready!");
     _printToTerminal("🤖", "Welcome message sent to user");
@@ -396,6 +403,23 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
       "🏫 College Contact Details\n\n"
       "What would you like to know?",
     );
+  }
+
+  // Load existing user name from Firestore
+  Future<void> _loadExistingUserName() async {
+    try {
+      if (_currentUserId != null) {
+        final name = await _getUserNameFromFirestore();
+        if (name != null) {
+          setState(() {
+            _userName = name;
+          });
+          _printToTerminal("📖", "Loaded existing user name: $name");
+        }
+      }
+    } catch (e) {
+      _printToTerminal("❌", "Failed to load user name: $e");
+    }
   }
 
   // Preload data for better matching
@@ -678,7 +702,93 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
     }
   }
 
-  // Enhanced smart response generator with better college contact detection
+  // Extract name from greeting message
+  String? _extractNameFromGreeting(String query) {
+    final lowerQuery = query.toLowerCase();
+
+    // Common patterns for name extraction
+    final patterns = [
+      RegExp(r'(?:hi|hello|hey)[\s,]*i\s*am\s+(\w+)', caseSensitive: false),
+      RegExp(
+        r'(?:hi|hello|hey)[\s,]*my\s+name\s+is\s+(\w+)',
+        caseSensitive: false,
+      ),
+      RegExp(
+        r"(?:hi|hello|hey)[\s,]*(?:i(?:'m|am))\s+(\w+)",
+        caseSensitive: false,
+      ),
+      RegExp(r'this\s+is\s+(\w+)', caseSensitive: false),
+      RegExp(r'my\s+name\s+is\s+(\w+)', caseSensitive: false),
+    ];
+
+    for (var pattern in patterns) {
+      final match = pattern.firstMatch(lowerQuery);
+      if (match != null) {
+        final extractedName = match.group(1);
+        if (extractedName != null) {
+          // Capitalize first letter
+          return extractedName[0].toUpperCase() + extractedName.substring(1);
+        }
+      }
+    }
+
+    return null;
+  }
+
+  // Store user name in Firestore
+  Future<void> _storeUserNameInFirestore(String name) async {
+    try {
+      if (_currentUserId == null) {
+        _printToTerminal("ℹ️", "No user ID available for Firestore storage");
+        return;
+      }
+
+      await _firestore.collection('users').doc(_currentUserId).set({
+        'name': name,
+        'lastInteraction': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      _printToTerminal("💾", "User name stored in Firestore: $name");
+    } catch (e) {
+      _printToTerminal("❌", "Failed to store user name: $e");
+    }
+  }
+
+  // Retrieve user name from Firestore
+  Future<String?> _getUserNameFromFirestore() async {
+    try {
+      if (_currentUserId == null) {
+        _printToTerminal("ℹ️", "No user ID available for Firestore retrieval");
+        return null;
+      }
+
+      final doc = await _firestore
+          .collection('users')
+          .doc(_currentUserId)
+          .get();
+
+      if (doc.exists && doc.data()?['name'] != null) {
+        final name = doc.data()!['name'] as String;
+        _printToTerminal("📖", "Retrieved user name from Firestore: $name");
+        return name;
+      }
+    } catch (e) {
+      _printToTerminal("❌", "Failed to retrieve user name: $e");
+    }
+    return null;
+  }
+
+  // Check if it's a greeting
+  bool _isGreeting(String query) {
+    return query.contains('hi') ||
+        query.contains('hello') ||
+        query.contains('hey') ||
+        query.contains('good morning') ||
+        query.contains('good afternoon');
+  }
+
+  // Enhanced smart response generator with better college contact detection and name handling
   Future<String> _generateSmartResponse(String query) async {
     final queryLower = query.toLowerCase();
     final keywords = _extractKeywords(queryLower);
@@ -694,8 +804,39 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
       _printToTerminal("🔍", "Detected course: $detectedCourse");
     }
 
-    // Greetings
+    // Greetings with name extraction
     if (_isGreeting(queryLower)) {
+      final extractedName = _extractNameFromGreeting(queryLower);
+
+      if (extractedName != null) {
+        // Store the extracted name
+        setState(() {
+          _userName = extractedName;
+        });
+
+        // Store in Firestore if user is logged in
+        if (_currentUserId != null) {
+          await _storeUserNameInFirestore(extractedName);
+        }
+
+        _printToTerminal(
+          "👤",
+          "Extracted and stored user name: $extractedName",
+        );
+        _printToTerminal("🎯", "Query classified as: GREETING_WITH_NAME");
+        return "Hello $extractedName! 👋 Nice to meet you! I'm here to help you with campus information. What would you like to know about?";
+      }
+
+      // Try to use existing name if no name in current message
+      if (_userName != null) {
+        _printToTerminal("👤", "Using existing user name: $_userName");
+        _printToTerminal(
+          "🎯",
+          "Query classified as: GREETING_WITH_STORED_NAME",
+        );
+        return "Hello again $_userName! 👋 How can I help you today?";
+      }
+
       _printToTerminal("🎯", "Query classified as: GREETING");
       return "Hello! 👋 Nice to meet you! I'm here to help you with campus information. What would you like to know about?";
     }
@@ -704,7 +845,8 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
     bool isCollegeContactQuery = _isCollegeContactQuery(queryLower);
     if (isCollegeContactQuery) {
       _printToTerminal("🎯", "Query classified as: COLLEGE_CONTACT");
-      return _getCollegeContactResponse();
+      final greeting = _userName != null ? "$_userName, " : "";
+      return "$greeting${_getCollegeContactResponse()}";
     }
 
     // Courses information - expanded to include fee-related queries and course names
@@ -722,7 +864,9 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
 
     if (isCourseQuery) {
       _printToTerminal("🎯", "Query classified as: COURSES");
-      return await _getCoursesResponse(queryLower, detectedCourse);
+      final response = await _getCoursesResponse(queryLower, detectedCourse);
+      final greeting = _userName != null ? "$_userName,\n\n" : "";
+      return "$greeting$response";
     }
 
     // Amenities information
@@ -735,7 +879,9 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
         queryLower.contains('sport') ||
         queryLower.contains('gym')) {
       _printToTerminal("🎯", "Query classified as: AMENITIES");
-      return await _getAmenitiesResponse(queryLower);
+      final response = await _getAmenitiesResponse(queryLower);
+      final greeting = _userName != null ? "$_userName,\n\n" : "";
+      return "$greeting$response";
     }
 
     // Events information
@@ -743,7 +889,9 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
         queryLower.contains('upcoming') ||
         queryLower.contains('schedule')) {
       _printToTerminal("🎯", "Query classified as: EVENTS");
-      return await _getEventsResponse();
+      final response = await _getEventsResponse();
+      final greeting = _userName != null ? "$_userName,\n\n" : "";
+      return "$greeting$response";
     }
 
     // Study materials
@@ -752,19 +900,23 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
         queryLower.contains('notes') ||
         queryLower.contains('book')) {
       _printToTerminal("🎯", "Query classified as: STUDY MATERIALS");
-      return await _getStudyMaterialsResponse();
+      final response = await _getStudyMaterialsResponse();
+      final greeting = _userName != null ? "$_userName,\n\n" : "";
+      return "$greeting$response";
     }
 
     // Help
     if (queryLower.contains('help') || queryLower.contains('what can you do')) {
       _printToTerminal("🎯", "Query classified as: HELP");
-      return _getHelpResponse();
+      final greeting = _userName != null ? "$_userName!\n\n" : "";
+      return "$greeting${_getHelpResponse()}";
     }
 
     // Default response for unknown queries
     _printToTerminal("🎯", "Query classified as: UNKNOWN/OTHER");
+    final greeting = _userName != null ? "$_userName, " : "";
     return """
-I'm not sure I understand. Here's what I can help you with:
+${greeting}I'm not sure I understand. Here's what I can help you with:
 
 📚 **Course Information**
 • Course details, credits, schedules, fees
@@ -919,14 +1071,6 @@ Try asking about specific courses like "BCA fees" or "college contact details"!"
         !queryLower.contains('sport') &&
         !queryLower.contains('gym') &&
         !queryLower.contains('amenity');
-  }
-
-  bool _isGreeting(String query) {
-    return query.contains('hi') ||
-        query.contains('hello') ||
-        query.contains('hey') ||
-        query.contains('good morning') ||
-        query.contains('good afternoon');
   }
 
   // College contact information response
@@ -1286,8 +1430,11 @@ ${data['description'] ?? ''}""";
 
   String _getHelpResponse() {
     _printToTerminal("ℹ️", "Help information requested by user");
+
+    final greeting = _userName != null ? "Hi $_userName!" : "Hi!";
+
     return """
-🤖 **Campus Assistant Help**
+$greeting 🤖 **Campus Assistant Help**
 
 I can help you find information about:
 
