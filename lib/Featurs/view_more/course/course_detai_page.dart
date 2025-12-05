@@ -43,7 +43,7 @@ class CourseDetailsPage extends StatelessWidget {
             fontSize: 18,
           ),
         ),
-        backgroundColor: const Color(0xFF1A237E),
+        backgroundColor: const Color.fromARGB(255, 10, 140, 220),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_rounded, size: 24),
@@ -67,8 +67,8 @@ class CourseDetailsPage extends StatelessWidget {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFF1A237E),
-                  Color(0xFF303F9F),
+                  Color.fromARGB(255, 21, 168, 241),
+                  Color.fromARGB(255, 18, 180, 225),
                 ],
               ),
               borderRadius: const BorderRadius.only(
@@ -154,7 +154,7 @@ class CourseDetailsPage extends StatelessWidget {
                           icon: Icons.people_alt_rounded,
                           title: 'Enrolled',
                           value: '$enrolledStudents/$maxStudents',
-                          color: Colors.green.shade700,
+                          color: const Color.fromARGB(255, 14, 176, 245),
                         ),
                       ),
                     ],
@@ -216,7 +216,7 @@ class CourseDetailsPage extends StatelessWidget {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.green,
+                                color: Color.fromARGB(255, 5, 165, 210),
                               ),
                             ),
                           ],
@@ -226,8 +226,8 @@ class CourseDetailsPage extends StatelessWidget {
                           value: enrollmentPercentage,
                           backgroundColor: Colors.grey.shade300,
                           color: enrollmentPercentage >= 0.8 
-                              ? Colors.orange.shade600 
-                              : Colors.green.shade600,
+                              ? const Color.fromARGB(255, 10, 178, 224) 
+                              : const Color.fromARGB(255, 11, 217, 240),
                           minHeight: 8,
                           borderRadius: BorderRadius.circular(4),
                         ),
@@ -296,7 +296,7 @@ class CourseDetailsPage extends StatelessWidget {
                                     'Fees can be paid in installments per semester',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Colors.blue.shade800,
+                                      color: const Color.fromARGB(255, 19, 156, 247),
                                     ),
                                   ),
                                 ),
@@ -338,7 +338,7 @@ class CourseDetailsPage extends StatelessWidget {
                             style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1A237E),
+                            backgroundColor: const Color.fromARGB(255, 20, 142, 190),
                             foregroundColor: Colors.white,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
@@ -389,10 +389,10 @@ class CourseDetailsPage extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A237E).withOpacity(0.1),
+                  color: const Color.fromARGB(255, 18, 181, 235).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: Icon(icon, size: 18, color: const Color(0xFF1A237E)),
+                child: Icon(icon, size: 18, color: const Color.fromARGB(255, 28, 179, 234)),
               ),
               const SizedBox(width: 12),
               Text(
@@ -400,7 +400,7 @@ class CourseDetailsPage extends StatelessWidget {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
-                  color: Color(0xFF1A237E),
+                  color: Color.fromARGB(255, 47, 173, 219),
                 ),
               ),
             ],
@@ -526,7 +526,7 @@ class CourseDetailsPage extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: isTotal ? FontWeight.w700 : FontWeight.w500,
-              color: isTotal ? Colors.green.shade800 : Colors.grey.shade700,
+              color: isTotal ? const Color.fromARGB(255, 11, 161, 192) : Colors.grey.shade700,
             ),
           ),
           Text(
@@ -534,7 +534,7 @@ class CourseDetailsPage extends StatelessWidget {
             style: TextStyle(
               fontSize: isTotal ? 18 : 16,
               fontWeight: FontWeight.w700,
-              color: isTotal ? Colors.green.shade700 : Colors.black87,
+              color: isTotal ? const Color.fromARGB(255, 15, 202, 244) : Colors.black87,
             ),
           ),
         ],
@@ -558,15 +558,15 @@ class CourseDetailsPage extends StatelessWidget {
             onPressed: () {
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                SnackBar( 
                   content: Text('Successfully enrolled in $courseName!'),
-                  backgroundColor: Colors.green,
+                  backgroundColor: const Color.fromARGB(255, 10, 171, 211),
                   behavior: SnackBarBehavior.floating,
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1A237E),
+              backgroundColor: const Color.fromARGB(255, 20, 144, 202),
             ),
             child: const Text('Enroll'),
           ),

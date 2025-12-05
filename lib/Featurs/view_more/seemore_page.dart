@@ -584,7 +584,7 @@ class ProfileExpantion extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [const Color(0xFF0D47A1), Colors.blue[700]!],
+              colors: [const Color.fromARGB(255, 11, 167, 234), Colors.blue[700]!],
             ),
             borderRadius: BorderRadius.circular(20),
           ),
@@ -911,20 +911,20 @@ class EventsExpansion extends StatelessWidget {
       icon: Icons.event_rounded,
       title: 'Events & Gallery',
       subtitle: 'Upcoming activities & photos',
-      color: const Color(0xFF6A1B9A),
+      color: const Color.fromARGB(255, 57, 137, 222),
       childrenBuilder: (context) => [
         _buildEventItem(
           context,
           'Photo Gallery',
           Icons.photo_library_rounded,
-          Colors.purple,
+          const Color.fromARGB(255, 22, 188, 249),
           const PhotoGalleryList(),
         ),
         _buildEventItem(
           context,
           'Events & Announcements',
           Icons.event_available_rounded,
-          Colors.deepPurple,
+          const Color.fromARGB(255, 12, 160, 234),
           const EventsPage(),
         ),
       ],
@@ -1067,7 +1067,7 @@ Widget _buildLoadingState() {
             child: CircularProgressIndicator(
               strokeWidth: 3,
               valueColor: AlwaysStoppedAnimation<Color>(
-                const Color(0xFF1A237E).withOpacity(0.7),
+                const Color.fromARGB(255, 8, 177, 239).withOpacity(0.7),
               ),
             ),
           ),
@@ -1087,7 +1087,7 @@ Widget _buildErrorState(String message) {
     padding: const EdgeInsets.all(24),
     child: Column(
       children: [
-        Icon(Icons.error_outline_rounded, color: Colors.red[400], size: 48),
+        Icon(Icons.error_outline_rounded, color: const Color.fromARGB(255, 17, 117, 193), size: 48),
         const SizedBox(height: 12),
         Text(
           message,

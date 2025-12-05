@@ -74,7 +74,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Account created successfully as $_selectedRole!'),
-              backgroundColor: Colors.green,
+              backgroundColor: const Color.fromARGB(255, 14, 171, 238),
             ),
           );
           Navigator.pop(context);

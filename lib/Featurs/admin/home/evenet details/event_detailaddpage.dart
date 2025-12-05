@@ -431,7 +431,7 @@ class EventDetailScreen extends StatelessWidget {
                             ),
                             child: const Icon(
                               Icons.calendar_today,
-                              color: Color(0xFF0F1A6E),
+                              color: Color.fromARGB(255, 93, 111, 247),
                               size: 24,
                             ),
                           ),
@@ -484,12 +484,12 @@ class EventDetailScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF0F1A6E).withOpacity(0.1),
+                              color: const Color.fromARGB(255, 93, 110, 240).withOpacity(0.1),
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: const Icon(
                               Icons.location_on,
-                              color: Color(0xFF0F1A6E),
+                              color: Color.fromARGB(255, 91, 109, 241),
                               size: 24,
                             ),
                           ),
@@ -518,7 +518,7 @@ class EventDetailScreen extends StatelessWidget {
                           ),
                           IconButton(
                             icon: const Icon(Icons.map),
-                            color: const Color(0xFF0F1A6E),
+                            color: const Color.fromARGB(255, 92, 109, 242),
                             onPressed: () {
                               // Open map
                             },
@@ -535,7 +535,7 @@ class EventDetailScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF0F1A6E),
+                      color: Color.fromARGB(255, 92, 107, 221),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -583,8 +583,8 @@ class EventDetailScreen extends StatelessWidget {
                 icon: const Icon(Icons.bookmark_border),
                 label: const Text('Save'),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF0F1A6E),
-                  side: const BorderSide(color: Color(0xFF0F1A6E)),
+                  foregroundColor: const Color.fromARGB(255, 95, 112, 238),
+                  side: const BorderSide(color: Color.fromARGB(255, 94, 111, 239)),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -600,7 +600,7 @@ class EventDetailScreen extends StatelessWidget {
                 icon: const Icon(Icons.check_circle_outline),
                 label: const Text('Register'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF0F1A6E),
+                  backgroundColor: const Color.fromARGB(255, 93, 108, 219),
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(

@@ -90,8 +90,8 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                Colors.blue.shade900,
-                Colors.blue.shade700,
+                const Color.fromARGB(255, 81, 142, 235),
+                const Color.fromARGB(255, 93, 171, 249),
                 Colors.blue.shade600,
               ],
             ),
@@ -220,7 +220,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               color: Colors.blue.shade50,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.filter_list, color: Colors.blue, size: 20),
+            child: const Icon(Icons.filter_list, color: Color.fromARGB(255, 66, 163, 241), size: 20),
           ),
         ],
       ),
@@ -255,7 +255,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   MaterialPageRoute(builder: (context) => TeacherCoursePanel()),
                 );
               },
-              child: _buildActionItem(Icons.school, 'Courses', Colors.blue),
+              child: _buildActionItem(Icons.school, 'Courses', const Color.fromARGB(255, 97, 116, 235)),
             ),
             GestureDetector(
               onTap: () {
@@ -264,7 +264,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   MaterialPageRoute(builder: (context) => NotesPapersPanel()),
                 );
               },
-              child: _buildActionItem(Icons.assignment, 'Notes', Colors.orange),
+              child: _buildActionItem(Icons.assignment, 'Notes', const Color.fromARGB(255, 90, 110, 239)),
             ),
             GestureDetector(
               onTap: () {
@@ -278,7 +278,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               child: _buildActionItem(
                 Icons.library_books,
                 'Amenities',
-                Colors.red,
+                const Color.fromARGB(255, 72, 136, 231),
               ),
             ),
             GestureDetector(
@@ -288,7 +288,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   MaterialPageRoute(builder: (context) => CollegeEventsPanel()),
                 );
               },
-              child: _buildActionItem(Icons.event, 'Events', Colors.pink),
+              child: _buildActionItem(Icons.event, 'Events', const Color.fromARGB(255, 12, 146, 249)),
             ),
             GestureDetector(
               onTap: () {
@@ -300,7 +300,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               child: _buildActionItem(
                 Icons.edit,
                 'Exams',
-                const Color.fromARGB(255, 198, 115, 201),
+                const Color.fromARGB(255, 36, 137, 232),
               ),
             ),
             // _buildActionItem(Icons.analytics, 'Analytics', Colors.teal),
@@ -314,7 +314,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   ),
                 );
               },
-              child: _buildActionItem(Icons.person, 'Profile', Colors.indigo),
+              child: _buildActionItem(Icons.person, 'Profile', const Color.fromARGB(255, 75, 101, 245)),
             ),
           ],
         ),
@@ -699,7 +699,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: Colors.orange,
+                          color: const Color.fromARGB(255, 98, 89, 226),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Text(
@@ -750,7 +750,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: Colors.orange,
+                          color: const Color.fromARGB(255, 85, 107, 219),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Text(
@@ -827,16 +827,16 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
           decoration: BoxDecoration(
             color: Colors.red.shade50,
             borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.red.shade200),
+            border: Border.all(color: const Color.fromARGB(255, 96, 114, 219)),
           ),
           child: Row(
             children: [
-              Icon(Icons.error_outline, color: Colors.red.shade400),
+              Icon(Icons.error_outline, color: const Color.fromARGB(255, 41, 148, 219)),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   error,
-                  style: TextStyle(color: Colors.red.shade700),
+                  style: TextStyle(color: const Color.fromARGB(255, 47, 123, 211)),
                 ),
               ),
             ],
@@ -888,19 +888,19 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
       case 'computer science':
         return Colors.blue;
       case 'mechanical engineering':
-        return Colors.green;
+        return const Color.fromARGB(255, 91, 141, 215);
       case 'electrical engineering':
-        return Colors.orange;
+        return const Color.fromARGB(255, 57, 131, 196);
       case 'mathematics':
-        return Colors.purple;
+        return const Color.fromARGB(255, 63, 112, 218);
       case 'physics':
-        return Colors.red;
+        return const Color.fromARGB(255, 54, 124, 244);
       case 'commerce':
-        return Colors.teal;
+        return const Color.fromARGB(255, 60, 117, 239);
       case 'english':
         return Colors.indigo;
       default:
-        return Colors.grey;
+        return const Color.fromARGB(255, 43, 87, 208);
     }
   }
 
@@ -928,17 +928,17 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
   Color _getEventColor(String? category) {
     switch (category) {
       case 'Cultural':
-        return Colors.purple;
+        return const Color.fromARGB(255, 16, 134, 224);
       case 'Technical':
         return Colors.blue;
       case 'Sports':
-        return Colors.green;
+        return const Color.fromARGB(255, 11, 147, 220);
       case 'Workshop':
-        return Colors.orange;
+        return const Color.fromARGB(255, 15, 189, 228);
       case 'Seminar':
-        return Colors.teal;
+        return const Color.fromARGB(255, 97, 117, 216);
       default:
-        return Colors.grey;
+        return const Color.fromARGB(255, 106, 141, 216);
     }
   }
 

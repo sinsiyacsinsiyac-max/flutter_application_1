@@ -92,7 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = true);
       
       try {
-        User? user = await _authService.signIn(
+        User? user = await _authService.signIn( 
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
@@ -110,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error: ${e.code}'),
-              backgroundColor: Colors.red,
+              backgroundColor: const Color.fromARGB(255, 54, 174, 244),
             ),
           );
         }

@@ -129,7 +129,7 @@ class _TeacherCoursePanelState extends State<TeacherCoursePanel> {
                     'Fees: ₹${course['totalFees']?.toStringAsFixed(0) ?? '0'}',
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.green.shade700,
+                      color: const Color.fromARGB(255, 73, 135, 189),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -486,7 +486,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Course updated successfully!'),
-                backgroundColor: Colors.green,
+                backgroundColor: Color.fromARGB(255, 124, 210, 250),
               ),
             );
             Navigator.pop(context);
@@ -515,7 +515,7 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
               content: Text(
                 'Error ${_isEditing ? 'updating' : 'creating'} course: $e',
               ),
-              backgroundColor: Colors.red,
+              backgroundColor: const Color.fromARGB(255, 72, 142, 170),
             ),
           );
         }
@@ -571,9 +571,9 @@ class CourseDetailScreen extends StatelessWidget {
                 value: 'delete',
                 child: Row(
                   children: [
-                    Icon(Icons.delete, size: 20, color: Colors.red),
+                    Icon(Icons.delete, size: 20, color: Color.fromARGB(255, 97, 184, 235)),
                     SizedBox(width: 8),
-                    Text('Delete Course', style: TextStyle(color: Colors.red)),
+                    Text('Delete Course', style: TextStyle(color: Color.fromARGB(255, 71, 166, 221))),
                   ],
                 ),
               ),
@@ -695,7 +695,7 @@ class CourseDetailScreen extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.account_balance_wallet,
-                                      color: Colors.green.shade700,
+                                      color: const Color.fromARGB(255, 83, 195, 215),
                                       size: 20,
                                     ),
                                     const SizedBox(width: 8),
@@ -712,7 +712,7 @@ class CourseDetailScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
-                                    color: Colors.green.shade700,
+                                    color: const Color.fromARGB(255, 97, 136, 204),
                                   ),
                                 ),
                               ],
@@ -725,7 +725,7 @@ class CourseDetailScreen extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.payment,
-                                      color: Colors.green.shade700,
+                                      color: const Color.fromARGB(255, 67, 139, 169),
                                       size: 20,
                                     ),
                                     const SizedBox(width: 8),
@@ -742,7 +742,7 @@ class CourseDetailScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                    color: Colors.green.shade700,
+                                    color: const Color.fromARGB(255, 54, 171, 210),
                                   ),
                                 ),
                               ],
@@ -854,7 +854,7 @@ class CourseDetailScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Course deleted successfully'),
-                      backgroundColor: Colors.red,
+                      backgroundColor: Color.fromARGB(255, 77, 135, 146),
                     ),
                   );
                 }
@@ -864,13 +864,13 @@ class CourseDetailScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Error deleting course: $e'),
-                      backgroundColor: Colors.red,
+                      backgroundColor: const Color.fromARGB(255, 123, 221, 248),
                     ),
                   );
                 }
               }
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete', style: TextStyle(color: Color.fromARGB(255, 80, 157, 193))),
           ),
         ],
       ),

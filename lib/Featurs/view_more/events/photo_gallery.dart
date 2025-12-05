@@ -15,7 +15,7 @@ class PhotoGalleryList extends StatelessWidget {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color.fromARGB(255, 15, 26, 110),
+        backgroundColor: const Color.fromARGB(255, 17, 168, 232),
         title: const Text('Events Gallery'),
         centerTitle: true,
       ),
@@ -254,17 +254,17 @@ class PhotoGalleryList extends StatelessWidget {
   Color _getEventColor(String? category) {
     switch (category) {
       case 'Cultural':
-        return Colors.purple.shade700;
+        return const Color.fromARGB(255, 87, 199, 247);
       case 'Technical':
-        return Colors.blue.shade700;
+        return const Color.fromARGB(255, 22, 151, 220);
       case 'Sports':
-        return Colors.green.shade700;
+        return const Color.fromARGB(255, 16, 158, 209);
       case 'Workshop':
-        return Colors.orange.shade700;
+        return const Color.fromARGB(255, 13, 175, 225);
       case 'Seminar':
-        return Colors.teal.shade700;
+        return const Color.fromARGB(255, 8, 174, 225);
       default:
-        return Colors.grey.shade700;
+        return const Color.fromARGB(255, 14, 184, 231);
     }
   }
 }
@@ -437,13 +437,13 @@ class PhotoGalleryPage extends StatelessWidget {
   Color _getEventColor(String? category) {
     switch (category) {
       case 'Cultural':
-        return Colors.purple.shade700;
+        return const Color.fromARGB(255, 24, 92, 119);
       case 'Technical':
         return Colors.blue.shade700;
       case 'Sports':
-        return Colors.green.shade700;
+        return const Color.fromARGB(255, 48, 133, 156);
       case 'Workshop':
-        return Colors.orange.shade700;
+        return const Color.fromARGB(255, 65, 170, 211);
       case 'Seminar':
         return Colors.teal.shade700;
       default:
@@ -484,7 +484,7 @@ class _FullScreenImageState extends State<FullScreenImage> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to share image: $e'),
-          backgroundColor: Colors.red,
+          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         ),
       );
     } finally {
@@ -721,17 +721,17 @@ class _FullScreenImageState extends State<FullScreenImage> {
   Color _getEventColor(String? category) {
     switch (category) {
       case 'Cultural':
-        return Colors.purple.shade700;
+        return const Color.fromARGB(255, 61, 140, 224);
       case 'Technical':
-        return Colors.blue.shade700;
+        return const Color.fromARGB(255, 89, 165, 241);
       case 'Sports':
-        return Colors.green.shade700;
+        return const Color.fromARGB(255, 105, 131, 247);
       case 'Workshop':
-        return Colors.orange.shade700;
+        return const Color.fromARGB(255, 97, 142, 245);
       case 'Seminar':
-        return Colors.teal.shade700;
+        return const Color.fromARGB(255, 101, 156, 240);
       default:
-        return Colors.grey.shade700;
+        return const Color.fromARGB(255, 122, 151, 249);
     }
   }
 }
