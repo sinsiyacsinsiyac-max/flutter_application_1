@@ -773,6 +773,7 @@ import 'package:flutter_application_1/Featurs/admin/home/download%20details/down
 import 'package:flutter_application_1/Featurs/admin/home/evenet%20details/eventdetails_page.dart';
 import 'package:flutter_application_1/Featurs/admin/home/exam%20detail/examdetail.page.dart';
 import 'package:flutter_application_1/Featurs/admin/profile_screen.dart';
+import 'package:flutter_application_1/Featurs/admin/user_notification.dart';
 import 'package:flutter_application_1/Featurs/auth/view/login_screen.dart';
 import 'package:flutter_application_1/Featurs/college/add_course.dart';
 import 'package:flutter_application_1/Featurs/college/add_event.dart';
@@ -863,7 +864,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   Icons.notifications_outlined,
                   color: Colors.black87,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SendNotificationScreen(),
+                    ),
+                  );
+                },
               ),
               Positioned(
                 right: 12,
@@ -1034,12 +1042,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       _buildStatItem(
                         _courseCount,
                         'Courses',
-                      const Color.fromARGB(255, 14, 123, 177),
+                        const Color.fromARGB(255, 14, 123, 177),
                       ),
                       _buildStatItem(
                         _usersCount,
                         'Students',
-                       const Color.fromARGB(255, 14, 123, 177),
+                        const Color.fromARGB(255, 14, 123, 177),
                       ),
                       _buildStatItem(
                         _teacheCount,

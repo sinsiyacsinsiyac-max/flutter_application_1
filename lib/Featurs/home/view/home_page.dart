@@ -341,8 +341,11 @@
 //       ),
 //     );
 //   }
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_application_1/Featurs/home/view/widget/notification_badge.dart';
+import 'package:flutter_application_1/Featurs/view_more/notification_list.dart';
 import 'package:flutter_application_1/Featurs/view_more/seemore_page.dart';
 
 class ChatbotHomePage extends StatefulWidget {
@@ -362,6 +365,8 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
   bool _isLoading = false;
 
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? _userId;
   List<Map<String, dynamic>> _allCourses = [];
   List<Map<String, dynamic>> _allAmenities = [];
   Map<String, dynamic>? _collegeData;
@@ -373,6 +378,8 @@ class _ChatbotHomePageState extends State<ChatbotHomePage>
   @override
   void initState() {
     super.initState();
+    _userId = _auth.currentUser?.uid ?? "";
+
     _pulseController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
@@ -1511,6 +1518,18 @@ What would you like to know?""";
         ),
         scrolledUnderElevation: 0,
         actions: [
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      UserNotificationsScreen(userId: _userId ?? ''),
+                ),
+              );
+            },
+            child: NotificationBadge(userId: _userId ?? ''),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: InkWell(
