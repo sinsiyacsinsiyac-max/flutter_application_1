@@ -12,7 +12,7 @@ class AdmissionManagementPage extends StatelessWidget {
           'Admission Management',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF0D47A1),
+        backgroundColor: const Color.fromARGB(255, 97, 154, 240),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -87,10 +87,10 @@ class AdmissionManagementPage extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF0D47A1).withOpacity(0.1),
+            color: const Color.fromARGB(255, 94, 155, 247).withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: const Color(0xFF0D47A1)),
+          child: Icon(icon, color: const Color.fromARGB(255, 60, 121, 212)),
         ),
         title: Text(
           title,

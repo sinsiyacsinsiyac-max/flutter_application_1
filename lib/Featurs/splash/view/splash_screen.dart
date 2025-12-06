@@ -5,7 +5,9 @@ import 'package:flutter_application_1/Featurs/auth/view/login_screen.dart';
 import 'package:flutter_application_1/Featurs/firebase_serviece/firebase.dart';
 import 'package:flutter_application_1/Featurs/admin/home/home_screen.dart';
 import 'package:flutter_application_1/Featurs/college/college_dashboard.dart';
+import 'package:flutter_application_1/Featurs/firebase_serviece/push_notification.dart';
 import 'package:flutter_application_1/Featurs/home/view/home_page.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -19,6 +21,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
+    final firebaseViewModel = Provider.of<FirebaseViewModel>(
+      context,
+      listen: false,
+    );
+    firebaseViewModel.registerNotification();
     _checkCurrentUser();
     super.initState();
   }

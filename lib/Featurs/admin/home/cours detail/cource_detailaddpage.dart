@@ -67,7 +67,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
           'Add New corse detail ${widget.courcename??''}',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF1A237E),
+        backgroundColor: const Color.fromARGB(255, 90, 103, 244),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -113,12 +113,12 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A237E).withOpacity(0.1),
+                    color: const Color.fromARGB(255, 89, 110, 242).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.info_rounded,
-                    color: Color(0xFF1A237E),
+                    color: Color.fromARGB(255, 100, 113, 252),
                     size: 24,
                   ),
                 ),
@@ -128,7 +128,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A237E),
+                    color: Color.fromARGB(255, 101, 112, 236),
                   ),
                 ),
               ],
@@ -197,12 +197,12 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF0D47A1).withOpacity(0.1),
+                    color: const Color.fromARGB(255, 98, 110, 245).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.schedule_rounded,
-                    color: Color(0xFF0D47A1),
+                    color: Color.fromARGB(255, 88, 119, 221),
                     size: 24,
                   ),
                 ),
@@ -212,7 +212,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF0D47A1),
+                    color: Color.fromARGB(255, 69, 135, 233),
                   ),
                 ),
               ],
@@ -300,12 +300,12 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF283593).withOpacity(0.1),
+                    color: const Color.fromARGB(255, 93, 110, 235).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.check_circle_rounded,
-                    color: Color(0xFF283593),
+                    color: Color.fromARGB(255, 78, 95, 222),
                     size: 24,
                   ),
                 ),
@@ -316,12 +316,12 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF283593),
+                      color: Color.fromARGB(255, 85, 102, 224),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.add_circle_outline, color: Color(0xFF283593)),
+                  icon: const Icon(Icons.add_circle_outline, color: Color.fromARGB(255, 86, 103, 238)),
                   onPressed: () {
                     setState(() {
                       _eligibilityControllers.add(TextEditingController());
@@ -379,7 +379,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                   _entranceRequired = value;
                 });
               },
-              activeColor: const Color(0xFF283593),
+              activeColor: const Color.fromARGB(255, 81, 100, 237),
               contentPadding: EdgeInsets.zero,
             ),
             const SizedBox(height: 16),
@@ -415,7 +415,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                     ),
                     if (_eligibilityControllers.length > 1)
                       IconButton(
-                        icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                        icon: const Icon(Icons.remove_circle_outline, color: Color.fromARGB(255, 66, 109, 218)),
                         onPressed: () {
                           setState(() {
                             _eligibilityControllers[index].dispose();
@@ -496,7 +496,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                 decoration: BoxDecoration(
                   color: Colors.blue[50],
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.blue[200]!),
+                  border: Border.all(color: const Color.fromARGB(255, 46, 143, 223)!),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -519,7 +519,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                         ),
                         if (_semesters.length > 1)
                           IconButton(
-                            icon: const Icon(Icons.delete_outline, color: Colors.red),
+                            icon: const Icon(Icons.delete_outline, color: Color.fromARGB(255, 64, 142, 220)),
                             onPressed: () {
                               setState(() {
                                 (semester['semester'] as TextEditingController).dispose();
@@ -553,7 +553,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                           icon: const Icon(Icons.add, size: 18),
                           label: const Text('Add Subject'),
                           style: TextButton.styleFrom(
-                            foregroundColor: const Color(0xFF1565C0),
+                            foregroundColor: const Color.fromARGB(255, 62, 137, 223),
                           ),
                         ),
                       ],
@@ -582,7 +582,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                             ),
                             if (subjectControllers.length > 1)
                               IconButton(
-                                icon: const Icon(Icons.remove_circle_outline, color: Colors.red, size: 20),
+                                icon: const Icon(Icons.remove_circle_outline, color: Color.fromARGB(255, 67, 123, 220), size: 20),
                                 onPressed: () {
                                   setState(() {
                                     controller.dispose();
@@ -626,7 +626,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                   ),
                   child: const Icon(
                     Icons.work_rounded,
-                    color: Color(0xFF00695C),
+                    color: Color.fromARGB(255, 46, 139, 253),
                     size: 24,
                   ),
                 ),
@@ -637,12 +637,12 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF00695C),
+                      color: Color.fromARGB(255, 63, 153, 255),
                     ),
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.add_circle_outline, color: Color(0xFF00695C)),
+                  icon: const Icon(Icons.add_circle_outline, color: Color.fromARGB(255, 74, 124, 222)),
                   onPressed: () {
                     setState(() {
                       _careerControllers.add(TextEditingController());
@@ -675,7 +675,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                     ),
                     if (_careerControllers.length > 1)
                       IconButton(
-                        icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+                        icon: const Icon(Icons.remove_circle_outline, color: Color.fromARGB(255, 61, 110, 215)),
                         onPressed: () {
                           setState(() {
                             _careerControllers[index].dispose();
@@ -710,12 +710,12 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE65100).withOpacity(0.1),
+                    color: const Color.fromARGB(255, 81, 120, 237).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.payments_rounded,
-                    color: Color(0xFFE65100),
+                    color: Color.fromARGB(255, 55, 114, 202),
                     size: 24,
                   ),
                 ),
@@ -725,7 +725,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFE65100),
+                    color: Color.fromARGB(255, 85, 85, 227),
                   ),
                 ),
               ],
@@ -781,7 +781,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
                   _scholarshipAvailable = value;
                 });
               },
-              activeColor: Colors.green[700],
+              activeColor: const Color.fromARGB(255, 76, 119, 211),
               contentPadding: EdgeInsets.zero,
             ),
           ],
@@ -796,12 +796,12 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
       height: 56,
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFF1A237E), Color(0xFF283593)],
+          colors: [Color.fromARGB(255, 100, 112, 246), Color.fromARGB(255, 100, 116, 232)],
         ),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1A237E).withOpacity(0.3),
+            color: const Color.fromARGB(255, 100, 111, 239).withOpacity(0.3),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
@@ -860,7 +860,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Course added successfully!'),
-          backgroundColor: Color(0xFF00695C),
+          backgroundColor: Color.fromARGB(255, 76, 100, 235),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -871,7 +871,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please fill all required fields'),
-          backgroundColor: Colors.red,
+          backgroundColor: Color.fromARGB(255, 86, 98, 223),
           behavior: SnackBarBehavior.floating,
         ),
       );

@@ -52,7 +52,7 @@ class _AddAdmissionPageState extends State<AddAdmissionPage> {
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         title: const Text('Add New Admission', style: TextStyle(fontWeight: FontWeight.w600)),
-        backgroundColor: const Color(0xFF0D47A1),
+        backgroundColor: const Color.fromARGB(255, 19, 178, 247),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -90,7 +90,7 @@ class _AddAdmissionPageState extends State<AddAdmissionPage> {
                 title: const Text('Scholarships Available'),
                 value: _scholarshipAvailable,
                 onChanged: (v) => setState(() => _scholarshipAvailable = v),
-                activeColor: Colors.green[700],
+                activeColor: const Color.fromARGB(255, 13, 176, 245),
                 contentPadding: EdgeInsets.zero,
               ),
             ]),
@@ -227,7 +227,7 @@ class _AddAdmissionPageState extends State<AddAdmissionPage> {
                   Container(
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE65100).withOpacity(0.1),
+                      color: const Color.fromARGB(255, 15, 185, 223).withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Icon(Icons.event_note_rounded, color: Color(0xFFE65100), size: 24),
@@ -356,9 +356,9 @@ class _AddAdmissionPageState extends State<AddAdmissionPage> {
       width: double.infinity,
       height: 56,
       decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [Color(0xFF0D47A1), Color(0xFF1565C0)]),
+        gradient: const LinearGradient(colors: [Color.fromARGB(255, 61, 125, 223), Color.fromARGB(255, 72, 146, 231)]),
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: const Color(0xFF0D47A1).withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))],
+        boxShadow: [BoxShadow(color: const Color.fromARGB(255, 93, 150, 236).withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))],
       ),
       child: ElevatedButton(
         onPressed: _submitForm,
@@ -376,7 +376,7 @@ class _AddAdmissionPageState extends State<AddAdmissionPage> {
     if (!_formKey.currentState!.validate()) return;
     if (_startDate == null || _endDate == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select both start and end dates'), backgroundColor: Colors.red),
+        const SnackBar(content: Text('Please select both start and end dates'), backgroundColor: Color.fromARGB(255, 94, 116, 227)),
       );
       return;
     }
@@ -405,7 +405,7 @@ class _AddAdmissionPageState extends State<AddAdmissionPage> {
 
     print('Admission Data: $data');
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Admission created successfully!'), backgroundColor: Color(0xFF00695C)),
+      const SnackBar(content: Text('Admission created successfully!'), backgroundColor: Color.fromARGB(255, 101, 87, 227)),
     );
     Navigator.pop(context);
   }

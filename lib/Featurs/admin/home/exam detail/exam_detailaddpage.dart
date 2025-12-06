@@ -49,7 +49,7 @@ class _AddExamScreenState extends State<AddExamScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF283593),
+              primary: Color.fromARGB(255, 81, 97, 218),
             ),
           ),
           child: child!,
@@ -71,7 +71,7 @@ class _AddExamScreenState extends State<AddExamScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF283593),
+              primary: Color.fromARGB(255, 77, 94, 218),
             ),
           ),
           child: child!,
@@ -109,7 +109,7 @@ class _AddExamScreenState extends State<AddExamScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Exam created successfully!'),
-          backgroundColor: Colors.green,
+          backgroundColor: Color.fromARGB(255, 78, 99, 240),
         ),
       );
     }
@@ -124,7 +124,7 @@ class _AddExamScreenState extends State<AddExamScreen> {
           'Add New Exam',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF283593),
+        backgroundColor: const Color.fromARGB(255, 96, 114, 249),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -286,7 +286,7 @@ class _AddExamScreenState extends State<AddExamScreen> {
             ElevatedButton(
               onPressed: _saveExam,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF283593),
+                backgroundColor: const Color.fromARGB(255, 89, 103, 214),
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -312,7 +312,7 @@ class _AddExamScreenState extends State<AddExamScreen> {
       style: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w700,
-        color: Color(0xFF283593),
+        color: Color.fromARGB(255, 90, 107, 235),
       ),
     );
   }
@@ -339,9 +339,9 @@ class _AddExamScreenState extends State<AddExamScreen> {
           decoration: InputDecoration(
             labelText: label,
             hintText: hint,
-            prefixIcon: Icon(icon, color: const Color(0xFF283593)),
+            prefixIcon: Icon(icon, color: const Color.fromARGB(255, 102, 117, 224)),
             border: InputBorder.none,
-            labelStyle: const TextStyle(color: Color(0xFF283593)),
+            labelStyle: const TextStyle(color: Color.fromARGB(255, 108, 121, 219)),
           ),
         ),
       ),
@@ -364,9 +364,9 @@ class _AddExamScreenState extends State<AddExamScreen> {
           value: value,
           decoration: InputDecoration(
             labelText: label,
-            prefixIcon: Icon(icon, color: const Color(0xFF283593)),
+            prefixIcon: Icon(icon, color: const Color.fromARGB(255, 99, 113, 221)),
             border: InputBorder.none,
-            labelStyle: const TextStyle(color: Color(0xFF283593)),
+            labelStyle: const TextStyle(color: Color.fromARGB(255, 99, 115, 240)),
           ),
           items: items.map((String item) {
             return DropdownMenuItem<String>(
@@ -390,7 +390,7 @@ class _AddExamScreenState extends State<AddExamScreen> {
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: ListTile(
-        leading: Icon(icon, color: const Color(0xFF283593)),
+        leading: Icon(icon, color: const Color.fromARGB(255, 92, 106, 206)),
         title: Text(
           label,
           style: const TextStyle(
@@ -424,7 +424,7 @@ class PlaceholderPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        backgroundColor: const Color(0xFF283593),
+        backgroundColor: const Color.fromARGB(255, 106, 121, 230),
         foregroundColor: Colors.white,
       ),
       body: Center(

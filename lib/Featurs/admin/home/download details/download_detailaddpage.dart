@@ -80,7 +80,7 @@ class _AddDownloadScreenState extends State<AddDownloadScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('File uploaded successfully!'),
-          backgroundColor: Colors.green,
+          backgroundColor: Color.fromARGB(255, 90, 172, 230),
         ),
       );
       Navigator.pop(context);
@@ -96,7 +96,7 @@ class _AddDownloadScreenState extends State<AddDownloadScreen> {
           'Add ${widget.category}',
           style: const TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF073D7A),
+        backgroundColor: const Color.fromARGB(255, 90, 156, 231),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -196,7 +196,7 @@ class _AddDownloadScreenState extends State<AddDownloadScreen> {
               child: ElevatedButton(
                 onPressed: _isUploading ? null : _submitForm,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF073D7A),
+                  backgroundColor: const Color.fromARGB(255, 94, 163, 241),
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -234,7 +234,7 @@ class _AddDownloadScreenState extends State<AddDownloadScreen> {
       style: const TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w700,
-        color: Color(0xFF073D7A),
+        color: Color.fromARGB(255, 92, 159, 235),
       ),
     );
   }
@@ -259,10 +259,10 @@ class _AddDownloadScreenState extends State<AddDownloadScreen> {
           decoration: InputDecoration(
             labelText: label,
             hintText: hint,
-            prefixIcon: Icon(icon, color: const Color(0xFF073D7A)),
+            prefixIcon: Icon(icon, color: const Color.fromARGB(255, 93, 156, 229)),
             border: InputBorder.none,
             labelStyle: const TextStyle(
-              color: Color(0xFF073D7A),
+              color: Color.fromARGB(255, 90, 148, 215),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -288,10 +288,10 @@ class _AddDownloadScreenState extends State<AddDownloadScreen> {
           value: value,
           decoration: InputDecoration(
             labelText: label,
-            prefixIcon: Icon(icon, color: const Color(0xFF073D7A)),
+            prefixIcon: Icon(icon, color: const Color.fromARGB(255, 91, 154, 225)),
             border: InputBorder.none,
             labelStyle: const TextStyle(
-              color: Color(0xFF073D7A),
+              color: Color.fromARGB(255, 93, 151, 217),
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -322,14 +322,14 @@ class _AddDownloadScreenState extends State<AddDownloadScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF073D7A).withOpacity(0.1),
+                  color: const Color.fromARGB(255, 86, 161, 247).withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   _selectedFileName != null
                       ? Icons.check_circle
                       : Icons.cloud_upload,
-                  color: const Color(0xFF073D7A),
+                  color: const Color.fromARGB(255, 90, 164, 249),
                   size: 48,
                 ),
               ),
@@ -340,7 +340,7 @@ class _AddDownloadScreenState extends State<AddDownloadScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: _selectedFileName != null
-                      ? const Color(0xFF073D7A)
+                      ? const Color.fromARGB(255, 96, 169, 252)
                       : Colors.grey[600],
                 ),
                 textAlign: TextAlign.center,

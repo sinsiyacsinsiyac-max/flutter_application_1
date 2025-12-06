@@ -18,7 +18,7 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         title: const Text('College Amenities'),
-        backgroundColor: Colors.teal.shade700,
+        backgroundColor: const Color.fromARGB(255, 18, 172, 219),
         elevation: 0,
         actions: [
           IconButton(
@@ -62,7 +62,7 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Amenity added successfully!'),
-                backgroundColor: Colors.green,
+                backgroundColor: Color.fromARGB(255, 12, 142, 235),
               ),
             );
           }
@@ -158,8 +158,8 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
                     amenity['available'] == true ? 'Available' : 'Unavailable',
                     style: TextStyle(
                       color: amenity['available'] == true
-                          ? Colors.green.shade700 
-                          : Colors.red.shade700,
+                          ? const Color.fromARGB(255, 10, 148, 211) 
+                          : const Color.fromARGB(255, 11, 123, 214),
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
                     ),
@@ -182,7 +182,7 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Amenity deleted'),
-                    backgroundColor: Colors.red,
+                    backgroundColor: Color.fromARGB(255, 13, 124, 214),
                   ),
                 );
               }
@@ -198,21 +198,21 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
       case 'Library':
         return Colors.blue.shade700;
       case 'Sports':
-        return Colors.green.shade700;
+        return const Color.fromARGB(255, 14, 152, 221);
       case 'Laboratory':
-        return Colors.orange.shade700;
+        return const Color.fromARGB(255, 20, 116, 206);
       case 'Cafeteria':
-        return Colors.red.shade700;
+        return const Color.fromARGB(255, 7, 111, 201);
       case 'Auditorium':
-        return Colors.purple.shade700;
+        return const Color.fromARGB(255, 19, 136, 203);
       case 'Hostel':
-        return Colors.indigo.shade700;
+        return const Color.fromARGB(255, 13, 138, 233);
       case 'Transport':
-        return Colors.cyan.shade700;
+        return const Color.fromARGB(255, 17, 128, 218);
       case 'Medical':
-        return Colors.pink.shade700;
+        return const Color.fromARGB(255, 9, 121, 181);
       default:
-        return Colors.teal.shade700;
+        return const Color.fromARGB(255, 12, 133, 198);
     }
   }
 
@@ -278,7 +278,7 @@ class _AddAmenityScreenState extends State<AddAmenityScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add New Amenity'),
-        backgroundColor: Colors.teal.shade700,
+        backgroundColor: const Color.fromARGB(255, 16, 114, 194),
       ),
       body: Stack(
         children: [
@@ -394,7 +394,7 @@ class _AddAmenityScreenState extends State<AddAmenityScreen> {
                         ? 'Amenity is open for use' 
                         : 'Amenity is temporarily closed'),
                     value: _isAvailable,
-                    activeColor: Colors.teal.shade700,
+                    activeColor: const Color.fromARGB(255, 14, 125, 222),
                     onChanged: (value) {
                       setState(() {
                         _isAvailable = value;
@@ -406,7 +406,7 @@ class _AddAmenityScreenState extends State<AddAmenityScreen> {
                 ElevatedButton(
                   onPressed: _isLoading ? null : _submitAmenity,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal.shade700,
+                    backgroundColor: const Color.fromARGB(255, 19, 140, 220),
                     padding: const EdgeInsets.all(16),
                   ),
                   child: const Text(
@@ -458,7 +458,7 @@ class _AddAmenityScreenState extends State<AddAmenityScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error: $e'),
-              backgroundColor: Colors.red,
+              backgroundColor: const Color.fromARGB(255, 14, 132, 222),
             ),
           );
         }
@@ -574,8 +574,8 @@ class AmenityDetailScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
                       color: amenity['available'] == true
-                          ? Colors.green.withOpacity(0.3)
-                          : Colors.red.withOpacity(0.3),
+                          ? const Color.fromARGB(255, 7, 146, 220).withOpacity(0.3)
+                          : const Color.fromARGB(255, 11, 127, 215).withOpacity(0.3),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
@@ -620,25 +620,25 @@ class AmenityDetailScreen extends StatelessWidget {
                     Icons.location_on,
                     'Location',
                     amenity['location'],
-                    Colors.red.shade700,
+                    const Color.fromARGB(255, 17, 149, 231),
                   ),
                   _buildInfoCard(
                     Icons.people,
                     'Capacity',
                     amenity['capacity'],
-                    Colors.blue.shade700,
+                    const Color.fromARGB(255, 20, 146, 205),
                   ),
                   _buildInfoCard(
                     Icons.access_time,
                     'Operating Hours',
                     amenity['timings'],
-                    Colors.orange.shade700,
+                    const Color.fromARGB(255, 15, 168, 220),
                   ),
                   _buildInfoCard(
                     Icons.phone,
                     'Contact',
                     amenity['contact'],
-                    Colors.green.shade700,
+                    const Color.fromARGB(255, 13, 160, 209),
                   ),
                   
                   const SizedBox(height: 24),
@@ -682,7 +682,7 @@ class AmenityDetailScreen extends StatelessWidget {
                             style: TextStyle(color: Colors.white),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.teal.shade700,
+                            backgroundColor: const Color.fromARGB(255, 120, 198, 237),
                             padding: const EdgeInsets.all(16),
                           ),
                         ),
@@ -697,13 +697,13 @@ class AmenityDetailScreen extends StatelessWidget {
                               ),
                             );
                           },
-                          icon: Icon(Icons.directions, color: Colors.teal.shade700),
+                          icon: Icon(Icons.directions, color: const Color.fromARGB(255, 85, 170, 239)),
                           label: Text(
                             'Get Directions',
-                            style: TextStyle(color: Colors.teal.shade700),
+                            style: TextStyle(color: const Color.fromARGB(255, 57, 150, 216)),
                           ),
                           style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: Colors.teal.shade700),
+                            side: BorderSide(color: const Color.fromARGB(255, 92, 125, 233)),
                             padding: const EdgeInsets.all(16),
                           ),
                         ),
@@ -768,21 +768,21 @@ class AmenityDetailScreen extends StatelessWidget {
       case 'Library':
         return Colors.blue.shade700;
       case 'Sports':
-        return Colors.green.shade700;
+        return const Color.fromARGB(255, 59, 140, 226);
       case 'Laboratory':
-        return Colors.orange.shade700;
+        return const Color.fromARGB(255, 81, 104, 236);
       case 'Cafeteria':
-        return Colors.red.shade700;
+        return const Color.fromARGB(255, 65, 79, 239);
       case 'Auditorium':
-        return Colors.purple.shade700;
+        return const Color.fromARGB(255, 64, 90, 219);
       case 'Hostel':
-        return Colors.indigo.shade700;
+        return const Color.fromARGB(255, 68, 89, 222);
       case 'Transport':
-        return Colors.cyan.shade700;
+        return const Color.fromARGB(255, 45, 112, 194);
       case 'Medical':
-        return Colors.pink.shade700;
+        return const Color.fromARGB(255, 106, 94, 235);
       default:
-        return Colors.teal.shade700;
+        return const Color.fromARGB(255, 66, 107, 212);
     }
   }
 
@@ -846,7 +846,7 @@ class AmenityDetailScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Error deleting: $e'),
-                      backgroundColor: Colors.red,
+                      backgroundColor: const Color.fromARGB(255, 14, 125, 222),
                     ),
                   );
                 }
@@ -854,7 +854,7 @@ class AmenityDetailScreen extends StatelessWidget {
             },
             child: const Text(
               'Delete',
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: Color.fromARGB(255, 6, 118, 198)),
             ),
           ),
         ],

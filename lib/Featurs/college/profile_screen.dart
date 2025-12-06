@@ -98,7 +98,7 @@ class _TeacherProfileScreenState extends State<TeacherProfileScreen> {
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF4A148C), Color(0xFF7B1FA2), Colors.white],
+            colors: [Color.fromARGB(255, 18, 132, 155), Color.fromARGB(255, 29, 133, 197), Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),

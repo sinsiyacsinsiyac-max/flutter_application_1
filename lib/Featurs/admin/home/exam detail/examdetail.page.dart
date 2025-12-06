@@ -16,7 +16,7 @@ class ExamManagementPage extends StatelessWidget {
           'Exam Management',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF283593),
+        backgroundColor: const Color.fromARGB(255, 96, 114, 247),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -70,10 +70,10 @@ class ExamManagementPage extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF283593).withOpacity(0.1),
+            color: const Color.fromARGB(255, 95, 113, 244).withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: const Color(0xFF283593)),
+          child: Icon(icon, color: const Color.fromARGB(255, 96, 113, 249)),
         ),
         title: Text(
           title,
@@ -104,7 +104,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
       ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
         SnackBar(
           content: Text(message),
-          backgroundColor: isError ? Colors.red : Colors.green,
+          backgroundColor: isError ? const Color.fromARGB(255, 81, 121, 240) : const Color.fromARGB(255, 76, 122, 175),
         ),
       );
     }
@@ -116,7 +116,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('Time Table Management'),
-        backgroundColor: const Color(0xFF283593),
+        backgroundColor: const Color.fromARGB(255, 97, 114, 248),
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -198,7 +198,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
                         value: 'delete',
                         child: Row(
                           children: [
-                            Icon(Icons.delete, color: Colors.red),
+                            Icon(Icons.delete, color: Color.fromARGB(255, 96, 113, 248)),
                             SizedBox(width: 8),
                             Text('Delete'),
                           ],
@@ -219,7 +219,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddTimeTableDialog,
-        backgroundColor: const Color(0xFF283593),
+        backgroundColor: const Color.fromARGB(255, 97, 114, 249),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -307,7 +307,7 @@ class _TimeTablePageState extends State<TimeTablePage> {
                   await _addTimeTable(titleController.text, selectedImage!);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF283593),
+                  backgroundColor: const Color.fromARGB(255, 93, 110, 236),
                 ),
                 child: const Text('Add Time Table'),
               ),
@@ -373,7 +373,7 @@ class _SeatArrangementPageState extends State<SeatArrangementPage> {
       ScaffoldMessenger.of(_scaffoldKey.currentContext!).showSnackBar(
         SnackBar(
           content: Text(message),
-          backgroundColor: isError ? Colors.red : Colors.green,
+          backgroundColor: isError ? const Color.fromARGB(255, 70, 130, 242) : const Color.fromARGB(255, 58, 140, 233),
         ),
       );
     }
@@ -385,7 +385,7 @@ class _SeatArrangementPageState extends State<SeatArrangementPage> {
       key: _scaffoldKey,
       appBar: AppBar(
         title: const Text('Seat Arrangement Management'),
-        backgroundColor: const Color(0xFF283593),
+        backgroundColor: const Color.fromARGB(255, 87, 105, 237),
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -467,7 +467,7 @@ class _SeatArrangementPageState extends State<SeatArrangementPage> {
                         value: 'delete',
                         child: Row(
                           children: [
-                            Icon(Icons.delete, color: Colors.red),
+                            Icon(Icons.delete, color: Color.fromARGB(255, 83, 115, 241)),
                             SizedBox(width: 8),
                             Text('Delete'),
                           ],
@@ -488,7 +488,7 @@ class _SeatArrangementPageState extends State<SeatArrangementPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddSeatArrangementDialog,
-        backgroundColor: const Color(0xFF283593),
+        backgroundColor: const Color.fromARGB(255, 98, 115, 242),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -579,7 +579,7 @@ class _SeatArrangementPageState extends State<SeatArrangementPage> {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF283593),
+                  backgroundColor: const Color.fromRGBO(27, 179, 234, 1),
                 ),
                 child: const Text('Add Arrangement'),
               ),
