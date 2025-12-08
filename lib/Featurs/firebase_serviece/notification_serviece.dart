@@ -21,7 +21,7 @@ class NotificationServiceWithCloudinary {
           .get();
 
       return querySnapshot.docs.map((doc) {
-        final data = doc.data();
+        final data = doc.data(); 
         return {
           'userId': doc.id,
           'fcmToken':

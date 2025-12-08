@@ -29,10 +29,7 @@ class FirebaseViewModel extends ChangeNotifier {
   // Save FCM token to Firestore for the current user
   Future<void> saveFCMTokenToFirestore(String userId, String token) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .update({
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'fcmToken': token,
         'fcmTokenUpdatedAt': FieldValue.serverTimestamp(),
         'platform': Platform.isAndroid ? 'android' : 'ios',
@@ -59,10 +56,10 @@ class FirebaseViewModel extends ChangeNotifier {
       } else {
         token = await FirebaseMessaging.instance.getAPNSToken();
       }
-      
+
       setfcmtoken = token ?? '';
       log('FCM Token: $fcmtoken');
-      
+
       // Save token to Firestore (you need to pass the userId from your auth system)
       // Uncomment and modify this when you have the userId available
       // final prefs = await SharedPreferences.getInstance();
@@ -70,7 +67,7 @@ class FirebaseViewModel extends ChangeNotifier {
       // if (userId != null && token != null) {
       //   await saveFCMTokenToFirestore(userId, token);
       // }
-      
+
       // Listen for token refresh
       FirebaseMessaging.instance.onTokenRefresh.listen((newToken) {
         setfcmtoken = newToken;
@@ -80,7 +77,6 @@ class FirebaseViewModel extends ChangeNotifier {
         //   saveFCMTokenToFirestore(userId, newToken);
         // }
       });
-      
     } catch (e) {
       log('error fcm $e');
     }
@@ -105,16 +101,16 @@ class FirebaseViewModel extends ChangeNotifier {
         initializationSettings,
         onDidReceiveNotificationResponse:
             (NotificationResponse notificationResponse) {
-          switch (notificationResponse.notificationResponseType) {
-            case NotificationResponseType.selectedNotification:
-              selectNotification(notificationResponse.payload ?? '');
-              break;
-            case NotificationResponseType.selectedNotificationAction:
-              break;
-          }
-        },
+              switch (notificationResponse.notificationResponseType) {
+                case NotificationResponseType.selectedNotification:
+                  selectNotification(notificationResponse.payload ?? '');
+                  break;
+                case NotificationResponseType.selectedNotificationAction:
+                  break;
+              }
+            },
       );
-      
+
       // Handle foreground messages
       FirebaseMessaging.onMessage.listen((RemoteMessage message) {
         RemoteNotification? notification = message.notification;
@@ -131,7 +127,11 @@ class FirebaseViewModel extends ChangeNotifier {
                 presentBadge: true,
                 presentSound: true,
                 attachments: notification.apple?.imageUrl != null
-                    ? [DarwinNotificationAttachment(notification.apple!.imageUrl!)]
+                    ? [
+                        DarwinNotificationAttachment(
+                          notification.apple!.imageUrl!,
+                        ),
+                      ]
                     : null,
               ),
               android: AndroidNotificationDetails(
@@ -157,15 +157,16 @@ class FirebaseViewModel extends ChangeNotifier {
           );
         }
       });
-      
+
       // Handle notification tap when app is in background/terminated
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         log('Notification tapped: ${message.data}');
         selectNotification(jsonEncode(message.data));
       });
-      
+
       // Check if app was opened from a notification when terminated
-      RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+      RemoteMessage? initialMessage = await FirebaseMessaging.instance
+          .getInitialMessage();
       if (initialMessage != null) {
         log('App opened from notification: ${initialMessage.data}');
         selectNotification(jsonEncode(initialMessage.data));
@@ -182,7 +183,7 @@ class FirebaseViewModel extends ChangeNotifier {
         final data = jsonDecode(payload);
         // Handle notification tap based on data
         // You can navigate to specific screens based on notification type
-        
+
         navigatorKey.currentState!.pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const SplashScreen()),
           (route) => false,
@@ -205,20 +206,17 @@ class FirebaseViewModel extends ChangeNotifier {
       onNotificationClick.add(payload);
     }
   }
-  
+
   // Delete FCM token from Firestore on logout
   Future<void> deleteFCMToken(String userId) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .update({
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
         'fcmToken': FieldValue.delete(),
       });
-      
+
       // Also delete token from FCM
       await FirebaseMessaging.instance.deleteToken();
-      
+
       log('FCM token deleted for user: $userId');
     } catch (e) {
       log('Error deleting FCM token: $e');
