@@ -12,7 +12,7 @@ class DownloadsManagementPage extends StatelessWidget {
           'Downloads Management',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF073D7A),
+        backgroundColor: const Color.fromARGB(255, 38, 159, 234),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -54,7 +54,7 @@ class DownloadsManagementPage extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showUploadDialog(context),
-        backgroundColor: const Color(0xFF073D7A),
+        backgroundColor: const Color.fromARGB(255, 73, 148, 233),
         icon: const Icon(Icons.upload_file, color: Colors.white),
         label: const Text(
           'Upload File',
@@ -79,10 +79,10 @@ class DownloadsManagementPage extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF073D7A).withOpacity(0.1),
+            color: const Color.fromARGB(255, 92, 158, 235).withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: const Color(0xFF073D7A)),
+          child: Icon(icon, color: const Color.fromARGB(255, 93, 163, 243)),
         ),
         title: Text(
           title,
@@ -97,7 +97,7 @@ class DownloadsManagementPage extends StatelessWidget {
             subtitle,
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey[600],
+              color: const Color.fromARGB(255, 95, 187, 240),
             ),
           ),
         ),
@@ -155,13 +155,13 @@ class CategoryFilesPage extends StatelessWidget {
       backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
         title: Text(category),
-        backgroundColor: const Color(0xFF073D7A),
+        backgroundColor: const Color.fromARGB(255, 92, 165, 248),
         foregroundColor: Colors.white,
       ),
       body: Center(
         child: Text(
           '$category files will appear here',
-          style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+          style: TextStyle(fontSize: 16, color: const Color.fromARGB(255, 94, 195, 249)),
         ),
       ),
     );

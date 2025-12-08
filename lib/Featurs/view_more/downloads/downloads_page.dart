@@ -19,7 +19,7 @@ class NotesDownloadPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Notes Download"),
-        backgroundColor: Colors.blue[900],
+        backgroundColor: const Color.fromARGB(255, 94, 151, 238),
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
@@ -120,7 +120,7 @@ class NotesDownloadPage extends StatelessWidget {
           ),
           child: Icon(
             Icons.note_rounded,
-            color: Colors.green.shade700,
+            color: const Color.fromARGB(255, 96, 136, 247),
             size: 28,
           ),
         ),
@@ -136,12 +136,12 @@ class NotesDownloadPage extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               '${note['subject'] ?? ''} • ${note['course'] ?? ''}',
-              style: TextStyle(color: Colors.grey.shade700, fontSize: 14),
+              style: TextStyle(color: const Color.fromARGB(255, 99, 176, 253), fontSize: 14),
             ),
             const SizedBox(height: 2),
             Text(
               '${note['semester'] ?? ''} • ${note['year'] ?? ''}',
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+              style: TextStyle(color: const Color.fromARGB(255, 99, 141, 241), fontSize: 12),
             ),
             if (note['fileSize'] != null) ...[
               const SizedBox(height: 2),
@@ -160,7 +160,7 @@ class NotesDownloadPage extends StatelessWidget {
           ),
           child: Icon(
             Icons.arrow_forward_ios,
-            color: Colors.blue.shade700,
+            color: const Color.fromARGB(255, 96, 167, 239),
             size: 18,
           ),
         ),
@@ -200,7 +200,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Note Details'),
-        backgroundColor: Colors.green.shade700,
+        backgroundColor: const Color.fromARGB(255, 97, 146, 244),
         actions: [
           if (_localFilePath != null)
             IconButton(
@@ -263,7 +263,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                         children: [
                           CircularProgressIndicator(
                             value: _downloadProgress,
-                            color: Colors.green.shade700,
+                            color: const Color.fromARGB(255, 103, 173, 253),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
@@ -287,7 +287,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                       LinearProgressIndicator(
                         value: _downloadProgress,
                         backgroundColor: Colors.grey.shade300,
-                        color: Colors.green.shade700,
+                        color: const Color.fromARGB(255, 99, 169, 249),
                       ),
                     ],
                   ),
@@ -315,12 +315,12 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                       decoration: BoxDecoration(
                         color: Colors.green.shade50,
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.green.shade700),
+                        border: Border.all(color: const Color.fromARGB(255, 96, 177, 248)),
                       ),
                       child: Text(
                         'Notes',
                         style: TextStyle(
-                          color: Colors.green.shade700,
+                          color: const Color.fromARGB(255, 93, 161, 240),
                           fontWeight: FontWeight.bold,
                           fontSize: 12,
                         ),
@@ -454,7 +454,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                       ),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green.shade700,
+                      backgroundColor: const Color.fromARGB(255, 92, 156, 239),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
@@ -476,8 +476,8 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
                       ),
                     ),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: Colors.green.shade700,
-                      side: BorderSide(color: Colors.green.shade700, width: 2),
+                      foregroundColor: const Color.fromARGB(255, 97, 165, 244),
+                      side: BorderSide(color: const Color.fromARGB(255, 101, 148, 251), width: 2),
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -598,7 +598,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
       await _performDownload(fileUrl, filePath);
 
       if (mounted) {
-        _showSnackBar(context, 'Downloaded to app directory', Colors.green);
+        _showSnackBar(context, 'Downloaded to app directory', const Color.fromARGB(255, 100, 176, 247));
       }
     } catch (e) {
       throw Exception('Failed to download to app directory: $e');
@@ -685,7 +685,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
 
   void _viewPDF(BuildContext context) {
     if (_localFilePath == null) {
-      _showSnackBar(context, 'Please download the file first', Colors.orange);
+      _showSnackBar(context, 'Please download the file first', const Color.fromARGB(255, 101, 177, 248));
       return;
     }
 
@@ -704,7 +704,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     final fileUrl = widget.note['fileUrl'];
 
     if (fileUrl == null) {
-      _showSnackBar(context, 'File URL not available', Colors.red);
+      _showSnackBar(context, 'File URL not available', const Color.fromARGB(255, 96, 185, 245));
       return;
     }
 
@@ -750,7 +750,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
               onTap: () {
                 Navigator.pop(context);
                 Clipboard.setData(ClipboardData(text: fileUrl));
-                _showSnackBar(context, 'URL copied to clipboard', Colors.green);
+                _showSnackBar(context, 'URL copied to clipboard', const Color.fromARGB(255, 101, 162, 247));
               },
             ),
             ListTile(
@@ -772,7 +772,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
       _showSnackBar(
         context,
         'Cannot share: File URL not available',
-        Colors.red,
+        const Color.fromARGB(255, 100, 190, 250),
       );
       return;
     }
@@ -780,7 +780,7 @@ class _NoteDetailScreenState extends State<NoteDetailScreen> {
     try {
       await Share.share('$title\n\nDownload: $fileUrl', subject: title);
     } catch (e) {
-      _showSnackBar(context, 'Error sharing: $e', Colors.red);
+      _showSnackBar(context, 'Error sharing: $e', const Color.fromARGB(255, 54, 130, 244));
     }
   }
 

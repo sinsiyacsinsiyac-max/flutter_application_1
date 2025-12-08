@@ -19,7 +19,7 @@ class _EventsPageState extends State<EventsPage> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFF283593),
+        backgroundColor: const Color.fromARGB(255, 96, 114, 246),
         title: const Text(
           'Events',
           style: TextStyle(
@@ -32,7 +32,7 @@ class _EventsPageState extends State<EventsPage> {
         children: [
           // Tab Selector
           Container(
-            color: const Color(0xFF283593),
+            color: const Color.fromARGB(255, 100, 117, 253),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
@@ -96,7 +96,7 @@ class _EventsPageState extends State<EventsPage> {
           child: Text(
             title,
             style: TextStyle(
-              color: isSelected ? const Color(0xFF283593) : Colors.white,
+              color: isSelected ? const Color.fromARGB(255, 98, 115, 248) : Colors.white,
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
@@ -205,7 +205,7 @@ class _EventsPageState extends State<EventsPage> {
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F1A6E),
+                            color: Color.fromARGB(255, 93, 111, 251),
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -249,7 +249,7 @@ class _EventsPageState extends State<EventsPage> {
                     icon: const Icon(Icons.check_circle, size: 18),
                     label: const Text('Register'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF283593),
+                      backgroundColor: const Color.fromARGB(255, 95, 112, 243),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -321,17 +321,17 @@ class _EventsPageState extends State<EventsPage> {
   Color _getEventColor(String? category) {
     switch (category) {
       case 'Cultural':
-        return Colors.purple.shade700;
+        return const Color.fromARGB(255, 76, 99, 250);
       case 'Technical':
-        return Colors.blue.shade700;
+        return const Color.fromARGB(255, 97, 125, 251);
       case 'Sports':
-        return Colors.green.shade700;
+        return const Color.fromARGB(255, 95, 125, 245);
       case 'Workshop':
-        return Colors.orange.shade700;
+        return const Color.fromARGB(255, 99, 106, 251);
       case 'Seminar':
-        return Colors.teal.shade700;
+        return const Color.fromARGB(255, 97, 105, 251);
       default:
-        return Colors.grey.shade700;
+        return const Color.fromARGB(255, 100, 115, 255);
     }
   }
 
@@ -423,7 +423,7 @@ class _EventsPageState extends State<EventsPage> {
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF0F1A6E),
+                          color: Color.fromARGB(255, 92, 110, 245),
                         ),
                       ),
                     ),
@@ -435,7 +435,7 @@ class _EventsPageState extends State<EventsPage> {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: Color(0xFF0F1A6E),
+                    color: Color.fromARGB(255, 92, 111, 254),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -451,7 +451,7 @@ class _EventsPageState extends State<EventsPage> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F1A6E),
+                      color: Color.fromARGB(255, 93, 111, 252),
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -473,7 +473,7 @@ class _EventsPageState extends State<EventsPage> {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF0F1A6E),
+                      color: Color.fromARGB(255, 91, 109, 245),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -515,7 +515,7 @@ class _EventsPageState extends State<EventsPage> {
                         style: TextStyle(fontSize: 16),
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF283593),
+                        backgroundColor: const Color.fromARGB(255, 92, 109, 243),
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -538,7 +538,7 @@ class _EventsPageState extends State<EventsPage> {
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         children: [
-          Icon(icon, size: 20, color: const Color(0xFF283593)),
+          Icon(icon, size: 20, color: const Color.fromARGB(255, 96, 114, 247)),
           const SizedBox(width: 12),
           Text(
             '$label: ',
@@ -581,7 +581,7 @@ class _EventsPageState extends State<EventsPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('Successfully registered for $eventTitle'),
-                  backgroundColor: Colors.green,
+                  backgroundColor: const Color.fromARGB(255, 95, 103, 243),
                   behavior: SnackBarBehavior.floating,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -590,7 +590,7 @@ class _EventsPageState extends State<EventsPage> {
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF283593),
+              backgroundColor: const Color.fromARGB(255, 96, 114, 250),
             ),
             child: const Text('Register'),
           ),

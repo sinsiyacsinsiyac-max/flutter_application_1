@@ -12,7 +12,7 @@ class EventsManagementPage extends StatelessWidget {
           'Events Management',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF0F1A6E),
+        backgroundColor: const Color.fromARGB(255, 90, 107, 236),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -87,7 +87,7 @@ class EventsManagementPage extends StatelessWidget {
             ),
           );
         },
-        backgroundColor: const Color(0xFF0F1A6E),
+        backgroundColor: const Color.fromARGB(255, 92, 109, 240),
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text(
           'Create Event',
@@ -111,10 +111,10 @@ class EventsManagementPage extends StatelessWidget {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF0F1A6E).withOpacity(0.1),
+            color: const Color.fromARGB(255, 94, 112, 253).withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: Icon(icon, color: const Color(0xFF0F1A6E)),
+          child: Icon(icon, color: const Color.fromARGB(255, 93, 111, 249)),
         ),
         title: Text(
           title,
@@ -142,7 +142,7 @@ class PlaceholderPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        backgroundColor: const Color(0xFF0F1A6E),
+        backgroundColor: const Color.fromARGB(255, 91, 110, 255),
         foregroundColor: Colors.white,
       ),
       body: Center(

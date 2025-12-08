@@ -773,6 +773,7 @@ import 'package:flutter_application_1/Featurs/admin/home/download%20details/down
 import 'package:flutter_application_1/Featurs/admin/home/evenet%20details/eventdetails_page.dart';
 import 'package:flutter_application_1/Featurs/admin/home/exam%20detail/examdetail.page.dart';
 import 'package:flutter_application_1/Featurs/admin/profile_screen.dart';
+import 'package:flutter_application_1/Featurs/admin/user_notification.dart';
 import 'package:flutter_application_1/Featurs/auth/view/login_screen.dart';
 import 'package:flutter_application_1/Featurs/college/add_course.dart';
 import 'package:flutter_application_1/Featurs/college/add_event.dart';
@@ -830,7 +831,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: const Color(0xFF1A237E),
+                color: const Color.fromARGB(255, 19, 166, 211),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: const Icon(Icons.dashboard, color: Colors.white, size: 24),
@@ -863,7 +864,14 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   Icons.notifications_outlined,
                   color: Colors.black87,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SendNotificationScreen(),
+                    ),
+                  );
+                },
               ),
               Positioned(
                 right: 12,
@@ -872,7 +880,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                   width: 8,
                   height: 8,
                   decoration: const BoxDecoration(
-                    color: Colors.red,
+                    color: Color.fromARGB(255, 26, 147, 240),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -916,7 +924,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               title: 'College Details',
               subtitle: 'Manage college contact information',
               icon: Icons.business_rounded,
-              color: const Color(0xFF00695C),
+              color: const Color.fromARGB(255, 8, 161, 203),
               onTap: () {
                 Navigator.push(
                   context,
@@ -931,7 +939,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               title: 'User Management',
               subtitle: 'Manage users, colleges and teachers',
               icon: Icons.people_alt_rounded,
-              color: const Color(0xFF4A148C),
+              color: const Color.fromARGB(255, 8, 161, 203),
               onTap: () {
                 Navigator.push(
                   context,
@@ -947,7 +955,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               title: 'Courses',
               subtitle: 'Manage all courses and programs',
               icon: Icons.school_rounded,
-              color: const Color(0xFF1A237E),
+              color: const Color.fromARGB(255, 8, 161, 203),
               onTap: () {
                 Navigator.push(
                   context,
@@ -975,7 +983,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               title: 'Aminities',
               subtitle: 'Upload College  Aminities',
               icon: Icons.category,
-              color: const Color(0xFF073D7A),
+              color: const Color.fromARGB(255, 8, 161, 203),
               onTap: () {
                 Navigator.push(
                   context,
@@ -991,7 +999,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
               title: 'Events',
               subtitle: 'Create and manage college events',
               icon: Icons.event_rounded,
-              color: const Color(0xFF0F1A6E),
+              color: const Color.fromARGB(255, 8, 161, 203),
               onTap: () {
                 Navigator.push(
                   context,
@@ -1034,17 +1042,17 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
                       _buildStatItem(
                         _courseCount,
                         'Courses',
-                        const Color(0xFF1A237E),
+                        const Color.fromARGB(255, 14, 123, 177),
                       ),
                       _buildStatItem(
                         _usersCount,
                         'Students',
-                        const Color(0xFF0D47A1),
+                        const Color.fromARGB(255, 14, 123, 177),
                       ),
                       _buildStatItem(
                         _teacheCount,
                         'Teachers',
-                        const Color(0xFF4A148C),
+                        const Color.fromARGB(255, 14, 123, 177),
                       ),
                       // _buildStatItem('3', 'Colleges', const Color(0xFF283593)),
                     ],
@@ -1186,7 +1194,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
           'User Management',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF4A148C),
+        backgroundColor: const Color.fromARGB(255, 21, 136, 212),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -1330,7 +1338,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
         onPressed: () {
           _showAddUserDialog(context);
         },
-        backgroundColor: const Color(0xFF4A148C),
+        backgroundColor: const Color.fromARGB(255, 26, 164, 232),
         icon: const Icon(Icons.person_add, color: Colors.white),
         label: const Text(
           'Add User',
@@ -1346,19 +1354,19 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
     switch (userData['role']) {
       case 'admin':
-        roleColor = Colors.red;
+        roleColor = const Color.fromARGB(255, 11, 182, 229);
         roleIcon = Icons.admin_panel_settings;
         break;
       case 'college':
-        roleColor = Colors.orange;
+        roleColor = const Color.fromARGB(255, 31, 162, 228);
         roleIcon = Icons.school;
         break;
       case 'teacher':
-        roleColor = Colors.green;
+        roleColor = const Color.fromARGB(255, 16, 185, 219);
         roleIcon = Icons.person;
         break;
       default:
-        roleColor = Colors.blue;
+        roleColor = const Color.fromARGB(255, 32, 171, 231);
         roleIcon = Icons.person_outline;
     }
 
@@ -1516,7 +1524,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('User created successfully!'),
-                      backgroundColor: Colors.green,
+                      backgroundColor: Color.fromARGB(255, 22, 195, 234),
                     ),
                   );
                 }
@@ -1532,7 +1540,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF4A148C),
+              backgroundColor: const Color.fromARGB(255, 12, 112, 212),
             ),
             child: const Text('Create User'),
           ),
@@ -1577,7 +1585,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('User role updated successfully!'),
-                      backgroundColor: Colors.green,
+                      backgroundColor: Color.fromARGB(255, 23, 168, 231),
                     ),
                   );
                 }
@@ -1593,7 +1601,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF4A148C),
+              backgroundColor: const Color.fromARGB(255, 68, 159, 234),
             ),
             child: const Text('Update Role'),
           ),
@@ -1628,7 +1636,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('User deleted successfully!'),
-                      backgroundColor: Colors.green,
+                      backgroundColor: Color.fromARGB(255, 33, 145, 237),
                     ),
                   );
                 }

@@ -781,7 +781,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Error creating event: $e'),
-              backgroundColor: Colors.red,
+              backgroundColor: const Color.fromARGB(255, 89, 124, 185),
             ),
           );
         }
@@ -816,7 +816,7 @@ class EventDetailScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Event Details'),
-        backgroundColor: Colors.purple.shade700,
+        backgroundColor: const Color.fromARGB(255, 96, 166, 212),
         actions: [
           PopupMenuButton<String>(
             onSelected: (value) {
@@ -954,7 +954,7 @@ class EventDetailScreen extends StatelessWidget {
                             vertical: 6,
                           ),
                           decoration: BoxDecoration(
-                            color: Colors.red.withOpacity(0.8),
+                            color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.8),
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: const Text(
@@ -1141,7 +1141,7 @@ class EventDetailScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, size: 20, color: Colors.purple.shade700),
+          Icon(icon, size: 20, color: const Color.fromARGB(255, 0, 0, 0)),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -1164,17 +1164,17 @@ class EventDetailScreen extends StatelessWidget {
   Color _getEventColor(String? category) {
     switch (category) {
       case 'Cultural':
-        return Colors.purple.shade700;
+        return const Color.fromARGB(255, 87, 156, 235);
       case 'Technical':
         return Colors.blue.shade700;
       case 'Sports':
-        return Colors.green.shade700;
+        return const Color.fromARGB(255, 61, 157, 195);
       case 'Workshop':
-        return Colors.orange.shade700;
+        return const Color.fromARGB(255, 92, 177, 192);
       case 'Seminar':
-        return Colors.teal.shade700;
+        return const Color.fromARGB(255, 60, 117, 152);
       default:
-        return Colors.grey.shade700;
+        return const Color.fromARGB(255, 56, 120, 146);
     }
   }
 
@@ -1233,7 +1233,7 @@ class EventDetailScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Event deleted successfully'),
-                      backgroundColor: Colors.red,
+                      backgroundColor: Color.fromARGB(255, 91, 137, 189),
                     ),
                   );
                 }
@@ -1243,13 +1243,13 @@ class EventDetailScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Error deleting event: $e'),
-                      backgroundColor: Colors.red,
+                      backgroundColor: const Color.fromARGB(255, 60, 167, 255),
                     ),
                   );
                 }
               }
             },
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: const Text('Delete', style: TextStyle(color: Color.fromARGB(255, 38, 56, 101))),
           ),
         ],
       ),

@@ -30,7 +30,7 @@ class _CourseManagementPageState extends State<CourseManagementPage> {
           'Course Management',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        backgroundColor: const Color(0xFF1A237E),
+        backgroundColor: const Color.fromARGB(255, 96, 107, 236),
         foregroundColor: Colors.white,
         elevation: 0,
       ),
@@ -59,7 +59,7 @@ class _CourseManagementPageState extends State<CourseManagementPage> {
         onPressed: () {
           _showAddCourseDialog(context);
         },
-        backgroundColor: const Color(0xFF1A237E),
+        backgroundColor: const Color.fromARGB(255, 96, 108, 235),
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text(
           'Add Course',
@@ -111,10 +111,10 @@ class _CourseManagementPageState extends State<CourseManagementPage> {
         leading: Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: const Color(0xFF1A237E).withOpacity(0.1),
+            color: const Color.fromARGB(255, 103, 114, 236).withOpacity(0.1),
             borderRadius: BorderRadius.circular(10),
           ),
-          child: const Icon(Icons.school_rounded, color: Color(0xFF1A237E)),
+          child: const Icon(Icons.school_rounded, color: Color.fromARGB(255, 96, 106, 214)),
         ),
         title: Text(
           courseName,
@@ -135,7 +135,7 @@ class _CourseManagementPageState extends State<CourseManagementPage> {
           children: [
            
             IconButton(
-              icon: const Icon(Icons.delete, color: Colors.red),
+              icon: const Icon(Icons.delete, color: Color.fromARGB(255, 79, 125, 250)),
               onPressed: () {
                 _showDeleteDialog(context, courseName, index);
               },
@@ -191,13 +191,13 @@ class _CourseManagementPageState extends State<CourseManagementPage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('${controller.text.trim()} added successfully'),
-                    backgroundColor: Colors.green,
+                    backgroundColor: const Color.fromARGB(255, 67, 137, 197),
                   ),
                 );
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1A237E),
+              backgroundColor: const Color.fromARGB(255, 92, 120, 230),
               foregroundColor: Colors.white,
             ),
             child: const Text('Add'),
@@ -251,13 +251,13 @@ class _CourseManagementPageState extends State<CourseManagementPage> {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Course updated successfully'),
-                    backgroundColor: Colors.green,
+                    backgroundColor: Color.fromARGB(255, 83, 162, 240),
                   ),
                 );
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF1A237E),
+              backgroundColor: const Color.fromARGB(255, 97, 109, 240),
               foregroundColor: Colors.white,
             ),
             child: const Text('Update'),
@@ -287,12 +287,12 @@ class _CourseManagementPageState extends State<CourseManagementPage> {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text('$courseName deleted successfully'),
-                  backgroundColor: Colors.red[700],
+                  backgroundColor: const Color.fromARGB(255, 93, 124, 237),
                 ),
               );
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
+              backgroundColor: const Color.fromARGB(255, 66, 138, 219),
               foregroundColor: Colors.white,
             ),
             child: const Text('Delete'),
