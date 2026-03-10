@@ -20,26 +20,17 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
         title: const Text('College Amenities'),
         backgroundColor: const Color.fromARGB(255, 18, 172, 219),
         elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {},
-          ),
-        ],
+        actions: [IconButton(icon: const Icon(Icons.search), onPressed: () {})],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore.collection('amenities').orderBy('name').snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
+            return Center(child: Text('Error: ${snapshot.error}'));
           }
 
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
@@ -53,11 +44,9 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
         onPressed: () async {
           final result = await Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const AddAmenityScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const AddAmenityScreen()),
           );
-          
+
           if (result != null) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -106,7 +95,7 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
       itemBuilder: (context, index) {
         final amenity = docs[index].data() as Map<String, dynamic>;
         final amenityId = docs[index].id;
-        
+
         return Card(
           margin: const EdgeInsets.only(bottom: 12),
           child: ListTile(
@@ -136,7 +125,11 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    Icon(Icons.location_on, size: 14, color: Colors.grey.shade600),
+                    Icon(
+                      Icons.location_on,
+                      size: 14,
+                      color: Colors.grey.shade600,
+                    ),
                     const SizedBox(width: 4),
                     Expanded(child: Text(amenity['location'] ?? '')),
                   ],
@@ -147,10 +140,13 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: amenity['available'] == true
-                        ? Colors.green.shade50 
+                        ? Colors.green.shade50
                         : Colors.red.shade50,
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -158,7 +154,7 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
                     amenity['available'] == true ? 'Available' : 'Unavailable',
                     style: TextStyle(
                       color: amenity['available'] == true
-                          ? const Color.fromARGB(255, 10, 148, 211) 
+                          ? const Color.fromARGB(255, 10, 148, 211)
                           : const Color.fromARGB(255, 11, 123, 214),
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
@@ -177,7 +173,7 @@ class _CollegeAmenitiesPanelState extends State<CollegeAmenitiesPanel> {
                   ),
                 ),
               );
-              
+
               if (result == 'delete') {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
@@ -257,7 +253,7 @@ class _AddAmenityScreenState extends State<AddAmenityScreen> {
   final _capacityController = TextEditingController();
   final _contactController = TextEditingController();
   final _timingsController = TextEditingController();
-  
+
   String _selectedCategory = 'Library';
   bool _isAvailable = true;
   bool _isLoading = false;
@@ -306,19 +302,23 @@ class _AddAmenityScreenState extends State<AddAmenityScreen> {
                     border: OutlineInputBorder(),
                     prefixIcon: Icon(Icons.category),
                   ),
-                  items: const [
-                    'Library',
-                    'Sports',
-                    'Laboratory',
-                    'Cafeteria',
-                    'Auditorium',
-                    'Hostel',
-                    'Transport',
-                    'Medical',
-                    'Other',
-                  ].map((category) {
-                    return DropdownMenuItem(value: category, child: Text(category));
-                  }).toList(),
+                  items:
+                      const [
+                        'Library',
+                        'Sports',
+                        'Laboratory',
+                        'Cafeteria',
+                        'Auditorium',
+                        'Hostel',
+                        'Transport',
+                        'Medical',
+                        'Other',
+                      ].map((category) {
+                        return DropdownMenuItem(
+                          value: category,
+                          child: Text(category),
+                        );
+                      }).toList(),
                   onChanged: (value) {
                     setState(() {
                       _selectedCategory = value!;
@@ -390,9 +390,11 @@ class _AddAmenityScreenState extends State<AddAmenityScreen> {
                 Card(
                   child: SwitchListTile(
                     title: const Text('Currently Available'),
-                    subtitle: Text(_isAvailable 
-                        ? 'Amenity is open for use' 
-                        : 'Amenity is temporarily closed'),
+                    subtitle: Text(
+                      _isAvailable
+                          ? 'Amenity is open for use'
+                          : 'Amenity is temporarily closed',
+                    ),
                     value: _isAvailable,
                     activeColor: const Color.fromARGB(255, 14, 125, 222),
                     onChanged: (value) {
@@ -420,9 +422,7 @@ class _AddAmenityScreenState extends State<AddAmenityScreen> {
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(0.3),
-              child: const Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: const Center(child: CircularProgressIndicator()),
             ),
         ],
       ),
@@ -447,9 +447,9 @@ class _AddAmenityScreenState extends State<AddAmenityScreen> {
           'available': _isAvailable,
           'createdAt': FieldValue.serverTimestamp(),
         };
-        
+
         await _firestore.collection('amenities').add(newAmenity);
-        
+
         if (mounted) {
           Navigator.pop(context, true);
         }
@@ -500,14 +500,8 @@ class AmenityDetailScreen extends StatelessWidget {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'edit',
-                child: Text('Edit Amenity'),
-              ),
-              const PopupMenuItem(
-                value: 'share',
-                child: Text('Share Details'),
-              ),
+              const PopupMenuItem(value: 'edit', child: Text('Edit Amenity')),
+              const PopupMenuItem(value: 'share', child: Text('Share Details')),
               const PopupMenuItem(
                 value: 'delete',
                 child: Text('Delete Amenity'),
@@ -541,7 +535,10 @@ class AmenityDetailScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
                               decoration: BoxDecoration(
                                 color: Colors.white.withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(20),
@@ -571,24 +568,41 @@ class AmenityDetailScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: amenity['available'] == true
-                          ? const Color.fromARGB(255, 7, 146, 220).withOpacity(0.3)
-                          : const Color.fromARGB(255, 11, 127, 215).withOpacity(0.3),
+                          ? const Color.fromARGB(
+                              255,
+                              7,
+                              146,
+                              220,
+                            ).withOpacity(0.3)
+                          : const Color.fromARGB(
+                              255,
+                              11,
+                              127,
+                              215,
+                            ).withOpacity(0.3),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(
-                          amenity['available'] == true ? Icons.check_circle : Icons.cancel,
+                          amenity['available'] == true
+                              ? Icons.check_circle
+                              : Icons.cancel,
                           color: Colors.white,
                           size: 16,
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          amenity['available'] == true ? 'Available' : 'Unavailable',
+                          amenity['available'] == true
+                              ? 'Available'
+                              : 'Unavailable',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 14,
@@ -601,7 +615,7 @@ class AmenityDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Details Section
             Padding(
               padding: const EdgeInsets.all(16),
@@ -610,10 +624,7 @@ class AmenityDetailScreen extends StatelessWidget {
                 children: [
                   const Text(
                     'Amenity Information',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
                   _buildInfoCard(
@@ -640,30 +651,7 @@ class AmenityDetailScreen extends StatelessWidget {
                     amenity['contact'],
                     const Color.fromARGB(255, 13, 160, 209),
                   ),
-                  
-                  const SizedBox(height: 24),
-                  const Text(
-                    'Description',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Text(
-                        amenity['description'],
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey.shade700,
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-                  ),
-                  
+
                   const SizedBox(height: 24),
                   Row(
                     children: [
@@ -682,7 +670,12 @@ class AmenityDetailScreen extends StatelessWidget {
                             style: TextStyle(color: Colors.white),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 120, 198, 237),
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              120,
+                              198,
+                              237,
+                            ),
                             padding: const EdgeInsets.all(16),
                           ),
                         ),
@@ -697,13 +690,20 @@ class AmenityDetailScreen extends StatelessWidget {
                               ),
                             );
                           },
-                          icon: Icon(Icons.directions, color: const Color.fromARGB(255, 85, 170, 239)),
+                          icon: Icon(
+                            Icons.directions,
+                            color: const Color.fromARGB(255, 85, 170, 239),
+                          ),
                           label: Text(
                             'Get Directions',
-                            style: TextStyle(color: const Color.fromARGB(255, 57, 150, 216)),
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 57, 150, 216),
+                            ),
                           ),
                           style: OutlinedButton.styleFrom(
-                            side: BorderSide(color: const Color.fromARGB(255, 92, 125, 233)),
+                            side: BorderSide(
+                              color: const Color.fromARGB(255, 92, 125, 233),
+                            ),
                             padding: const EdgeInsets.all(16),
                           ),
                         ),
@@ -719,7 +719,12 @@ class AmenityDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCard(IconData icon, String label, String value, Color color) {
+  Widget _buildInfoCard(
+    IconData icon,
+    String label,
+    String value,
+    Color color,
+  ) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -741,10 +746,7 @@ class AmenityDetailScreen extends StatelessWidget {
                 children: [
                   Text(
                     label,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -810,11 +812,9 @@ class AmenityDetailScreen extends StatelessWidget {
   }
 
   void _editAmenity(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Edit feature coming soon!'),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Edit feature coming soon!')));
   }
 
   void _showDeleteDialog(BuildContext context) {
@@ -835,7 +835,7 @@ class AmenityDetailScreen extends StatelessWidget {
                     .collection('amenities')
                     .doc(amenityId)
                     .delete();
-                
+
                 if (context.mounted) {
                   Navigator.pop(context); // Close dialog
                   Navigator.pop(context, 'delete'); // Return to list

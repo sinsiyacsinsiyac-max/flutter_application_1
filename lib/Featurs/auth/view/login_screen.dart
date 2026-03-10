@@ -28,8 +28,7 @@
 //           TextFormField(controller: emailcontroller,decoration: InputDecoration(labelText: "email"),),
 //           SizedBox(height: 10, width: 10,),
 //           ]
-        
-          
+
 //         ,),
 //       ))
 
@@ -90,9 +89,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
-      
+
       try {
-        User? user = await _authService.signIn( 
+        User? user = await _authService.signIn(
           email: emailController.text.trim(),
           password: passwordController.text.trim(),
         );
@@ -100,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if (user != null) {
           // Get user role from Firestore
           String? role = await _authService.getUserRole(user.uid);
-          
+
           if (mounted) {
             _navigateBasedOnRole(role, context);
           }
@@ -157,11 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
         width: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [
-              Color(0xFF1976D2),
-              Color(0xFF42A5F5),
-              Colors.white,
-            ],
+            colors: [Color(0xFF1976D2), Color(0xFF42A5F5), Colors.white],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -293,21 +288,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 12),
 
                     // Forgot Password
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          // Handle forgot password
-                        },
-                        child: const Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Align(
+                    //   alignment: Alignment.centerRight,
+                    //   child: TextButton(
+                    //     onPressed: () {
+                    //       // Handle forgot password
+                    //     },
+                    //     child: const Text(
+                    //       'Forgot Password?',
+                    //       style: TextStyle(
+                    //         color: Colors.white,
+                    //         fontWeight: FontWeight.w600,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                     const SizedBox(height: 24),
 
                     // Login Button
@@ -345,32 +340,32 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 24),
 
                     // Sign Up Link
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Don't have an account? ",
-                          style: TextStyle(
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context, 
-                              MaterialPageRoute(builder: (context) => const SignUpScreen())
-                            );
-                          },
-                          child: const Text(
-                            'Sign Up',
-                            style: TextStyle(
-                              color: Color(0xFF1976D2),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.center,
+                    //   children: [
+                    //     Text(
+                    //       "Don't have an account? ",
+                    //       style: TextStyle(
+                    //         color: Colors.grey[700],
+                    //       ),
+                    //     ),
+                    //     TextButton(
+                    //       onPressed: () {
+                    //         Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(builder: (context) => const SignUpScreen())
+                    //         );
+                    //       },
+                    //       child: const Text(
+                    //         'Sign Up',
+                    //         style: TextStyle(
+                    //           color: Color(0xFF1976D2),
+                    //           fontWeight: FontWeight.bold,
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),

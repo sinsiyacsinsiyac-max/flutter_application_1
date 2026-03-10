@@ -8,6 +8,7 @@ import 'package:flutter_application_1/Featurs/college/add_event.dart';
 import 'package:flutter_application_1/Featurs/college/add_notes_and_question_pappersadd.dart';
 import 'package:flutter_application_1/Featurs/college/aminities_add_option.dart';
 import 'package:flutter_application_1/Featurs/college/profile_screen.dart';
+import 'package:flutter_application_1/Featurs/college/student_add.dart';
 import 'package:flutter_application_1/Featurs/firebase_serviece/firebase.dart';
 import 'package:intl/intl.dart';
 
@@ -58,9 +59,6 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
 
                     // Upcoming Events
                     _buildUpcomingEvents(),
-
-                    // News & Announcements
-                    _buildNewsSection(),
                   ],
                 ),
               ),
@@ -220,7 +218,11 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
               color: Colors.blue.shade50,
               borderRadius: BorderRadius.circular(10),
             ),
-            child: const Icon(Icons.filter_list, color: Color.fromARGB(255, 66, 163, 241), size: 20),
+            child: const Icon(
+              Icons.filter_list,
+              color: Color.fromARGB(255, 66, 163, 241),
+              size: 20,
+            ),
           ),
         ],
       ),
@@ -255,7 +257,11 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   MaterialPageRoute(builder: (context) => TeacherCoursePanel()),
                 );
               },
-              child: _buildActionItem(Icons.school, 'Courses', const Color.fromARGB(255, 97, 116, 235)),
+              child: _buildActionItem(
+                Icons.school,
+                'Courses',
+                const Color.fromARGB(255, 97, 116, 235),
+              ),
             ),
             GestureDetector(
               onTap: () {
@@ -264,7 +270,11 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   MaterialPageRoute(builder: (context) => NotesPapersPanel()),
                 );
               },
-              child: _buildActionItem(Icons.assignment, 'Notes', const Color.fromARGB(255, 90, 110, 239)),
+              child: _buildActionItem(
+                Icons.assignment,
+                'Notes',
+                const Color.fromARGB(255, 90, 110, 239),
+              ),
             ),
             GestureDetector(
               onTap: () {
@@ -288,7 +298,11 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   MaterialPageRoute(builder: (context) => CollegeEventsPanel()),
                 );
               },
-              child: _buildActionItem(Icons.event, 'Events', const Color.fromARGB(255, 12, 146, 249)),
+              child: _buildActionItem(
+                Icons.event,
+                'Events',
+                const Color.fromARGB(255, 12, 146, 249),
+              ),
             ),
             GestureDetector(
               onTap: () {
@@ -314,7 +328,26 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
                   ),
                 );
               },
-              child: _buildActionItem(Icons.person, 'Profile', const Color.fromARGB(255, 75, 101, 245)),
+              child: _buildActionItem(
+                Icons.person,
+                'Profile',
+                const Color.fromARGB(255, 75, 101, 245),
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const StudentAdd(),
+                  ),
+                );
+              },
+              child: _buildActionItem(
+                Icons.person_add,
+                'Students',
+                const Color.fromARGB(255, 75, 101, 245),
+              ),
             ),
           ],
         ),
@@ -640,146 +673,146 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
     );
   }
 
-  Widget _buildNewsSection() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: _firestore
-          .collection('announcements')
-          .orderBy('createdAt', descending: true)
-          .limit(1)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return _buildSectionLoading('News & Announcements');
-        }
+  // Widget _buildNewsSection() {
+  //   return StreamBuilder<QuerySnapshot>(
+  //     stream: _firestore
+  //         .collection('announcements')
+  //         .orderBy('createdAt', descending: true)
+  //         .limit(1)
+  //         .snapshots(),
+  //     builder: (context, snapshot) {
+  //       if (snapshot.connectionState == ConnectionState.waiting) {
+  //         return _buildSectionLoading('News & Announcements');
+  //       }
 
-        if (snapshot.hasError) {
-          return _buildSectionError('Failed to load announcements');
-        }
+  //       if (snapshot.hasError) {
+  //         return _buildSectionError('Failed to load announcements');
+  //       }
 
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return _buildEmptySection('News & Announcements', 'No announcements');
-        }
+  //       if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+  //         return _buildEmptySection('News & Announcements', 'No announcements');
+  //       }
 
-        final announcement =
-            snapshot.data!.docs.first.data() as Map<String, dynamic>;
-        final createdAt = (announcement['createdAt'] as Timestamp).toDate();
-        final timeAgo = _getTimeAgo(createdAt);
+  //       final announcement =
+  //           snapshot.data!.docs.first.data() as Map<String, dynamic>;
+  //       final createdAt = (announcement['createdAt'] as Timestamp).toDate();
+  //       final timeAgo = _getTimeAgo(createdAt);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 24),
-            const Text(
-              'News & Announcements',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.orange.shade50,
-                    Colors.orange.shade100.withOpacity(0.5),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 98, 89, 226),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Text(
-                          'NEW',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        DateFormat('MMMM dd, yyyy').format(createdAt),
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    announcement['title'] ?? 'No Title',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    announcement['description'] ?? 'No description available',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black87,
-                      height: 1.4,
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: const Color.fromARGB(255, 85, 107, 219),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Text(
-                          'Read More',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      const Spacer(),
-                      Text(
-                        timeAgo,
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  //       return Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           const SizedBox(height: 24),
+  //           const Text(
+  //             'News & Announcements',
+  //             style: TextStyle(
+  //               fontSize: 22,
+  //               fontWeight: FontWeight.bold,
+  //               color: Colors.black87,
+  //             ),
+  //           ),
+  //           const SizedBox(height: 12),
+  //           Container(
+  //             padding: const EdgeInsets.all(20),
+  //             decoration: BoxDecoration(
+  //               gradient: LinearGradient(
+  //                 begin: Alignment.topLeft,
+  //                 end: Alignment.bottomRight,
+  //                 colors: [
+  //                   Colors.orange.shade50,
+  //                   Colors.orange.shade100.withOpacity(0.5),
+  //                 ],
+  //               ),
+  //               borderRadius: BorderRadius.circular(20),
+  //             ),
+  //             child: Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Row(
+  //                   children: [
+  //                     Container(
+  //                       padding: const EdgeInsets.all(8),
+  //                       decoration: BoxDecoration(
+  //                         color: const Color.fromARGB(255, 98, 89, 226),
+  //                         borderRadius: BorderRadius.circular(8),
+  //                       ),
+  //                       child: const Text(
+  //                         'NEW',
+  //                         style: TextStyle(
+  //                           color: Colors.white,
+  //                           fontSize: 12,
+  //                           fontWeight: FontWeight.bold,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     const SizedBox(width: 8),
+  //                     Text(
+  //                       DateFormat('MMMM dd, yyyy').format(createdAt),
+  //                       style: TextStyle(
+  //                         color: Colors.grey.shade600,
+  //                         fontSize: 12,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //                 const SizedBox(height: 12),
+  //                 Text(
+  //                   announcement['title'] ?? 'No Title',
+  //                   style: const TextStyle(
+  //                     fontSize: 18,
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.black87,
+  //                   ),
+  //                 ),
+  //                 const SizedBox(height: 8),
+  //                 Text(
+  //                   announcement['description'] ?? 'No description available',
+  //                   style: const TextStyle(
+  //                     fontSize: 14,
+  //                     color: Colors.black87,
+  //                     height: 1.4,
+  //                   ),
+  //                   maxLines: 3,
+  //                   overflow: TextOverflow.ellipsis,
+  //                 ),
+  //                 const SizedBox(height: 16),
+  //                 Row(
+  //                   children: [
+  //                     Container(
+  //                       padding: const EdgeInsets.symmetric(
+  //                         horizontal: 16,
+  //                         vertical: 8,
+  //                       ),
+  //                       decoration: BoxDecoration(
+  //                         color: const Color.fromARGB(255, 85, 107, 219),
+  //                         borderRadius: BorderRadius.circular(20),
+  //                       ),
+  //                       child: const Text(
+  //                         'Read More',
+  //                         style: TextStyle(
+  //                           color: Colors.white,
+  //                           fontSize: 14,
+  //                           fontWeight: FontWeight.w500,
+  //                         ),
+  //                       ),
+  //                     ),
+  //                     const Spacer(),
+  //                     Text(
+  //                       timeAgo,
+  //                       style: TextStyle(
+  //                         color: Colors.grey.shade600,
+  //                         fontSize: 12,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ],
+  //             ),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   // Helper methods
   Widget _buildSectionLoading(String title) {
@@ -831,12 +864,17 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
           ),
           child: Row(
             children: [
-              Icon(Icons.error_outline, color: const Color.fromARGB(255, 41, 148, 219)),
+              Icon(
+                Icons.error_outline,
+                color: const Color.fromARGB(255, 41, 148, 219),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   error,
-                  style: TextStyle(color: const Color.fromARGB(255, 47, 123, 211)),
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 47, 123, 211),
+                  ),
                 ),
               ),
             ],
