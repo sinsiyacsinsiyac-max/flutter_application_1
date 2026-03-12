@@ -656,19 +656,19 @@ class CourseDetailScreen extends StatelessWidget {
                   ],
 
                   const SizedBox(height: 24),
-                  const Text(
-                    'Description',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    course['description'] ?? '',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey.shade700,
-                      height: 1.5,
-                    ),
-                  ),
+                  // const Text(
+                  //   'Description',
+                  //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  // ),
+                  // const SizedBox(height: 8),
+                  // Text(
+                  //   course['description'] ?? '',
+                  //   style: TextStyle(
+                  //     fontSize: 14,
+                  //     color: Colors.grey.shade700,
+                  //     height: 1.5,
+                  //   ),
+                  // ),
 
                   const SizedBox(height: 24),
 
@@ -754,40 +754,40 @@ class CourseDetailScreen extends StatelessWidget {
                     const SizedBox(height: 24),
                   ],
 
-                  const Text(
-                    'Enrollment Status',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text('Current Enrollment'),
-                              Text(
-                                '${course['enrolledStudents'] ?? 0}/${course['maxStudents']}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          LinearProgressIndicator(
-                            value:
-                                (course['enrolledStudents'] ?? 0) /
-                                (course['maxStudents'] ?? 1).toDouble(),
-                            backgroundColor: Colors.grey.shade300,
-                            color: Colors.blue,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  // const Text(
+                  //   'Enrollment Status',
+                  //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  // ),
+                  // const SizedBox(height: 12),
+                  // Card(
+                  //   child: Padding(
+                  //     padding: const EdgeInsets.all(16),
+                  //     child: Column(
+                  //       children: [
+                  //         Row(
+                  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  //           children: [
+                  //             const Text('Current Enrollment'),
+                  //             Text(
+                  //               '${course['enrolledStudents'] ?? 0}/${course['maxStudents']}',
+                  //               style: const TextStyle(
+                  //                 fontWeight: FontWeight.bold,
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         ),
+                  //         const SizedBox(height: 8),
+                  //         LinearProgressIndicator(
+                  //           value:
+                  //               (course['enrolledStudents'] ?? 0) /
+                  //               (course['maxStudents'] ?? 1).toDouble(),
+                  //           backgroundColor: Colors.grey.shade300,
+                  //           color: Colors.blue,
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

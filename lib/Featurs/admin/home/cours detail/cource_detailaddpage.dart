@@ -331,8 +331,7 @@ class _AddCourseDetailsPageState extends State<AddCourseDetailsPage> {
               ],
             ),
             const SizedBox(height: 20),
-            TextFormField(
-              controller: _minMarksController,
+            TextFormField(              controller: _minMarksController,
               decoration: InputDecoration(
                 labelText: 'Minimum Marks Required *',
                 hintText: 'e.g., 50%',

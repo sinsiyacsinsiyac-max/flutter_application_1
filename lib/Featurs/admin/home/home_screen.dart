@@ -1011,55 +1011,55 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             ),
 
             const SizedBox(height: 24),
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Quick Statistics',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatItem(
-                        _courseCount,
-                        'Courses',
-                        const Color.fromARGB(255, 14, 123, 177),
-                      ),
-                      _buildStatItem(
-                        _usersCount,
-                        'Students',
-                        const Color.fromARGB(255, 14, 123, 177),
-                      ),
-                      _buildStatItem(
-                        _teacheCount,
-                        'Teachers',
-                        const Color.fromARGB(255, 14, 123, 177),
-                      ),
-                      // _buildStatItem('3', 'Colleges', const Color(0xFF283593)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+            // Container(
+            //   padding: const EdgeInsets.all(20),
+            //   decoration: BoxDecoration(
+            //     color: Colors.white,
+            //     borderRadius: BorderRadius.circular(16),
+            //     boxShadow: [
+            //       BoxShadow(
+            //         color: Colors.black.withOpacity(0.05),
+            //         blurRadius: 10,
+            //         offset: const Offset(0, 4),
+            //       ),
+            //     ],
+            //   ),
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       const Text(
+            //         'Quick Statistics',
+            //         style: TextStyle(
+            //           fontSize: 20,
+            //           fontWeight: FontWeight.bold,
+            //           color: Colors.black87,
+            //         ),
+            //       ),
+            //       const SizedBox(height: 20),
+            //       Row(
+            //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+            //         children: [
+            //           _buildStatItem(
+            //             _courseCount,
+            //             'Courses',
+            //             const Color.fromARGB(255, 14, 123, 177),
+            //           ),
+            //           _buildStatItem(
+            //             _usersCount,
+            //             'Students',
+            //             const Color.fromARGB(255, 14, 123, 177),
+            //           ),
+            //           _buildStatItem(
+            //             _teacheCount,
+            //             'Teachers',
+            //             const Color.fromARGB(255, 14, 123, 177),
+            //           ),
+            //           // _buildStatItem('3', 'Colleges', const Color(0xFF283593)),
+            //         ],
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

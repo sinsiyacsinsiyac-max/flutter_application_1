@@ -653,63 +653,7 @@ class AmenityDetailScreen extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 24),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Booking feature coming soon!'),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.bookmark, color: Colors.white),
-                          label: const Text(
-                            'Book Now',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(
-                              255,
-                              120,
-                              198,
-                              237,
-                            ),
-                            padding: const EdgeInsets.all(16),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Direction feature coming soon!'),
-                              ),
-                            );
-                          },
-                          icon: Icon(
-                            Icons.directions,
-                            color: const Color.fromARGB(255, 85, 170, 239),
-                          ),
-                          label: Text(
-                            'Get Directions',
-                            style: TextStyle(
-                              color: const Color.fromARGB(255, 57, 150, 216),
-                            ),
-                          ),
-                          style: OutlinedButton.styleFrom(
-                            side: BorderSide(
-                              color: const Color.fromARGB(255, 92, 125, 233),
-                            ),
-                            padding: const EdgeInsets.all(16),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  
                 ],
               ),
             ),

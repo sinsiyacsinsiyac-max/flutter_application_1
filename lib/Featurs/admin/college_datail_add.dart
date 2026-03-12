@@ -539,35 +539,34 @@ class _CollegeDetailsPageState extends State<CollegeDetailsPage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _buildInfoCard(
-                      'Birth Certificate',
-                      _birthCertificateController.text,
-                      Icons.description_rounded,
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      margin: const EdgeInsets.symmetric(vertical: 10),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: Colors.grey.shade300),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: const [
+                          
+
+                          Text("• Birth Certificate",style: TextStyle(fontSize: 16),),
+                          SizedBox(height: 6),
+                          Text("• Transfer Certificate",style: TextStyle(fontSize: 16),),
+                          SizedBox(height: 6),
+                          Text("• Mark Sheets",style: TextStyle(fontSize: 16),),
+                          SizedBox(height: 6),
+                          Text("• Address Proof",style: TextStyle(fontSize: 16),),
+                          SizedBox(height: 6),
+                          Text("• Photographs",style: TextStyle(fontSize: 16),),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 12),
-                    _buildInfoCard(
-                      'Transfer Certificate',
-                      _transferCertificateController.text,
-                      Icons.description_rounded,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildInfoCard(
-                      'Mark Sheets',
-                      _markSheetsController.text,
-                      Icons.description_rounded,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildInfoCard(
-                      'Address Proof',
-                      _addressProofController.text,
-                      Icons.description_rounded,
-                    ),
-                    const SizedBox(height: 12),
-                    _buildInfoCard(
-                      'Photographs',
-                      _photographsController.text,
-                      Icons.description_rounded,
-                    ),
+
+                    SizedBox(height: 12),
 
                     // Empty State
                     if (_nameController.text.isEmpty &&

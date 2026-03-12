@@ -319,21 +319,7 @@ class _CollegeHomeScreenState extends State<CollegeHomeScreen> {
             ),
             // _buildActionItem(Icons.analytics, 'Analytics', Colors.teal),
             // _buildActionItem(Icons.people, 'Students', Colors.green),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TeacherProfileScreen(),
-                  ),
-                );
-              },
-              child: _buildActionItem(
-                Icons.person,
-                'Profile',
-                const Color.fromARGB(255, 75, 101, 245),
-              ),
-            ),
+            
             GestureDetector(
               onTap: () {
                 Navigator.push(
