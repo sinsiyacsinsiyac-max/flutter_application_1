@@ -10,6 +10,7 @@ import 'package:flutter_application_1/Featurs/view_more/events/events_page.dart'
 import 'package:flutter_application_1/Featurs/view_more/events/photo_gallery.dart'
     hide EventsPage;
 import 'package:flutter_application_1/Featurs/view_more/exam/exam_page.dart';
+import 'package:flutter_application_1/Featurs/view_more/amenities/amenity_details_page.dart';
 import 'package:flutter_application_1/Featurs/view_more/profile/user_profile_screen.dart';
 
 class ExpantioList extends StatelessWidget {
@@ -62,6 +63,8 @@ class ExpantioList extends StatelessWidget {
             const DownloadsExpansion(),
             const SizedBox(height: 16),
             const EventsExpansion(),
+            const SizedBox(height: 16),
+            const AmenitiesExpansion(),
             const SizedBox(height: 24),
             _buildLogoutButton(context, _authService),
           ],
@@ -584,7 +587,10 @@ class ProfileExpantion extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [const Color.fromARGB(255, 11, 167, 234), Colors.blue[700]!],
+              colors: [
+                const Color.fromARGB(255, 11, 167, 234),
+                Colors.blue[700]!,
+              ],
             ),
             borderRadius: BorderRadius.circular(20),
           ),
@@ -1087,11 +1093,18 @@ Widget _buildErrorState(String message) {
     padding: const EdgeInsets.all(24),
     child: Column(
       children: [
-        Icon(Icons.error_outline_rounded, color: const Color.fromARGB(255, 17, 117, 193), size: 48),
+        Icon(
+          Icons.error_outline_rounded,
+          color: const Color.fromARGB(255, 17, 117, 193),
+          size: 48,
+        ),
         const SizedBox(height: 12),
         Text(
           message,
-          style: TextStyle(fontSize: 14, color: const Color.fromARGB(255, 32, 192, 236)),
+          style: TextStyle(
+            fontSize: 14,
+            color: const Color.fromARGB(255, 32, 192, 236),
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -1104,14 +1117,254 @@ Widget _buildEmptyState(String message) {
     padding: const EdgeInsets.all(24),
     child: Column(
       children: [
-        Icon(Icons.inbox_rounded, color: const Color.fromARGB(255, 37, 147, 238), size: 48),
+        Icon(
+          Icons.inbox_rounded,
+          color: const Color.fromARGB(255, 37, 147, 238),
+          size: 48,
+        ),
         const SizedBox(height: 12),
         Text(
           message,
-          style: TextStyle(fontSize: 14, color: const Color.fromARGB(255, 57, 181, 243)),
+          style: TextStyle(
+            fontSize: 14,
+            color: const Color.fromARGB(255, 57, 181, 243),
+          ),
           textAlign: TextAlign.center,
         ),
       ],
     ),
   );
+}
+
+class AmenitiesExpansion extends StatelessWidget {
+  const AmenitiesExpansion({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return _ExpansionCard(
+      icon: Icons.apartment_rounded,
+      title: 'Amenities',
+      subtitleBuilder: (context) => StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance.collection('amenities').snapshots(),
+        builder: (context, snapshot) {
+          final count = snapshot.data?.docs.length ?? 0;
+          return Text(
+            '$count facilities available',
+            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+          );
+        },
+      ),
+      color: const Color(0xFF00796B),
+      childrenBuilder: (context) => [
+        StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('amenities')
+              .orderBy('name')
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return _buildErrorState('Error loading amenities');
+            }
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return _buildLoadingState();
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return _buildEmptyState('No amenities listed');
+            }
+
+            final amenities = snapshot.data!.docs;
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: amenities.length,
+              itemBuilder: (context, index) => _buildAmenityItem(
+                context,
+                amenities[index],
+                index,
+                amenities.length,
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAmenityItem(
+    BuildContext context,
+    QueryDocumentSnapshot doc,
+    int index,
+    int total,
+  ) {
+    final amenity = doc.data() as Map<String, dynamic>;
+    final name = amenity['name'] ?? 'Unnamed Facility';
+    final category = amenity['category'] ?? 'Other';
+    final isAvailable = amenity['available'] == true;
+    final location = amenity['location'] ?? '';
+
+    return AnimatedContainer(
+      duration: Duration(milliseconds: 200 + (index * 100)),
+      curve: Curves.easeInOut,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AmenityDetailsPage(amenity: amenity),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            margin: EdgeInsets.only(bottom: index == total - 1 ? 0 : 8),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey[200]!),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        _getAmenityColor(category).withOpacity(0.8),
+                        _getAmenityColor(category),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(
+                    _getAmenityIcon(category),
+                    color: Colors.white,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            size: 12,
+                            color: Colors.grey[600],
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              location,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: isAvailable
+                        ? Colors.green.withOpacity(0.1)
+                        : Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    isAvailable ? 'Available' : 'Closed',
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: isAvailable ? Colors.green[700] : Colors.red[700],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _getAmenityColor(String category) {
+    switch (category) {
+      case 'Library':
+        return Colors.blue.shade700;
+      case 'Sports':
+        return Colors.orange.shade700;
+      case 'Laboratory':
+        return Colors.purple.shade700;
+      case 'Cafeteria':
+        return Colors.brown.shade700;
+      case 'Auditorium':
+        return Colors.indigo.shade700;
+      case 'Hostel':
+        return Colors.teal.shade700;
+      case 'Transport':
+        return Colors.amber.shade700;
+      case 'Medical':
+        return Colors.red.shade700;
+      default:
+        return Colors.blueGrey.shade700;
+    }
+  }
+
+  IconData _getAmenityIcon(String category) {
+    switch (category) {
+      case 'Library':
+        return Icons.local_library;
+      case 'Sports':
+        return Icons.sports_basketball;
+      case 'Laboratory':
+        return Icons.science;
+      case 'Cafeteria':
+        return Icons.restaurant;
+      case 'Auditorium':
+        return Icons.theater_comedy;
+      case 'Hostel':
+        return Icons.hotel;
+      case 'Transport':
+        return Icons.directions_bus;
+      case 'Medical':
+        return Icons.local_hospital;
+      default:
+        return Icons.apartment;
+    }
+  }
 }
